@@ -3,10 +3,11 @@ from contextlib import asynccontextmanager
 from sqlmodel import SQLModel
 
 from fastauth.db.session import engine
+from fastauth.api.auth import router as auth_router
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(app: FastAPI):
     SQLModel.metadata.create_all(engine)
     yield
 
@@ -15,6 +16,8 @@ app = FastAPI(
     title="FastAuth",
     lifespan=lifespan,
 )
+
+app.include_router(auth_router)
 
 
 @app.get("/health")
