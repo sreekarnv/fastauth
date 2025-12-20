@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 
 
@@ -19,4 +19,5 @@ class User(SQLModel, table=True):
     hashed_password: str
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
