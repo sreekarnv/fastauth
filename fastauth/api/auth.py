@@ -77,7 +77,7 @@ def refresh_token(
     session: Session = Depends(get_session),
 ):
     try:
-        new_refresh, user_id = rotate_refresh_token(
+        result = rotate_refresh_token(
             session=session,
             token=payload.refresh_token,
         )
@@ -87,10 +87,10 @@ def refresh_token(
             detail="Invalid refresh token",
         )
 
-    access_token = create_access_token(subject=str(user_id))
+    access_token = create_access_token(subject=str(result.user_id))
 
     return {
         "access_token": access_token,
-        "refresh_token": new_refresh,
+        "refresh_token": result.refresh_token,
         "token_type": "bearer",
     }

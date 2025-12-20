@@ -1,3 +1,5 @@
+import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta, UTC
 from sqlmodel import Session, select
 
@@ -7,6 +9,11 @@ from fastauth.security.refresh import (
     hash_refresh_token,
 )
 
+
+@dataclass(frozen=True)
+class RotatedRefreshToken:
+    refresh_token: str
+    user_id: uuid.UUID
 
 class RefreshTokenError(Exception):
     pass
@@ -37,7 +44,7 @@ def rotate_refresh_token(
     *,
     session: Session,
     token: str,
-) -> tuple[str, str]:
+) -> RotatedRefreshToken:
     token_hash = hash_refresh_token(token)
 
     statement = select(RefreshToken).where(
@@ -67,4 +74,7 @@ def rotate_refresh_token(
     session.add(new_refresh)
     session.commit()
 
-    return new_token, refresh.user_id
+    return RotatedRefreshToken(
+        refresh_token=new_token,
+        user_id=refresh.user_id,
+    )
