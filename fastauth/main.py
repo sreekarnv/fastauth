@@ -8,7 +8,6 @@ from fastauth.api.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    SQLModel.metadata.create_all(engine)
     yield
 
 
