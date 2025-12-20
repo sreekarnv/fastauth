@@ -15,6 +15,7 @@ class RotatedRefreshToken:
     refresh_token: str
     user_id: uuid.UUID
 
+
 class RefreshTokenError(Exception):
     pass
 
@@ -78,3 +79,27 @@ def rotate_refresh_token(
         refresh_token=new_token,
         user_id=refresh.user_id,
     )
+
+
+def revoke_refresh_token(
+    *,
+    session: Session,
+    token: str,
+) -> None:
+    """
+    Revoke a refresh token (logout).
+    """
+    token_hash = hash_refresh_token(token)
+
+    statement = select(RefreshToken).where(
+        RefreshToken.token_hash == token_hash,
+        RefreshToken.revoked == False,
+    )
+    refresh = session.exec(statement).first()
+
+    if not refresh:
+        return
+
+    refresh.revoked = True
+    session.add(refresh)
+    session.commit()

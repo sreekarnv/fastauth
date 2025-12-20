@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from fastauth.api.schemas import LoginRequest, RegisterRequest, TokenResponse, RefreshRequest
+from fastauth.api.schemas import (
+    LoginRequest,
+    RegisterRequest,
+    TokenResponse,
+    RefreshRequest,
+    LogoutRequest,
+)
 from fastauth.core.users import (
     create_user,
     authenticate_user,
@@ -11,10 +17,12 @@ from fastauth.core.users import (
 from fastauth.core.refresh_tokens import (
     create_refresh_token,
     rotate_refresh_token,
+    revoke_refresh_token,
     RefreshTokenError,
 )
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -94,3 +102,14 @@ def refresh_token(
         "refresh_token": result.refresh_token,
         "token_type": "bearer",
     }
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(
+    payload: LogoutRequest,
+    session: Session = Depends(get_session),
+):
+    revoke_refresh_token(
+        session=session,
+        token=payload.refresh_token,
+    )
