@@ -12,7 +12,8 @@ dependencies = [
     "fastapi[all] (>=0.125.0,<0.126.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
     "python-jose (>=3.5.0,<4.0.0)",
-    "pydantic-settings (>=2.12.0,<3.0.0)"
+    "pydantic-settings (>=2.12.0,<3.0.0)",
+    "sqlmodel (>=0.0.27,<0.0.28)"
 ]
 
 
