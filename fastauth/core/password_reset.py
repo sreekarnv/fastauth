@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, UTC, timezone
 from sqlmodel import Session, select
 
 from fastauth.db.models import User, PasswordResetToken
@@ -61,7 +61,8 @@ def confirm_password_reset(
         )
     ).first()
 
-    if not reset or reset.expires_at < datetime.now(UTC):
+    now = datetime.utcnow()
+    if not reset or reset.expires_at < now:
         raise PasswordResetError("Invalid or expired reset token")
 
     user = session.get(User, reset.user_id)
