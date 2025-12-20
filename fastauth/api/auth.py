@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session
 
 from fastauth.api.schemas import (
@@ -22,6 +22,8 @@ from fastauth.core.refresh_tokens import (
 )
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
+from fastauth.security.limits import login_rate_limiter, register_rate_limiter
+from fastauth.security.rate_limit import RateLimitExceeded
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -30,8 +32,19 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/register", response_model=TokenResponse)
 def register(
     payload: RegisterRequest,
+    request: Request,
     session: Session = Depends(get_session),
 ):
+    key = request.client.host
+
+    try:
+        register_rate_limiter.hit(key)
+    except RateLimitExceeded:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many registration attempts. Try again later.",
+        )
+
     try:
         user = create_user(
             session=session,
@@ -44,20 +57,34 @@ def register(
             detail="User already exists",
         )
 
-    token = create_access_token(subject=str(user.id))
+    access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
         session=session,
         user_id=user.id,
     )
 
-    return TokenResponse(access_token=token, refresh_token=refresh_token)
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
 
 
 @router.post("/login", response_model=TokenResponse)
 def login(
     payload: LoginRequest,
+    request: Request,
     session: Session = Depends(get_session),
 ):
+    key = f"{request.client.host}:{payload.email}"
+
+    try:
+        login_rate_limiter.hit(key)
+    except RateLimitExceeded:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many login attempts. Try again later.",
+        )
+
     try:
         user = authenticate_user(
             session=session,
@@ -70,13 +97,18 @@ def login(
             detail="Invalid email or password",
         )
 
-    token = create_access_token(subject=str(user.id))
+    login_rate_limiter.reset(key)
+
+    access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
         session=session,
         user_id=user.id,
     )
 
-    return TokenResponse(access_token=token, refresh_token=refresh_token)
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
 
 
 @router.post("/refresh", response_model=TokenResponse)
