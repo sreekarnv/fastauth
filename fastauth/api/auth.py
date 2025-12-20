@@ -1,15 +1,28 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from fastauth.api.schemas import LoginRequest, RegisterRequest, TokenResponse
+from fastauth.api.schemas import (
+    LoginRequest,
+    RegisterRequest,
+    TokenResponse,
+    RefreshRequest,
+    LogoutRequest,
+)
 from fastauth.core.users import (
     create_user,
     authenticate_user,
     UserAlreadyExistsError,
     InvalidCredentialsError,
 )
+from fastauth.core.refresh_tokens import (
+    create_refresh_token,
+    rotate_refresh_token,
+    revoke_refresh_token,
+    RefreshTokenError,
+)
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -32,8 +45,12 @@ def register(
         )
 
     token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(
+        session=session,
+        user_id=user.id,
+    )
 
-    return TokenResponse(access_token=token)
+    return TokenResponse(access_token=token, refresh_token=refresh_token)
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -54,5 +71,45 @@ def login(
         )
 
     token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(
+        session=session,
+        user_id=user.id,
+    )
 
-    return TokenResponse(access_token=token)
+    return TokenResponse(access_token=token, refresh_token=refresh_token)
+
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh_token(
+    payload: RefreshRequest,
+    session: Session = Depends(get_session),
+):
+    try:
+        result = rotate_refresh_token(
+            session=session,
+            token=payload.refresh_token,
+        )
+    except RefreshTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+        )
+
+    access_token = create_access_token(subject=str(result.user_id))
+
+    return {
+        "access_token": access_token,
+        "refresh_token": result.refresh_token,
+        "token_type": "bearer",
+    }
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(
+    payload: LogoutRequest,
+    session: Session = Depends(get_session),
+):
+    revoke_refresh_token(
+        session=session,
+        token=payload.refresh_token,
+    )
