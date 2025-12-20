@@ -20,3 +20,26 @@ class User(SQLModel, table=True):
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class RefreshToken(SQLModel, table=True):
+    __tablename__ = "refresh_tokens"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id: uuid.UUID = Field(
+        foreign_key="users.id",
+        nullable=False,
+        index=True,
+    )
+
+    token_hash: str = Field(index=True, unique=True)
+
+    expires_at: datetime
+    revoked: bool = Field(default=False)
+
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
