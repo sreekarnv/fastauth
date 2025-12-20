@@ -7,6 +7,8 @@ from fastauth.api.schemas import (
     TokenResponse,
     RefreshRequest,
     LogoutRequest,
+    PasswordResetConfirm,
+    PasswordResetRequest
 )
 from fastauth.core.users import (
     create_user,
@@ -19,6 +21,12 @@ from fastauth.core.refresh_tokens import (
     rotate_refresh_token,
     revoke_refresh_token,
     RefreshTokenError,
+)
+from fastauth.core.password_reset import (
+    request_password_reset,
+    confirm_password_reset,
+    PasswordResetError,
+    
 )
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
@@ -145,3 +153,40 @@ def logout(
         session=session,
         token=payload.refresh_token,
     )
+
+
+@router.post("/password-reset/request", status_code=204)
+def password_reset_request(
+    payload: PasswordResetRequest,
+    session: Session = Depends(get_session),
+):
+    token = request_password_reset(
+        session=session,
+        email=payload.email,
+    )
+
+    if token:
+        # TODO: impl send email
+        print("Password reset token:", token)
+
+    return None
+
+
+@router.post("/password-reset/confirm", status_code=204)
+def password_reset_confirm(
+    payload: PasswordResetConfirm,
+    session: Session = Depends(get_session),
+):
+    try:
+        confirm_password_reset(
+            session=session,
+            token=payload.token,
+            new_password=payload.new_password,
+        )
+    except PasswordResetError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    return None
