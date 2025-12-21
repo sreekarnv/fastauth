@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     require_email_verification: bool = True
 
+    email_backend: str = "console"
+
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

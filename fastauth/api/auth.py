@@ -43,6 +43,7 @@ from fastauth.security.limits import (
 )
 from fastauth.security.rate_limit import RateLimitExceeded
 from fastauth.core.users import EmailNotVerifiedError
+from fastauth.email.factory import get_email_client
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -182,7 +183,11 @@ def password_reset_request(
     )
 
     if token:
-        # TODO: impl send email
+        email_client = get_email_client()
+        email_client.send_password_reset_email(
+            to=payload.email,
+            token=token,
+        )
         print("Password reset token:", token)
 
     return None
@@ -219,10 +224,14 @@ def email_verification_request(
     )
 
     if token:
-        # TODO: send email
+        email_client = get_email_client()
+        email_client.send_verification_email(
+            to=payload.email,
+            token=token,
+        )
         print("Email verification token:", token)
 
-    return
+    return None
 
 
 @router.post("/email-verification/confirm", status_code=204)
@@ -264,7 +273,11 @@ def resend_email_verification(
     )
 
     if token:
-        # TODO: send email
+        email_client = get_email_client()
+        email_client.send_verification_email(
+            to=payload.email,
+            token=token,
+        )
         print("Resent email verification token:", token)
 
     return None
