@@ -19,6 +19,7 @@ class User(SQLModel, table=True):
     hashed_password: str
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
+    is_verified: bool = Field(default=False) 
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -67,3 +68,29 @@ class PasswordResetToken(SQLModel, table=True):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(UTC)
     )
+
+
+class EmailVerificationToken(SQLModel, table=True):
+    __tablename__ = "email_verification_tokens"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id: uuid.UUID = Field(
+        foreign_key="users.id",
+        nullable=False,
+        index=True,
+    )
+
+    token_hash: str = Field(unique=True, index=True)
+
+    expires_at: datetime
+    used: bool = Field(default=False)
+
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow
+    )
+    
