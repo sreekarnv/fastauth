@@ -23,9 +23,7 @@ def request_password_reset(
     Returns raw reset token if user exists.
     Returns None otherwise (do not leak info).
     """
-    user = session.exec(
-        select(User).where(User.email == email)
-    ).first()
+    user = session.exec(select(User).where(User.email == email)).first()
 
     if not user:
         return None
@@ -36,8 +34,7 @@ def request_password_reset(
     reset = PasswordResetToken(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.now(UTC)
-        + timedelta(minutes=expires_in_minutes),
+        expires_at=datetime.now(UTC) + timedelta(minutes=expires_in_minutes),
     )
 
     session.add(reset)

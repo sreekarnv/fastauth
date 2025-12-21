@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 from fastauth.db.models import User
 from fastauth.core.hashing import hash_password, verify_password
+from fastauth.settings import settings
 
 
 class UserAlreadyExistsError(Exception):
@@ -9,6 +10,10 @@ class UserAlreadyExistsError(Exception):
 
 class InvalidCredentialsError(Exception):
     """Raised when login credentials are invalid."""
+
+
+class EmailNotVerifiedError(Exception):
+    """Raised when email is not verified"""
 
 
 def create_user(
@@ -65,7 +70,10 @@ def authenticate_user(
         raise InvalidCredentialsError("Invalid email or password")
 
     if not verify_password(user.hashed_password, password):
-        raise InvalidCredentialsError("Invalid email or password")
+        raise InvalidCredentialsError
+
+    if settings.require_email_verification and not user.is_verified:
+        raise EmailNotVerifiedError
 
     if not user.is_active:
         raise InvalidCredentialsError("User is inactive")

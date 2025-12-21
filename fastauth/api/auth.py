@@ -10,7 +10,7 @@ from fastauth.api.schemas import (
     PasswordResetConfirm,
     PasswordResetRequest,
     EmailVerificationRequest,
-    EmailVerificationConfirm
+    EmailVerificationConfirm,
 )
 from fastauth.core.users import (
     create_user,
@@ -28,7 +28,6 @@ from fastauth.core.password_reset import (
     request_password_reset,
     confirm_password_reset,
     PasswordResetError,
-    
 )
 from fastauth.core.email_verification import (
     request_email_verification,
@@ -39,6 +38,7 @@ from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
 from fastauth.security.limits import login_rate_limiter, register_rate_limiter
 from fastauth.security.rate_limit import RateLimitExceeded
+from fastauth.core.users import EmailNotVerifiedError
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -105,6 +105,11 @@ def login(
             session=session,
             email=payload.email,
             password=payload.password,
+        )
+    except EmailNotVerifiedError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email address is not verified",
         )
     except InvalidCredentialsError:
         raise HTTPException(

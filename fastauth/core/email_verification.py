@@ -18,9 +18,7 @@ def request_email_verification(
     email: str,
     expires_in_minutes: int = 60,
 ) -> str | None:
-    user = session.exec(
-        select(User).where(User.email == email)
-    ).first()
+    user = session.exec(select(User).where(User.email == email)).first()
 
     if not user or user.is_verified:
         return None
@@ -31,8 +29,7 @@ def request_email_verification(
     record = EmailVerificationToken(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.utcnow()
-        + timedelta(minutes=expires_in_minutes),
+        expires_at=datetime.utcnow() + timedelta(minutes=expires_in_minutes),
     )
 
     session.add(record)
