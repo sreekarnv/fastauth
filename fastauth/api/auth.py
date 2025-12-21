@@ -36,7 +36,11 @@ from fastauth.core.email_verification import (
 )
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
-from fastauth.security.limits import login_rate_limiter, register_rate_limiter
+from fastauth.security.limits import (
+    login_rate_limiter,
+    register_rate_limiter,
+    email_verification_rate_limiter,
+)
 from fastauth.security.rate_limit import RateLimitExceeded
 from fastauth.core.users import EmailNotVerifiedError
 
@@ -236,3 +240,31 @@ def email_verification_confirm(
             status_code=400,
             detail="Invalid or expired verification token",
         )
+
+
+@router.post("/email-verification/resend", status_code=204)
+def resend_email_verification(
+    payload: EmailVerificationRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    key = request.client.host
+
+    try:
+        email_verification_rate_limiter.hit(key)
+    except RateLimitExceeded:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many requests. Try again later.",
+        )
+
+    token = request_email_verification(
+        session=session,
+        email=payload.email,
+    )
+
+    if token:
+        # TODO: send email
+        print("Resent email verification token:", token)
+
+    return None
