@@ -45,6 +45,7 @@ def rotate_refresh_token(
     *,
     session: Session,
     token: str,
+    expires_in_days: int = 30,
 ) -> RotatedRefreshToken:
     token_hash = hash_refresh_token(token)
 
@@ -57,7 +58,12 @@ def rotate_refresh_token(
     if not refresh:
         raise RefreshTokenError("Invalid refresh token")
 
-    if refresh.expires_at < datetime.now(UTC):
+    expires_at = refresh.expires_at
+
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
+
+    if expires_at < datetime.now(UTC):
         raise RefreshTokenError("Refresh token expired")
 
     refresh.revoked = True
@@ -69,7 +75,7 @@ def rotate_refresh_token(
     new_refresh = RefreshToken(
         user_id=refresh.user_id,
         token_hash=new_hash,
-        expires_at=datetime.now(UTC) + (refresh.expires_at - refresh.created_at),
+        expires_at=datetime.now(UTC) + timedelta(days=expires_in_days)
     )
 
     session.add(new_refresh)
