@@ -85,9 +85,7 @@ def test_password_reset_expired_token(session):
         expires_in_minutes=1,
     )
 
-    reset_token = session.exec(
-        select(PasswordResetToken)
-    ).first()
+    reset_token = session.exec(select(PasswordResetToken)).first()
 
     reset_token.expires_at = datetime.now(UTC) - timedelta(minutes=1)
     session.add(reset_token)

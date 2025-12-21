@@ -19,7 +19,7 @@ class User(SQLModel, table=True):
     hashed_password: str
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
-    is_verified: bool = Field(default=False) 
+    is_verified: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -45,6 +45,7 @@ class RefreshToken(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
+
 class PasswordResetToken(SQLModel, table=True):
     __tablename__ = "password_reset_tokens"
 
@@ -65,9 +66,7 @@ class PasswordResetToken(SQLModel, table=True):
     expires_at: datetime
     used: bool = Field(default=False)
 
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class EmailVerificationToken(SQLModel, table=True):
@@ -90,7 +89,4 @@ class EmailVerificationToken(SQLModel, table=True):
     expires_at: datetime
     used: bool = Field(default=False)
 
-    created_at: datetime = Field(
-        default_factory=datetime.utcnow
-    )
-    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
