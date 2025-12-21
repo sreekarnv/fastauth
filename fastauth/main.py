@@ -1,8 +1,5 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from sqlmodel import SQLModel
-
-from fastauth.db.session import engine
 from fastauth.api.auth import router as auth_router
 
 
