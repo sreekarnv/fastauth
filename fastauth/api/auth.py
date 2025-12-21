@@ -8,7 +8,9 @@ from fastauth.api.schemas import (
     RefreshRequest,
     LogoutRequest,
     PasswordResetConfirm,
-    PasswordResetRequest
+    PasswordResetRequest,
+    EmailVerificationRequest,
+    EmailVerificationConfirm
 )
 from fastauth.core.users import (
     create_user,
@@ -27,6 +29,11 @@ from fastauth.core.password_reset import (
     confirm_password_reset,
     PasswordResetError,
     
+)
+from fastauth.core.email_verification import (
+    request_email_verification,
+    confirm_email_verification,
+    EmailVerificationError,
 )
 from fastauth.db.session import get_session
 from fastauth.security.jwt import create_access_token
@@ -190,3 +197,37 @@ def password_reset_confirm(
         )
 
     return None
+
+
+@router.post("/email-verification/request", status_code=204)
+def email_verification_request(
+    payload: EmailVerificationRequest,
+    session: Session = Depends(get_session),
+):
+    token = request_email_verification(
+        session=session,
+        email=payload.email,
+    )
+
+    if token:
+        # TODO: send email
+        print("Email verification token:", token)
+
+    return
+
+
+@router.post("/email-verification/confirm", status_code=204)
+def email_verification_confirm(
+    payload: EmailVerificationConfirm,
+    session: Session = Depends(get_session),
+):
+    try:
+        confirm_email_verification(
+            session=session,
+            token=payload.token,
+        )
+    except EmailVerificationError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired verification token",
+        )
