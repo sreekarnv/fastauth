@@ -1,9 +1,12 @@
+# Deprecated: models moved to fastauth.adapters.sqlalchemy.models
+
 from sqlmodel import SQLModel, Field
 from datetime import datetime, UTC
 import uuid
 
 
 class User(SQLModel, table=True):
+
     __tablename__ = "users"
 
     id: uuid.UUID = Field(

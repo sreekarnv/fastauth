@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session
-
+from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
 from fastauth.api.schemas import (
     LoginRequest,
     RegisterRequest,
@@ -65,12 +65,10 @@ def register(
             detail="Too many registration attempts. Try again later.",
         )
 
+    users = SQLAlchemyUserAdapter(session=session)
+
     try:
-        user = create_user(
-            session=session,
-            email=payload.email,
-            password=payload.password,
-        )
+        user = create_user(users=users, email=payload.email, password=payload.password)
     except UserAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -104,10 +102,12 @@ def login(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many login attempts. Try again later.",
         )
+    
+    users = SQLAlchemyUserAdapter(session=session)
 
     try:
         user = authenticate_user(
-            session=session,
+            users=users,
             email=payload.email,
             password=payload.password,
         )

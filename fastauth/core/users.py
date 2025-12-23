@@ -1,5 +1,4 @@
-from sqlmodel import Session, select
-from fastauth.db.models import User
+from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password, verify_password
 from fastauth.settings import settings
 
@@ -18,11 +17,10 @@ class EmailNotVerifiedError(Exception):
 
 def create_user(
     *,
-    session: Session,
+    users: UserAdapter,
     email: str,
     password: str,
-    is_superuser: bool = False,
-) -> User:
+):
     """
     Create a new user with a hashed password.
 
@@ -30,31 +28,22 @@ def create_user(
         UserAlreadyExistsError: if a user with the same email already exists
     """
 
-    statement = select(User).where(User.email == email)
-    existing_user = session.exec(statement).first()
+    existing_user = users.get_by_email(email=email)
 
     if existing_user:
         raise UserAlreadyExistsError(f"User with email {email} already exists")
 
-    user = User(
-        email=email,
-        hashed_password=hash_password(password),
-        is_superuser=is_superuser,
-    )
-
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    user = users.create_user(email=email, hashed_password=hash_password(password))
 
     return user
 
 
 def authenticate_user(
     *,
-    session: Session,
+    users: UserAdapter,
     email: str,
     password: str,
-) -> User:
+):
     """
     Authenticate a user by email and password.
 
@@ -62,11 +51,9 @@ def authenticate_user(
         InvalidCredentialsError: if email does not exist or password is wrong
     """
 
-    statement = select(User).where(User.email == email)
-    user = session.exec(statement).first()
+    user = users.get_by_email(email=email)
 
     if not user:
-        # Do not reveal whether email exists
         raise InvalidCredentialsError("Invalid email or password")
 
     if not verify_password(user.hashed_password, password):
