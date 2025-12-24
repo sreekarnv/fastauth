@@ -1,5 +1,4 @@
 import pytest
-from sqlmodel import SQLModel, create_engine, Session
 
 from fastauth.core.users import (
     EmailNotVerifiedError,
@@ -8,78 +7,71 @@ from fastauth.core.users import (
     InvalidCredentialsError,
 )
 
+from tests.fakes.users import FakeUserAdapter
+
 
 @pytest.fixture
-def session():
-    engine = create_engine("sqlite://", echo=False)
-    SQLModel.metadata.create_all(engine)
-
-    with Session(engine) as session:
-        yield session
+def users():
+    return FakeUserAdapter()
 
 
-def test_authenticate_user_success():
-    engine = create_engine("sqlite://", echo=False)
-    SQLModel.metadata.create_all(engine)
+def test_authenticate_user_success(users):
+    user = create_user(
+        users=users,
+        email="user@example.com",
+        password="secret",
+    )
 
-    with Session(engine) as session:
-        user = create_user(
-            session=session,
-            email="user@example.com",
-            password="secret",
-        )
+    # Mark user as verified
+    users.mark_verified(user.id)
 
-        user.is_verified = True
-        session.add(user)
-        session.commit()
+    authenticated = authenticate_user(
+        users=users,
+        email="user@example.com",
+        password="secret",
+    )
 
-        authenticated = authenticate_user(
-            session=session,
-            email="user@example.com",
-            password="secret",
-        )
-
-        assert authenticated.id == user.id
+    assert authenticated.id == user.id
 
 
-def test_authenticate_user_wrong_password(session):
+def test_authenticate_user_wrong_password(users):
     create_user(
-        session=session,
+        users=users,
         email="user@example.com",
         password="correct-password",
     )
 
+    users.mark_verified(
+        users.get_by_email("user@example.com").id
+    )
+
     with pytest.raises(InvalidCredentialsError):
         authenticate_user(
-            session=session,
+            users=users,
             email="user@example.com",
             password="wrong-password",
         )
 
 
-def test_authenticate_user_nonexistent_email(session):
+def test_authenticate_user_nonexistent_email(users):
     with pytest.raises(InvalidCredentialsError):
         authenticate_user(
-            session=session,
+            users=users,
             email="missing@example.com",
             password="whatever",
         )
 
 
-def test_authenticate_user_fails_if_not_verified():
-    engine = create_engine("sqlite://", echo=False)
-    SQLModel.metadata.create_all(engine)
+def test_authenticate_user_fails_if_not_verified(users):
+    create_user(
+        users=users,
+        email="user@example.com",
+        password="secret",
+    )
 
-    with Session(engine) as session:
-        create_user(
-            session=session,
+    with pytest.raises(EmailNotVerifiedError):
+        authenticate_user(
+            users=users,
             email="user@example.com",
             password="secret",
         )
-
-        with pytest.raises(EmailNotVerifiedError):
-            authenticate_user(
-                session=session,
-                email="user@example.com",
-                password="secret",
-            )

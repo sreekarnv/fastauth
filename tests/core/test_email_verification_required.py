@@ -1,5 +1,4 @@
 import pytest
-from sqlmodel import SQLModel, create_engine, Session
 
 from fastauth.core.users import (
     create_user,
@@ -7,21 +6,21 @@ from fastauth.core.users import (
     EmailNotVerifiedError,
 )
 
+from tests.fakes.users import FakeUserAdapter
+
 
 def test_login_fails_if_email_not_verified():
-    engine = create_engine("sqlite://", echo=False)
-    SQLModel.metadata.create_all(engine)
+    users = FakeUserAdapter()
 
-    with Session(engine) as session:
-        user = create_user(
-            session=session,
+    create_user(
+        users=users,
+        email="user@example.com",
+        password="secret",
+    )
+
+    with pytest.raises(EmailNotVerifiedError):
+        authenticate_user(
+            users=users,
             email="user@example.com",
             password="secret",
         )
-
-        with pytest.raises(EmailNotVerifiedError):
-            authenticate_user(
-                session=session,
-                email="user@example.com",
-                password="secret",
-            )
