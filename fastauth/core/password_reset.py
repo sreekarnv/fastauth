@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, UTC
 
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
+from fastauth.core.hashing import hash_password
 from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
 
 
@@ -54,9 +55,11 @@ def confirm_password_reset(
     if expires_at < datetime.now(UTC):
         raise PasswordResetError("Expired reset token")
 
+    hashed = hash_password(new_password)
+
     users.set_password(
         user_id=record.user_id,
-        new_password=new_password,
+        hashed_password=hashed,
     )
 
     resets.mark_used(token_hash=token_hash)
