@@ -3,6 +3,7 @@ from sqlmodel import Session
 from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
 from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
 from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
+from fastauth.adapters.sqlalchemy.email_verification import SQLAlchemyEmailVerificationAdapter
 from fastauth.api.schemas import (
     LoginRequest,
     RegisterRequest,
@@ -237,8 +238,12 @@ def email_verification_request(
     payload: EmailVerificationRequest,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    verifications = SQLAlchemyEmailVerificationAdapter(session)
+
     token = request_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         email=payload.email,
     )
 
@@ -259,8 +264,12 @@ def email_verification_confirm(
     session: Session = Depends(get_session),
 ):
     try:
+        users = SQLAlchemyUserAdapter(session)
+        verifications = SQLAlchemyEmailVerificationAdapter(session)
+
         confirm_email_verification(
-            session=session,
+            users=users,
+            verifications=verifications,
             token=payload.token,
         )
     except EmailVerificationError:
