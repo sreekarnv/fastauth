@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
-from sqlmodel import Session, select
+from datetime import datetime, timedelta, UTC
 
-from fastauth.db.models import User, EmailVerificationToken
+from fastauth.adapters.base.users import UserAdapter
+from fastauth.adapters.base.email_verification import EmailVerificationAdapter
 from fastauth.security.email_verification import (
     generate_email_verification_token,
-    hash_email_verification_token,
+    hash_email_verification_token
 )
 
 
@@ -14,54 +14,47 @@ class EmailVerificationError(Exception):
 
 def request_email_verification(
     *,
-    session: Session,
+    users: UserAdapter,
+    verifications: EmailVerificationAdapter,
     email: str,
     expires_in_minutes: int = 60,
 ) -> str | None:
-    user = session.exec(select(User).where(User.email == email)).first()
-
+    user = users.get_by_email(email)
     if not user or user.is_verified:
         return None
 
     raw_token = generate_email_verification_token()
     token_hash = hash_email_verification_token(raw_token)
 
-    record = EmailVerificationToken(
+    expires_at = datetime.now(UTC) + timedelta(minutes=expires_in_minutes)
+
+    verifications.create(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.utcnow() + timedelta(minutes=expires_in_minutes),
+        expires_at=expires_at,
     )
-
-    session.add(record)
-    session.commit()
 
     return raw_token
 
 
 def confirm_email_verification(
     *,
-    session: Session,
+    users: UserAdapter,
+    verifications: EmailVerificationAdapter,
     token: str,
 ) -> None:
     token_hash = hash_email_verification_token(token)
 
-    record = session.exec(
-        select(EmailVerificationToken).where(
-            EmailVerificationToken.token_hash == token_hash,
-            EmailVerificationToken.used == False,
-        )
-    ).first()
+    record = verifications.get_valid(token_hash=token_hash)
+    if not record:
+        raise EmailVerificationError("Invalid or expired verification token")
 
-    if not record or record.expires_at < datetime.utcnow():
-        raise EmailVerificationError("Invalid or expired token")
+    expires_at = record.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
 
-    user = session.get(User, record.user_id)
-    if not user:
-        raise EmailVerificationError("User not found")
+    if expires_at < datetime.now(UTC):
+        raise EmailVerificationError("Expired verification token")
 
-    user.is_verified = True
-    record.used = True
-
-    session.add(user)
-    session.add(record)
-    session.commit()
+    users.mark_verified(record.user_id)
+    verifications.mark_used(token_hash=token_hash)

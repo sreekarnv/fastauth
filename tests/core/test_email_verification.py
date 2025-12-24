@@ -1,7 +1,4 @@
 import pytest
-from datetime import timedelta, datetime
-
-from sqlmodel import SQLModel, create_engine, Session
 
 from fastauth.core.users import create_user
 from fastauth.core.email_verification import (
@@ -10,57 +7,67 @@ from fastauth.core.email_verification import (
     EmailVerificationError,
 )
 
+from tests.fakes.users import FakeUserAdapter
+from tests.fakes.email_verification import FakeEmailVerificationAdapter
+
 
 @pytest.fixture
-def session():
-    engine = create_engine("sqlite://", echo=False)
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
+def users():
+    return FakeUserAdapter()
 
 
-def test_email_verification_success(session):
+@pytest.fixture
+def verifications():
+    return FakeEmailVerificationAdapter()
+
+
+def test_email_verification_success(users, verifications):
     user = create_user(
-        session=session,
+        users=users,
         email="user@example.com",
         password="secret",
     )
 
     token = request_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         email="user@example.com",
     )
 
     assert token is not None
 
     confirm_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         token=token,
     )
 
-    session.refresh(user)
-    assert user.is_verified is True
+    updated_user = users.get_by_id(user.id)
+    assert updated_user.is_verified is True
 
 
-def test_email_verification_single_use(session):
-    user = create_user(
-        session=session,
+def test_email_verification_single_use(users, verifications):
+    create_user(
+        users=users,
         email="user@example.com",
         password="secret",
     )
 
     token = request_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         email="user@example.com",
     )
 
     confirm_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         token=token,
     )
 
     with pytest.raises(EmailVerificationError):
         confirm_email_verification(
-            session=session,
+            users=users,
+            verifications=verifications,
             token=token,
         )

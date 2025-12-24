@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session
-
+from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
+from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
+from fastauth.adapters.sqlalchemy.email_verification import SQLAlchemyEmailVerificationAdapter
 from fastauth.api.schemas import (
     LoginRequest,
     RegisterRequest,
@@ -65,21 +68,21 @@ def register(
             detail="Too many registration attempts. Try again later.",
         )
 
+    users = SQLAlchemyUserAdapter(session=session)
+
     try:
-        user = create_user(
-            session=session,
-            email=payload.email,
-            password=payload.password,
-        )
+        user = create_user(users=users, email=payload.email, password=payload.password)
     except UserAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="User already exists",
         )
 
+    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
+
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
-        session=session,
+        refresh_tokens=refresh_tokens,
         user_id=user.id,
     )
 
@@ -104,10 +107,12 @@ def login(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many login attempts. Try again later.",
         )
+    
+    users = SQLAlchemyUserAdapter(session=session)
 
     try:
         user = authenticate_user(
-            session=session,
+            users=users,
             email=payload.email,
             password=payload.password,
         )
@@ -124,9 +129,11 @@ def login(
 
     login_rate_limiter.reset(key)
 
+    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
+
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
-        session=session,
+        refresh_tokens=refresh_tokens,
         user_id=user.id,
     )
 
@@ -142,8 +149,9 @@ def refresh_token(
     session: Session = Depends(get_session),
 ):
     try:
+        refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
         result = rotate_refresh_token(
-            session=session,
+            refresh_tokens=refresh_tokens,
             token=payload.refresh_token,
         )
     except RefreshTokenError:
@@ -152,11 +160,12 @@ def refresh_token(
             detail="Invalid refresh token",
         )
 
-    access_token = create_access_token(subject=str(result.user_id))
+    refresh_token, user_id = result
+    access_token = create_access_token(subject=str(user_id))
 
     return {
         "access_token": access_token,
-        "refresh_token": result.refresh_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
     }
 
@@ -166,10 +175,13 @@ def logout(
     payload: LogoutRequest,
     session: Session = Depends(get_session),
 ):
+    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
     revoke_refresh_token(
-        session=session,
+        refresh_tokens=refresh_tokens,
         token=payload.refresh_token,
     )
+
+    return None
 
 
 @router.post("/password-reset/request", status_code=204)
@@ -177,8 +189,12 @@ def password_reset_request(
     payload: PasswordResetRequest,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    resets = SQLAlchemyPasswordResetAdapter(session)
+
     token = request_password_reset(
-        session=session,
+        users=users,
+        resets=resets,
         email=payload.email,
     )
 
@@ -198,9 +214,13 @@ def password_reset_confirm(
     payload: PasswordResetConfirm,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    resets = SQLAlchemyPasswordResetAdapter(session)
+
     try:
         confirm_password_reset(
-            session=session,
+            users=users,
+            resets=resets,
             token=payload.token,
             new_password=payload.new_password,
         )
@@ -218,8 +238,12 @@ def email_verification_request(
     payload: EmailVerificationRequest,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    verifications = SQLAlchemyEmailVerificationAdapter(session)
+
     token = request_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         email=payload.email,
     )
 
@@ -240,8 +264,12 @@ def email_verification_confirm(
     session: Session = Depends(get_session),
 ):
     try:
+        users = SQLAlchemyUserAdapter(session)
+        verifications = SQLAlchemyEmailVerificationAdapter(session)
+
         confirm_email_verification(
-            session=session,
+            users=users,
+            verifications=verifications,
             token=payload.token,
         )
     except EmailVerificationError:

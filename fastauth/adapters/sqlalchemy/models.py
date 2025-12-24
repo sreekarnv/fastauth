@@ -1,12 +1,9 @@
-# Deprecated: models moved to fastauth.adapters.sqlalchemy.models
-
-from sqlmodel import SQLModel, Field
-from datetime import datetime, UTC
 import uuid
+from datetime import datetime, UTC
+from sqlmodel import SQLModel, Field
 
 
 class User(SQLModel, table=True):
-
     __tablename__ = "users"
 
     id: uuid.UUID = Field(
@@ -92,4 +89,4 @@ class EmailVerificationToken(SQLModel, table=True):
     expires_at: datetime
     used: bool = Field(default=False)
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

@@ -18,3 +18,8 @@ class UserAdapter(ABC):
     @abstractmethod
     def mark_verified(self, user_id: uuid.UUID) -> None:
         ...
+
+    @abstractmethod
+    def set_password(self, *, user_id, new_password: str) -> None:
+        ...
+
