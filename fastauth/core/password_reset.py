@@ -1,12 +1,8 @@
-from datetime import datetime, timedelta, UTC, timezone
-from sqlmodel import Session, select
+from datetime import datetime, timedelta, UTC
 
-from fastauth.db.models import User, PasswordResetToken
-from fastauth.security.password_reset import (
-    generate_reset_token,
-    hash_reset_token,
-)
-from fastauth.core.hashing import hash_password
+from fastauth.adapters.base.users import UserAdapter
+from fastauth.adapters.base.password_reset import PasswordResetAdapter
+from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
 
 
 class PasswordResetError(Exception):
@@ -15,60 +11,52 @@ class PasswordResetError(Exception):
 
 def request_password_reset(
     *,
-    session: Session,
+    users: UserAdapter,
+    resets: PasswordResetAdapter,
     email: str,
-    expires_in_minutes: int = 15,
+    expires_in_minutes: int = 30,
 ) -> str | None:
-    """
-    Returns raw reset token if user exists.
-    Returns None otherwise (do not leak info).
-    """
-    user = session.exec(select(User).where(User.email == email)).first()
-
+    user = users.get_by_email(email)
     if not user:
         return None
 
-    raw_token = generate_reset_token()
-    token_hash = hash_reset_token(raw_token)
+    raw_token = generate_refresh_token()
+    token_hash = hash_refresh_token(raw_token)
 
-    reset = PasswordResetToken(
+    expires_at = datetime.now(UTC) + timedelta(minutes=expires_in_minutes)
+
+    resets.create(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.now(UTC) + timedelta(minutes=expires_in_minutes),
+        expires_at=expires_at,
     )
-
-    session.add(reset)
-    session.commit()
 
     return raw_token
 
 
 def confirm_password_reset(
     *,
-    session: Session,
+    users: UserAdapter,
+    resets: PasswordResetAdapter,
     token: str,
     new_password: str,
 ) -> None:
-    token_hash = hash_reset_token(token)
+    token_hash = hash_refresh_token(token)
 
-    reset = session.exec(
-        select(PasswordResetToken).where(
-            PasswordResetToken.token_hash == token_hash,
-            PasswordResetToken.used == False,
-        )
-    ).first()
-
-    now = datetime.utcnow()
-    if not reset or reset.expires_at < now:
+    record = resets.get_valid(token_hash=token_hash)
+    if not record:
         raise PasswordResetError("Invalid or expired reset token")
 
-    user = session.get(User, reset.user_id)
-    if not user:
-        raise PasswordResetError("User not found")
+    expires_at = record.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
 
-    user.hashed_password = hash_password(new_password)
-    reset.used = True
+    if expires_at < datetime.now(UTC):
+        raise PasswordResetError("Expired reset token")
 
-    session.add(user)
-    session.add(reset)
-    session.commit()
+    users.set_password(
+        user_id=record.user_id,
+        new_password=new_password,
+    )
+
+    resets.mark_used(token_hash=token_hash)

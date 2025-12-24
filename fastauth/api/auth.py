@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session
 from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
 from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
+from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
 from fastauth.api.schemas import (
     LoginRequest,
     RegisterRequest,
@@ -187,8 +188,12 @@ def password_reset_request(
     payload: PasswordResetRequest,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    resets = SQLAlchemyPasswordResetAdapter(session)
+
     token = request_password_reset(
-        session=session,
+        users=users,
+        resets=resets,
         email=payload.email,
     )
 
@@ -208,9 +213,13 @@ def password_reset_confirm(
     payload: PasswordResetConfirm,
     session: Session = Depends(get_session),
 ):
+    users = SQLAlchemyUserAdapter(session)
+    resets = SQLAlchemyPasswordResetAdapter(session)
+
     try:
         confirm_password_reset(
-            session=session,
+            users=users,
+            resets=resets,
             token=payload.token,
             new_password=payload.new_password,
         )

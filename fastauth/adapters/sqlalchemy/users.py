@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.adapters.sqlalchemy.models import User
+from fastauth.core.hashing import hash_password
 
 
 class SQLAlchemyUserAdapter(UserAdapter):
@@ -30,3 +31,12 @@ class SQLAlchemyUserAdapter(UserAdapter):
             user.is_verified = True
             self.session.add(user)
             self.session.commit()
+
+    def set_password(self, *, user_id, new_password: str) -> None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return
+
+        user.hashed_password = hash_password(new_password)
+        self.session.add(user)
+        self.session.commit()
