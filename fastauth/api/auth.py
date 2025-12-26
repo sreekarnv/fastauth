@@ -295,8 +295,12 @@ def resend_email_verification(
             detail="Too many requests. Try again later.",
         )
 
+    users = SQLAlchemyUserAdapter(session)
+    verifications = SQLAlchemyEmailVerificationAdapter(session)
+
     token = request_email_verification(
-        session=session,
+        users=users,
+        verifications=verifications,
         email=payload.email,
     )
 
