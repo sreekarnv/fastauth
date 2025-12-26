@@ -2,11 +2,17 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
-from fastauth.db.session import get_session
-from fastauth.db.models import User
+from fastauth.adapters.sqlalchemy.models import User
 from fastauth.security.jwt import decode_access_token, TokenError
 
 security = HTTPBearer()
+
+
+def get_session():
+    raise NotImplementedError(
+        "get_session must be overridden by the application. "
+        "Use app.dependency_overrides[dependencies.get_session] = your_get_session"
+    )
 
 
 def get_current_user(

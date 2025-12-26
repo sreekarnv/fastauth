@@ -37,7 +37,7 @@ from fastauth.core.email_verification import (
     confirm_email_verification,
     EmailVerificationError,
 )
-from fastauth.db.session import get_session
+from fastauth.api.dependencies import get_session
 from fastauth.security.jwt import create_access_token
 from fastauth.security.limits import (
     login_rate_limiter,
