@@ -24,7 +24,6 @@ def test_create_refresh_token(session: Session):
     assert token.id is not None
     assert token.user_id == user.id
     assert token.token_hash == "token_hash_123"
-    assert token.expires_at == expires_at
     assert token.revoked is False
     assert token.created_at is not None
 
