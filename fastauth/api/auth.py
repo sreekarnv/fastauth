@@ -1,53 +1,55 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
-from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
-from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
+
+from fastauth.adapters.sqlalchemy.email_verification import (
+    SQLAlchemyEmailVerificationAdapter,
+)
 from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
-from fastauth.adapters.sqlalchemy.email_verification import SQLAlchemyEmailVerificationAdapter
+from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
+from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+from fastauth.api.dependencies import get_session
 from fastauth.api.schemas import (
+    EmailVerificationConfirm,
+    EmailVerificationRequest,
     LoginRequest,
-    RegisterRequest,
-    TokenResponse,
-    RefreshRequest,
     LogoutRequest,
     PasswordResetConfirm,
     PasswordResetRequest,
-    EmailVerificationRequest,
-    EmailVerificationConfirm,
-)
-from fastauth.core.users import (
-    create_user,
-    authenticate_user,
-    UserAlreadyExistsError,
-    InvalidCredentialsError,
-)
-from fastauth.core.refresh_tokens import (
-    create_refresh_token,
-    rotate_refresh_token,
-    revoke_refresh_token,
-    RefreshTokenError,
-)
-from fastauth.core.password_reset import (
-    request_password_reset,
-    confirm_password_reset,
-    PasswordResetError,
+    RefreshRequest,
+    RegisterRequest,
+    TokenResponse,
 )
 from fastauth.core.email_verification import (
-    request_email_verification,
-    confirm_email_verification,
     EmailVerificationError,
+    confirm_email_verification,
+    request_email_verification,
 )
-from fastauth.api.dependencies import get_session
+from fastauth.core.password_reset import (
+    PasswordResetError,
+    confirm_password_reset,
+    request_password_reset,
+)
+from fastauth.core.refresh_tokens import (
+    RefreshTokenError,
+    create_refresh_token,
+    revoke_refresh_token,
+    rotate_refresh_token,
+)
+from fastauth.core.users import (
+    EmailNotVerifiedError,
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
+    authenticate_user,
+    create_user,
+)
+from fastauth.email.factory import get_email_client
 from fastauth.security.jwt import create_access_token
 from fastauth.security.limits import (
+    email_verification_rate_limiter,
     login_rate_limiter,
     register_rate_limiter,
-    email_verification_rate_limiter,
 )
 from fastauth.security.rate_limit import RateLimitExceeded
-from fastauth.core.users import EmailNotVerifiedError
-from fastauth.email.factory import get_email_client
-
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -107,7 +109,7 @@ def login(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Too many login attempts. Try again later.",
         )
-    
+
     users = SQLAlchemyUserAdapter(session=session)
 
     try:

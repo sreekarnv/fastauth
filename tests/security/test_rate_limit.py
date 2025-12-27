@@ -1,4 +1,5 @@
 import pytest
+
 from fastauth.security.rate_limit import RateLimiter, RateLimitExceeded
 
 

@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 
 from fastauth.settings import settings
 

@@ -1,11 +1,10 @@
 import pytest
 
 from fastauth.core.users import (
-    create_user,
-    authenticate_user,
     EmailNotVerifiedError,
+    authenticate_user,
+    create_user,
 )
-
 from tests.fakes.users import FakeUserAdapter
 
 

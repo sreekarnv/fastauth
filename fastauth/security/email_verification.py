@@ -1,5 +1,5 @@
-import secrets
 import hashlib
+import secrets
 
 
 def generate_email_verification_token() -> str:

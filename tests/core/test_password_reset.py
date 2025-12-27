@@ -1,16 +1,16 @@
-import pytest
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
+import pytest
+
+from fastauth.core.hashing import verify_password
 from fastauth.core.password_reset import (
-    request_password_reset,
-    confirm_password_reset,
     PasswordResetError,
+    confirm_password_reset,
+    request_password_reset,
 )
 from fastauth.core.users import create_user
-from fastauth.core.hashing import hash_password, verify_password
-
-from tests.fakes.users import FakeUserAdapter
 from tests.fakes.password_reset import FakePasswordResetAdapter
+from tests.fakes.users import FakeUserAdapter
 
 
 @pytest.fixture

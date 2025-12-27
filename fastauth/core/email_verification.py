@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
-from fastauth.adapters.base.users import UserAdapter
 from fastauth.adapters.base.email_verification import EmailVerificationAdapter
+from fastauth.adapters.base.users import UserAdapter
 from fastauth.security.email_verification import (
     generate_email_verification_token,
-    hash_email_verification_token
+    hash_email_verification_token,
 )
 
 

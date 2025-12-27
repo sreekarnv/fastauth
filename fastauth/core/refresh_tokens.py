@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from fastauth.adapters.base.refresh_tokens import RefreshTokenAdapter
 from fastauth.security.refresh import (

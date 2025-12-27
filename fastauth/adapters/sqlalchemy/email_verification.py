@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlmodel import Session, select
 
 from fastauth.adapters.base.email_verification import EmailVerificationAdapter
@@ -27,14 +28,14 @@ class SQLAlchemyEmailVerificationAdapter(EmailVerificationAdapter):
     def get_valid(self, *, token_hash: str):
         statement = select(EmailVerificationToken).where(
             EmailVerificationToken.token_hash == token_hash,
-            EmailVerificationToken.used == False,
+            EmailVerificationToken.used.is_(False),
         )
         return self.session.exec(statement).first()
 
     def mark_used(self, *, token_hash: str) -> None:
         statement = select(EmailVerificationToken).where(
             EmailVerificationToken.token_hash == token_hash,
-            EmailVerificationToken.used == False,
+            EmailVerificationToken.used.is_(False),
         )
         record = self.session.exec(statement).first()
         if not record:

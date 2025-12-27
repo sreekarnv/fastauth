@@ -1,5 +1,5 @@
-import secrets
 import hashlib
+import secrets
 
 
 def generate_reset_token() -> str:

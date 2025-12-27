@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
-from fastauth.adapters.base.users import UserAdapter
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
+from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
 from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
 
