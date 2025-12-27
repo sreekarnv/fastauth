@@ -11,6 +11,7 @@ FastAuth is a flexible, database-agnostic authentication library for FastAPI tha
 ## Features
 
 - **Complete Authentication Flow** - Registration, login, logout, and token refresh
+- **Role-Based Access Control (RBAC)** - Fine-grained authorization with roles and permissions
 - **Email Verification** - Secure email verification with expiring tokens
 - **Password Reset** - Self-service password reset via email
 - **Refresh Tokens** - Long-lived refresh tokens with rotation support
@@ -252,6 +253,86 @@ class User(BaseUser, table=True):
     first_name: str | None = None
     last_name: str | None = None
     company: str | None = None
+```
+
+### Role-Based Access Control (RBAC)
+
+Protect routes with roles and permissions for fine-grained authorization:
+
+#### Creating Roles and Permissions
+
+```python
+from fastauth import create_role, create_permission, assign_permission_to_role, assign_role
+from fastauth.adapters.sqlalchemy.roles import SQLAlchemyRoleAdapter
+
+# Create roles
+admin_role = create_role(roles=role_adapter, name="admin", description="Administrator")
+moderator_role = create_role(roles=role_adapter, name="moderator", description="Moderator")
+user_role = create_role(roles=role_adapter, name="user", description="Regular user")
+
+# Create permissions
+read_users = create_permission(roles=role_adapter, name="read:users")
+write_users = create_permission(roles=role_adapter, name="write:users")
+delete_users = create_permission(roles=role_adapter, name="delete:users")
+
+# Assign permissions to roles
+assign_permission_to_role(roles=role_adapter, role_name="admin", permission_name="read:users")
+assign_permission_to_role(roles=role_adapter, role_name="admin", permission_name="write:users")
+assign_permission_to_role(roles=role_adapter, role_name="admin", permission_name="delete:users")
+
+# Assign role to user
+assign_role(roles=role_adapter, user_id=user.id, role_name="admin")
+```
+
+#### Protecting Routes by Role
+
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import require_role
+
+@app.get("/admin/dashboard", dependencies=[Depends(require_role("admin"))])
+def admin_dashboard():
+    return {"message": "Admin access granted"}
+
+@app.get("/moderator/panel", dependencies=[Depends(require_role("moderator"))])
+def moderator_panel():
+    return {"message": "Moderator access granted"}
+```
+
+#### Protecting Routes by Permission
+
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import require_permission
+
+@app.get("/users", dependencies=[Depends(require_permission("read:users"))])
+def list_users():
+    return {"users": [...]}
+
+@app.delete("/users/{id}", dependencies=[Depends(require_permission("delete:users"))])
+def delete_user(id: str):
+    return {"message": "User deleted"}
+
+@app.post("/users", dependencies=[Depends(require_permission("write:users"))])
+def create_user(user_data: dict):
+    return {"message": "User created"}
+```
+
+#### Checking Permissions Programmatically
+
+```python
+from fastauth import check_permission
+
+# Check if user has specific permission
+has_access = check_permission(
+    roles=role_adapter,
+    user_id=user.id,
+    permission_name="delete:users"
+)
+
+if has_access:
+    # Perform action
+    pass
 ```
 
 ### Using Different Databases

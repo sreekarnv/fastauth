@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Role-Based Access Control (RBAC) system
+  - Role and Permission models for fine-grained authorization
+  - `require_role()` and `require_permission()` FastAPI dependencies for route protection
+  - Core functions for role/permission management (create_role, assign_role, check_permission, etc.)
+  - SQLAlchemy adapter for RBAC operations (SQLAlchemyRoleAdapter)
+  - Support for many-to-many user-role and role-permission relationships
+  - 47 comprehensive tests for RBAC functionality (110 total tests)
+
+### Fixed
+- UUID conversion bug in `get_current_user()` dependency (was passing string to SQLAlchemy, now converts to UUID)
+
 ## [0.1.0] - 2024-12-27
 
 ### Added

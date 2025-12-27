@@ -151,6 +151,158 @@ Verify user's email with token.
 **Raises:**
 - `EmailVerificationError`: If token is invalid or expired
 
+### `fastauth.core.roles`
+
+Role-Based Access Control (RBAC) functions.
+
+#### `create_role(roles, name, description)`
+
+Create a new role.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `name` (str): Unique role name
+- `description` (str, optional): Role description
+
+**Returns:**
+- Role object
+
+**Raises:**
+- `RoleAlreadyExistsError`: If a role with the name already exists
+
+**Example:**
+```python
+from fastauth.core.roles import create_role
+
+admin_role = create_role(
+    roles=role_adapter,
+    name="admin",
+    description="Administrator role"
+)
+```
+
+#### `create_permission(roles, name, description)`
+
+Create a new permission.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `name` (str): Unique permission name
+- `description` (str, optional): Permission description
+
+**Returns:**
+- Permission object
+
+**Raises:**
+- `PermissionAlreadyExistsError`: If a permission with the name already exists
+
+#### `assign_role(roles, user_id, role_name)`
+
+Assign a role to a user.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `role_name` (str): Name of the role to assign
+
+**Raises:**
+- `RoleNotFoundError`: If the role does not exist
+
+**Example:**
+```python
+from fastauth.core.roles import assign_role
+
+assign_role(
+    roles=role_adapter,
+    user_id=user.id,
+    role_name="admin"
+)
+```
+
+#### `remove_role(roles, user_id, role_name)`
+
+Remove a role from a user.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `role_name` (str): Name of the role to remove
+
+**Raises:**
+- `RoleNotFoundError`: If the role does not exist
+
+#### `assign_permission_to_role(roles, role_name, permission_name)`
+
+Assign a permission to a role.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `role_name` (str): Name of the role
+- `permission_name` (str): Name of the permission to assign
+
+**Raises:**
+- `RoleNotFoundError`: If the role does not exist
+- `PermissionNotFoundError`: If the permission does not exist
+
+#### `check_permission(roles, user_id, permission_name)`
+
+Check if a user has a specific permission through any of their roles.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `permission_name` (str): Name of the permission to check
+
+**Returns:**
+- bool: True if user has the permission, False otherwise
+
+**Example:**
+```python
+from fastauth.core.roles import check_permission
+
+has_access = check_permission(
+    roles=role_adapter,
+    user_id=user.id,
+    permission_name="delete:users"
+)
+```
+
+#### `get_user_roles(roles, user_id)`
+
+Get all roles assigned to a user.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `user_id` (UUID): User's unique identifier
+
+**Returns:**
+- List of role objects
+
+#### `get_user_permissions(roles, user_id)`
+
+Get all permissions for a user across all their roles.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `user_id` (UUID): User's unique identifier
+
+**Returns:**
+- List of permission objects
+
+#### `get_role_permissions(roles, role_name)`
+
+Get all permissions assigned to a role.
+
+**Parameters:**
+- `roles` (RoleAdapter): Role adapter for database operations
+- `role_name` (str): Name of the role
+
+**Returns:**
+- List of permission objects
+
+**Raises:**
+- `RoleNotFoundError`: If the role does not exist
+
 ## Adapters
 
 ### Base Adapters
@@ -193,6 +345,22 @@ Abstract base class for email verification operations.
 - `get_valid(token_hash)` - Get valid token by hash
 - `mark_used(token_hash)` - Mark token as used
 
+#### `RoleAdapter`
+
+Abstract base class for role and permission operations.
+
+**Methods:**
+- `create_role(name, description)` - Create a new role
+- `get_role_by_name(name)` - Retrieve role by name
+- `create_permission(name, description)` - Create a new permission
+- `get_permission_by_name(name)` - Retrieve permission by name
+- `assign_role_to_user(user_id, role_id)` - Assign role to user
+- `remove_role_from_user(user_id, role_id)` - Remove role from user
+- `get_user_roles(user_id)` - Get all roles for a user
+- `assign_permission_to_role(role_id, permission_id)` - Assign permission to role
+- `get_role_permissions(role_id)` - Get all permissions for a role
+- `get_user_permissions(user_id)` - Get all permissions for a user (from all roles)
+
 ### SQLAlchemy Adapters
 
 #### `SQLAlchemyUserAdapter`
@@ -222,6 +390,19 @@ SQLAlchemy implementation of PasswordResetAdapter.
 #### `SQLAlchemyEmailVerificationAdapter`
 
 SQLAlchemy implementation of EmailVerificationAdapter.
+
+#### `SQLAlchemyRoleAdapter`
+
+SQLAlchemy implementation of RoleAdapter.
+
+**Example:**
+```python
+from sqlmodel import Session
+from fastauth.adapters.sqlalchemy import SQLAlchemyRoleAdapter
+
+role_adapter = SQLAlchemyRoleAdapter(session)
+role = role_adapter.create_role(name="admin", description="Administrator role")
+```
 
 ## API Routes
 
@@ -505,6 +686,44 @@ SQLAlchemy email verification token model.
 - `used` (bool): Whether token is used
 - `created_at` (datetime): Creation timestamp
 
+### Role
+
+SQLAlchemy role model.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `name` (str): Role name (unique)
+- `description` (str, optional): Role description
+- `created_at` (datetime): Creation timestamp
+
+### Permission
+
+SQLAlchemy permission model.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `name` (str): Permission name (unique)
+- `description` (str, optional): Permission description
+- `created_at` (datetime): Creation timestamp
+
+### UserRole
+
+SQLAlchemy user-role junction model (many-to-many).
+
+**Fields:**
+- `user_id` (UUID): User reference (primary key)
+- `role_id` (UUID): Role reference (primary key)
+- `created_at` (datetime): Creation timestamp
+
+### RolePermission
+
+SQLAlchemy role-permission junction model (many-to-many).
+
+**Fields:**
+- `role_id` (UUID): Role reference (primary key)
+- `permission_id` (UUID): Permission reference (primary key)
+- `created_at` (datetime): Creation timestamp
+
 ## Settings
 
 ### `Settings`
@@ -546,6 +765,72 @@ def get_profile(current_user = Depends(get_current_user)):
     return {"email": current_user.email}
 ```
 
+### `get_role_adapter(session)`
+
+FastAPI dependency to get the role adapter instance.
+
+**Returns:**
+- `SQLAlchemyRoleAdapter` instance
+
+**Example:**
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import get_role_adapter
+
+@app.get("/roles")
+def list_roles(roles = Depends(get_role_adapter)):
+    return roles.get_all_roles()
+```
+
+### `require_role(role_name)`
+
+FastAPI dependency factory to require a specific role.
+
+**Parameters:**
+- `role_name` (str): Name of the required role
+
+**Returns:**
+- Dependency function that can be used with `Depends`
+
+**Raises:**
+- `HTTPException(403)`: If user doesn't have the required role
+
+**Example:**
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import require_role
+
+@app.get("/admin/dashboard", dependencies=[Depends(require_role("admin"))])
+def admin_dashboard():
+    return {"message": "Admin access granted"}
+```
+
+### `require_permission(permission_name)`
+
+FastAPI dependency factory to require a specific permission.
+
+**Parameters:**
+- `permission_name` (str): Name of the required permission
+
+**Returns:**
+- Dependency function that can be used with `Depends`
+
+**Raises:**
+- `HTTPException(403)`: If user doesn't have the required permission
+
+**Example:**
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import require_permission
+
+@app.delete(
+    "/users/{id}",
+    dependencies=[Depends(require_permission("delete:users"))]
+)
+def delete_user(id: str):
+    return {"message": "User deleted"}
+```
+
 ## Exceptions
 
 - `UserAlreadyExistsError` - User with email already exists
@@ -554,5 +839,9 @@ def get_profile(current_user = Depends(get_current_user)):
 - `RefreshTokenError` - Invalid or expired refresh token
 - `PasswordResetError` - Invalid or expired reset token
 - `EmailVerificationError` - Invalid or expired verification token
+- `RoleNotFoundError` - Role does not exist
+- `PermissionNotFoundError` - Permission does not exist
+- `RoleAlreadyExistsError` - Role with the name already exists
+- `PermissionAlreadyExistsError` - Permission with the name already exists
 - `RateLimitExceeded` - Too many attempts
 - `TokenError` - Invalid or expired JWT token
