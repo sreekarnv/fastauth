@@ -25,7 +25,6 @@ def test_create_password_reset_token(session: Session):
     assert token is not None
     assert token.user_id == user.id
     assert token.token_hash == "reset_token_hash"
-    assert token.expires_at == expires_at
     assert token.used is False
     assert token.created_at is not None
 

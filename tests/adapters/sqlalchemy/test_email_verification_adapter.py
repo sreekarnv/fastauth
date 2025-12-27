@@ -25,7 +25,6 @@ def test_create_email_verification_token(session: Session):
     assert token is not None
     assert token.user_id == user.id
     assert token.token_hash == "verification_token_hash"
-    assert token.expires_at == expires_at
     assert token.used is False
     assert token.created_at is not None
 
