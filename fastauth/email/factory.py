@@ -1,7 +1,7 @@
-from fastauth.settings import settings
+from fastauth.email.base import EmailClient
 from fastauth.email.console import ConsoleEmailClient
 from fastauth.email.smtp import SMTPEmailClient
-from fastauth.email.base import EmailClient
+from fastauth.settings import settings
 
 
 def get_email_client() -> EmailClient:

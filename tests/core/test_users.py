@@ -1,6 +1,6 @@
 import pytest
 
-from fastauth.core.users import create_user, UserAlreadyExistsError
+from fastauth.core.users import UserAlreadyExistsError, create_user
 from tests.fakes.users import FakeUserAdapter
 
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlmodel import Session, select
 
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
@@ -27,14 +28,14 @@ class SQLAlchemyPasswordResetAdapter(PasswordResetAdapter):
     def get_valid(self, *, token_hash: str):
         statement = select(PasswordResetToken).where(
             PasswordResetToken.token_hash == token_hash,
-            PasswordResetToken.used == False,
+            PasswordResetToken.used.is_(False),
         )
         return self.session.exec(statement).first()
 
     def mark_used(self, *, token_hash: str) -> None:
         statement = select(PasswordResetToken).where(
             PasswordResetToken.token_hash == token_hash,
-            PasswordResetToken.used == False,
+            PasswordResetToken.used.is_(False),
         )
         record = self.session.exec(statement).first()
         if not record:

@@ -1,17 +1,17 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlalchemy.pool import StaticPool
-
-from fastauth.api.auth import router as auth_router
-from fastauth.api import dependencies
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from sqlalchemy.pool import StaticPool
+from sqlmodel import Session, SQLModel, create_engine
+
+from fastauth.api import dependencies
+from fastauth.api.auth import router as auth_router
 
 
 @pytest.fixture(name="client", scope="function", autouse=False)
 def client_fixture():
-    from fastauth.settings import settings
     from fastauth.security import limits
+    from fastauth.settings import settings
 
     original_value = settings.require_email_verification
     settings.require_email_verification = False

@@ -1,15 +1,14 @@
 import pytest
 from sqlmodel import Session
+
 from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
-from fastauth.adapters.sqlalchemy.models import User
 
 
 def test_create_user(session: Session):
     adapter = SQLAlchemyUserAdapter(session)
 
     user = adapter.create_user(
-        email="test@example.com",
-        hashed_password="hashed_password_123"
+        email="test@example.com", hashed_password="hashed_password_123"
     )
 
     assert user.id is not None
@@ -24,8 +23,7 @@ def test_get_by_email(session: Session):
     adapter = SQLAlchemyUserAdapter(session)
 
     created_user = adapter.create_user(
-        email="test@example.com",
-        hashed_password="hashed_password_123"
+        email="test@example.com", hashed_password="hashed_password_123"
     )
 
     retrieved_user = adapter.get_by_email("test@example.com")
@@ -47,8 +45,7 @@ def test_get_by_id(session: Session):
     adapter = SQLAlchemyUserAdapter(session)
 
     created_user = adapter.create_user(
-        email="test@example.com",
-        hashed_password="hashed_password_123"
+        email="test@example.com", hashed_password="hashed_password_123"
     )
 
     retrieved_user = adapter.get_by_id(created_user.id)
@@ -60,6 +57,7 @@ def test_get_by_id(session: Session):
 
 def test_get_by_id_not_found(session: Session):
     import uuid
+
     adapter = SQLAlchemyUserAdapter(session)
 
     user = adapter.get_by_id(uuid.uuid4())
@@ -71,8 +69,7 @@ def test_mark_verified(session: Session):
     adapter = SQLAlchemyUserAdapter(session)
 
     user = adapter.create_user(
-        email="test@example.com",
-        hashed_password="hashed_password_123"
+        email="test@example.com", hashed_password="hashed_password_123"
     )
 
     assert user.is_verified is False
@@ -85,6 +82,7 @@ def test_mark_verified(session: Session):
 
 def test_mark_verified_nonexistent_user(session: Session):
     import uuid
+
     adapter = SQLAlchemyUserAdapter(session)
 
     adapter.mark_verified(uuid.uuid4())
@@ -93,10 +91,7 @@ def test_mark_verified_nonexistent_user(session: Session):
 def test_set_password(session: Session):
     adapter = SQLAlchemyUserAdapter(session)
 
-    user = adapter.create_user(
-        email="test@example.com",
-        hashed_password="old_hash"
-    )
+    user = adapter.create_user(email="test@example.com", hashed_password="old_hash")
 
     adapter.set_password(user_id=user.id, new_password="new_password")
 
@@ -107,21 +102,18 @@ def test_set_password(session: Session):
 
 def test_set_password_nonexistent_user(session: Session):
     import uuid
+
     adapter = SQLAlchemyUserAdapter(session)
 
     adapter.set_password(user_id=uuid.uuid4(), new_password="new_password")
 
 
 def test_unique_email_constraint(session: Session):
+    from sqlalchemy.exc import IntegrityError
+
     adapter = SQLAlchemyUserAdapter(session)
 
-    adapter.create_user(
-        email="test@example.com",
-        hashed_password="hash1"
-    )
+    adapter.create_user(email="test@example.com", hashed_password="hash1")
 
-    with pytest.raises(Exception):
-        adapter.create_user(
-            email="test@example.com",
-            hashed_password="hash2"
-        )
+    with pytest.raises(IntegrityError):
+        adapter.create_user(email="test@example.com", hashed_password="hash2")

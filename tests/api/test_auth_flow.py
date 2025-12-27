@@ -3,8 +3,7 @@ from fastapi.testclient import TestClient
 
 def test_register_user(client: TestClient):
     response = client.post(
-        "/auth/register",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/register", json={"email": "test@example.com", "password": "password123"}
     )
 
     assert response.status_code == 200
@@ -16,13 +15,12 @@ def test_register_user(client: TestClient):
 
 def test_register_duplicate_email(client: TestClient):
     client.post(
-        "/auth/register",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/register", json={"email": "test@example.com", "password": "password123"}
     )
 
     response = client.post(
         "/auth/register",
-        json={"email": "test@example.com", "password": "different_password"}
+        json={"email": "test@example.com", "password": "different_password"},
     )
 
     assert response.status_code == 409
@@ -31,13 +29,11 @@ def test_register_duplicate_email(client: TestClient):
 
 def test_login_success(client: TestClient):
     client.post(
-        "/auth/register",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/register", json={"email": "test@example.com", "password": "password123"}
     )
 
     response = client.post(
-        "/auth/login",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/login", json={"email": "test@example.com", "password": "password123"}
     )
 
     assert response.status_code == 200
@@ -50,7 +46,7 @@ def test_login_success(client: TestClient):
 def test_login_invalid_email(client: TestClient):
     response = client.post(
         "/auth/login",
-        json={"email": "nonexistent@example.com", "password": "password123"}
+        json={"email": "nonexistent@example.com", "password": "password123"},
     )
 
     assert response.status_code == 401
@@ -59,13 +55,11 @@ def test_login_invalid_email(client: TestClient):
 
 def test_login_invalid_password(client: TestClient):
     client.post(
-        "/auth/register",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/register", json={"email": "test@example.com", "password": "password123"}
     )
 
     response = client.post(
-        "/auth/login",
-        json={"email": "test@example.com", "password": "wrong_password"}
+        "/auth/login", json={"email": "test@example.com", "password": "wrong_password"}
     )
 
     assert response.status_code == 401
@@ -73,17 +67,16 @@ def test_login_invalid_password(client: TestClient):
 
 def test_login_unverified_email(client: TestClient):
     from fastauth import settings
+
     old_setting = settings.settings.require_email_verification
     settings.settings.require_email_verification = True
 
     client.post(
-        "/auth/register",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/register", json={"email": "test@example.com", "password": "password123"}
     )
 
     response = client.post(
-        "/auth/login",
-        json={"email": "test@example.com", "password": "password123"}
+        "/auth/login", json={"email": "test@example.com", "password": "password123"}
     )
 
     settings.settings.require_email_verification = old_setting
@@ -93,27 +86,20 @@ def test_login_unverified_email(client: TestClient):
 
 
 def test_login_missing_fields(client: TestClient):
-    response = client.post(
-        "/auth/login",
-        json={"email": "test@example.com"}
-    )
+    response = client.post("/auth/login", json={"email": "test@example.com"})
 
     assert response.status_code == 422
 
 
 def test_register_missing_fields(client: TestClient):
-    response = client.post(
-        "/auth/register",
-        json={"email": "test@example.com"}
-    )
+    response = client.post("/auth/register", json={"email": "test@example.com"})
 
     assert response.status_code == 422
 
 
 def test_register_invalid_email(client: TestClient):
     response = client.post(
-        "/auth/register",
-        json={"email": "invalid-email", "password": "password123"}
+        "/auth/register", json={"email": "invalid-email", "password": "password123"}
     )
 
     assert response.status_code == 422

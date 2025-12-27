@@ -2,11 +2,10 @@ import pytest
 
 from fastauth.core.users import (
     EmailNotVerifiedError,
-    create_user,
-    authenticate_user,
     InvalidCredentialsError,
+    authenticate_user,
+    create_user,
 )
-
 from tests.fakes.users import FakeUserAdapter
 
 
@@ -41,9 +40,7 @@ def test_authenticate_user_wrong_password(users):
         password="correct-password",
     )
 
-    users.mark_verified(
-        users.get_by_email("user@example.com").id
-    )
+    users.mark_verified(users.get_by_email("user@example.com").id)
 
     with pytest.raises(InvalidCredentialsError):
         authenticate_user(

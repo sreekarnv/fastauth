@@ -1,9 +1,9 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 
 from fastauth.adapters.sqlalchemy.models import User
-from fastauth.security.jwt import decode_access_token, TokenError
+from fastauth.security.jwt import TokenError, decode_access_token
 
 security = HTTPBearer()
 

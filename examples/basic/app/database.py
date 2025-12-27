@@ -1,10 +1,5 @@
-from sqlmodel import create_engine, Session, SQLModel
-from fastauth.adapters.sqlalchemy.models import (
-    User,
-    RefreshToken,
-    PasswordResetToken,
-    EmailVerificationToken,
-)
+from sqlmodel import Session, SQLModel, create_engine
+
 from app.settings import get_settings
 
 settings = get_settings()

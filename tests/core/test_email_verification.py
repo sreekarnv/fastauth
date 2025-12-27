@@ -1,14 +1,13 @@
 import pytest
 
-from fastauth.core.users import create_user
 from fastauth.core.email_verification import (
-    request_email_verification,
-    confirm_email_verification,
     EmailVerificationError,
+    confirm_email_verification,
+    request_email_verification,
 )
-
-from tests.fakes.users import FakeUserAdapter
+from fastauth.core.users import create_user
 from tests.fakes.email_verification import FakeEmailVerificationAdapter
+from tests.fakes.users import FakeUserAdapter
 
 
 @pytest.fixture

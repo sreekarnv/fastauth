@@ -1,4 +1,5 @@
 from sqlmodel import Session, select
+
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.adapters.sqlalchemy.models import User
 from fastauth.core.hashing import hash_password
@@ -9,9 +10,7 @@ class SQLAlchemyUserAdapter(UserAdapter):
         self.session = session
 
     def get_by_email(self, email: str) -> User:
-        return self.session.exec(
-            select(User).where(User.email == email)
-        ).first()
+        return self.session.exec(select(User).where(User.email == email)).first()
 
     def get_by_id(self, user_id) -> User:
         return self.session.get(User, user_id)

@@ -2,10 +2,9 @@ from fastauth.core.refresh_tokens import (
     create_refresh_token,
     revoke_refresh_token,
 )
-
 from fastauth.core.users import create_user
-from tests.fakes.users import FakeUserAdapter
 from tests.fakes.refresh_tokens import FakeRefreshTokenAdapter
+from tests.fakes.users import FakeUserAdapter
 
 
 def test_logout_revokes_refresh_token():

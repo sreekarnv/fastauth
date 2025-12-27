@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
+
 from sqlmodel import Session, select
-from datetime import datetime, UTC
 
 from fastauth.adapters.base.refresh_tokens import RefreshTokenAdapter
 from fastauth.adapters.sqlalchemy.models import RefreshToken
@@ -29,14 +30,14 @@ class SQLAlchemyRefreshTokenAdapter(RefreshTokenAdapter):
     def get_active(self, *, token_hash: str):
         statement = select(RefreshToken).where(
             RefreshToken.token_hash == token_hash,
-            RefreshToken.revoked == False,
+            RefreshToken.revoked.is_(False),
         )
         return self.session.exec(statement).first()
 
     def revoke(self, *, token_hash: str) -> None:
         statement = select(RefreshToken).where(
             RefreshToken.token_hash == token_hash,
-            RefreshToken.revoked == False,
+            RefreshToken.revoked.is_(False),
         )
         refresh = self.session.exec(statement).first()
         if not refresh:

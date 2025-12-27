@@ -1,4 +1,5 @@
 import uuid
+
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
 
@@ -42,4 +43,3 @@ class FakeUserAdapter(UserAdapter):
         user = self.get_by_id(user_id)
         if user:
             user.hashed_password = hashed_password
-

@@ -1,8 +1,7 @@
-from fastauth.core.users import create_user
 from fastauth.core.email_verification import request_email_verification
-
-from tests.fakes.users import FakeUserAdapter
+from fastauth.core.users import create_user
 from tests.fakes.email_verification import FakeEmailVerificationAdapter
+from tests.fakes.users import FakeUserAdapter
 
 
 def test_resend_verification_returns_token_for_unverified_user():
