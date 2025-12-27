@@ -24,8 +24,16 @@ def create_user(
     """
     Create a new user with a hashed password.
 
+    Args:
+        users: User adapter for database operations
+        email: User's email address
+        password: Plain text password (will be hashed)
+
+    Returns:
+        Created user object
+
     Raises:
-        UserAlreadyExistsError: if a user with the same email already exists
+        UserAlreadyExistsError: If a user with the email already exists
     """
 
     existing_user = users.get_by_email(email=email)
@@ -47,8 +55,18 @@ def authenticate_user(
     """
     Authenticate a user by email and password.
 
+    Args:
+        users: User adapter for database operations
+        email: User's email address
+        password: Plain text password to verify
+
+    Returns:
+        Authenticated user object
+
     Raises:
-        InvalidCredentialsError: if email does not exist or password is wrong
+        InvalidCredentialsError: If email doesn't exist, password is wrong, \
+            or user is inactive
+        EmailNotVerifiedError: If email verification is required but not completed
     """
 
     user = users.get_by_email(email=email)
