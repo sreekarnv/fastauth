@@ -62,6 +62,7 @@ app.dependency_overrides[get_session] = your_custom_session
 
 **Core Business Logic**
 - Authentication logic
+- Authorization (RBAC)
 - Token management
 - Password hashing
 - Email verification
@@ -102,6 +103,13 @@ app.dependency_overrides[get_session] = your_custom_session
 - Token validation
 - Email confirmation
 
+#### Roles (`fastauth/core/roles.py`)
+- Role creation and management
+- Permission creation and assignment
+- Role-to-user assignment
+- Permission checking
+- User authorization
+
 ### Adapters
 
 #### Base Adapters (`fastauth/adapters/base/`)
@@ -115,6 +123,19 @@ class UserAdapter(ABC):
 
     @abstractmethod
     def create_user(self, *, email: str, hashed_password: str): ...
+```
+
+**RoleAdapter:**
+```python
+class RoleAdapter(ABC):
+    @abstractmethod
+    def create_role(self, *, name: str, description: str | None = None): ...
+
+    @abstractmethod
+    def assign_role_to_user(self, *, user_id: UUID, role_id: UUID): ...
+
+    @abstractmethod
+    def get_user_permissions(self, user_id: UUID): ...
 ```
 
 #### SQLAlchemy Implementation (`fastauth/adapters/sqlalchemy/`)
@@ -243,6 +264,25 @@ Selects appropriate email provider based on configuration.
 7. Return new tokens
 ```
 
+### Authorization Flow (RBAC)
+
+```
+1. User requests protected resource
+   ↓
+2. Validate access token (get user)
+   ↓
+3. Check required role/permission (dependency)
+   ↓
+4. Core retrieves user roles (via adapter)
+   ↓
+5. Core retrieves role permissions (via adapter)
+   ↓
+6. Core checks if user has required permission
+   ↓
+7. If authorized → Execute route
+   If unauthorized → Return 403 Forbidden
+```
+
 ## Security Architecture
 
 ### Password Security
@@ -281,6 +321,42 @@ Plain Password → Argon2 Hash → Store in Database
 ```python
 limiter = RateLimiter(max_attempts=5, window_seconds=300)
 limiter.hit(request.client.host)
+```
+
+### Authorization (RBAC)
+
+**Role-Based Access Control:**
+- Fine-grained authorization
+- Separation of authentication and authorization
+- Flexible permission model
+
+**Architecture:**
+```
+User → [UserRole] → Role → [RolePermission] → Permission
+```
+
+**Many-to-Many Relationships:**
+- Users can have multiple roles
+- Roles can have multiple permissions
+- Users inherit all permissions from their roles
+
+**Route Protection:**
+```python
+# Protect by role
+@app.get("/admin", dependencies=[Depends(require_role("admin"))])
+
+# Protect by permission
+@app.delete("/users/{id}", dependencies=[Depends(require_permission("delete:users"))])
+```
+
+**Permission Check:**
+```python
+# Check permission programmatically
+has_access = check_permission(
+    roles=role_adapter,
+    user_id=user.id,
+    permission_name="delete:users"
+)
 ```
 
 ### SQL Injection Protection
@@ -450,6 +526,10 @@ Exception
 ├── RefreshTokenError
 ├── PasswordResetError
 ├── EmailVerificationError
+├── RoleNotFoundError
+├── PermissionNotFoundError
+├── RoleAlreadyExistsError
+├── PermissionAlreadyExistsError
 ├── RateLimitExceeded
 └── TokenError
 ```
@@ -503,6 +583,9 @@ export JWT_SECRET_KEY=$(openssl rand -hex 32)
 
 ## Future Architecture
 
+**Completed:**
+- ✅ **RBAC** - Role-based access control with permissions (implemented)
+
 Planned enhancements:
 
 **Multi-Tenancy:**
@@ -510,15 +593,15 @@ Planned enhancements:
 - Tenant isolation
 - Per-tenant settings
 
-**RBAC:**
-- Role model
-- Permission checks
-- Route-level authorization
-
 **Session Management:**
 - Track active sessions
 - Device information
 - Logout from specific device
+
+**Two-Factor Authentication:**
+- TOTP support
+- Backup codes
+- Trusted devices
 
 **Audit Logging:**
 - All auth events
