@@ -72,8 +72,9 @@ def test_login_invalid_password(client: TestClient):
 
 
 def test_login_unverified_email(client: TestClient):
-    import os
-    os.environ["REQUIRE_EMAIL_VERIFICATION"] = "true"
+    from fastauth import settings
+    old_setting = settings.settings.require_email_verification
+    settings.settings.require_email_verification = True
 
     client.post(
         "/auth/register",
@@ -84,6 +85,8 @@ def test_login_unverified_email(client: TestClient):
         "/auth/login",
         json={"email": "test@example.com", "password": "password123"}
     )
+
+    settings.settings.require_email_verification = old_setting
 
     assert response.status_code == 403
     assert "not verified" in response.json()["detail"].lower()
