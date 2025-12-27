@@ -53,12 +53,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check for code changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            code:
+              - 'fastauth/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+
       - name: Set up Python ${{ matrix.python-version }}
+        if: steps.changes.outputs.code == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
+        if: steps.changes.outputs.code == 'true'
         uses: snok/install-poetry@v1
         with:
           version: latest
@@ -66,6 +79,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Load cached venv
+        if: steps.changes.outputs.code == 'true'
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
@@ -73,26 +87,45 @@ jobs:
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: steps.changes.outputs.code == 'true' && steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
       - name: Install project
+        if: steps.changes.outputs.code == 'true'
         run: poetry install --no-interaction
 
       - name: Run tests
+        if: steps.changes.outputs.code == 'true'
         run: poetry run pytest tests/ -v --tb=short
+
+      - name: Skip tests
+        if: steps.changes.outputs.code != 'true'
+        run: echo "No code changes detected, skipping tests"
 
   coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check for code changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            code:
+              - 'fastauth/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+
       - name: Set up Python
+        if: steps.changes.outputs.code == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install Poetry
+        if: steps.changes.outputs.code == 'true'
         uses: snok/install-poetry@v1
         with:
           version: latest
@@ -100,6 +133,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Load cached venv
+        if: steps.changes.outputs.code == 'true'
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
@@ -107,17 +141,24 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: steps.changes.outputs.code == 'true' && steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
       - name: Install project
+        if: steps.changes.outputs.code == 'true'
         run: poetry install --no-interaction
 
       - name: Run tests with coverage
+        if: steps.changes.outputs.code == 'true'
         run: poetry run pytest tests/ --cov=fastauth --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
+        if: steps.changes.outputs.code == 'true'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
+
+      - name: Skip coverage
+        if: steps.changes.outputs.code != 'true'
+        run: echo "No code changes detected, skipping coverage"
