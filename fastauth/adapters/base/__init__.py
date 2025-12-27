@@ -1,6 +1,7 @@
 from .email_verification import EmailVerificationAdapter
 from .password_reset import PasswordResetAdapter
 from .refresh_tokens import RefreshTokenAdapter
+from .roles import RoleAdapter
 from .users import UserAdapter
 
 __all__ = [
@@ -8,4 +9,5 @@ __all__ = [
     "RefreshTokenAdapter",
     "PasswordResetAdapter",
     "EmailVerificationAdapter",
+    "RoleAdapter",
 ]
