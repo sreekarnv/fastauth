@@ -61,13 +61,13 @@ class UserAdapter(ABC):
         ...
 
     @abstractmethod
-    def set_password(self, *, user_id, new_password: str) -> None:
+    def set_password(self, *, user_id, hashed_password: str) -> None:
         """
         Update user's password.
 
         Args:
             user_id: User's unique identifier
-            new_password: New hashed password
+            hashed_password: Already hashed password
         """
         ...
 
@@ -75,6 +75,37 @@ class UserAdapter(ABC):
     def update_last_login(self, user_id: uuid.UUID) -> None:
         """
         Update user's last login timestamp.
+
+        Args:
+            user_id: User's unique identifier
+        """
+        ...
+
+    @abstractmethod
+    def update_email(self, *, user_id: uuid.UUID, new_email: str) -> None:
+        """
+        Update user's email address.
+
+        Args:
+            user_id: User's unique identifier
+            new_email: New email address
+        """
+        ...
+
+    @abstractmethod
+    def soft_delete_user(self, *, user_id: uuid.UUID) -> None:
+        """
+        Soft delete a user by setting deleted_at timestamp.
+
+        Args:
+            user_id: User's unique identifier
+        """
+        ...
+
+    @abstractmethod
+    def hard_delete_user(self, *, user_id: uuid.UUID) -> None:
+        """
+        Permanently delete a user from the database.
 
         Args:
             user_id: User's unique identifier

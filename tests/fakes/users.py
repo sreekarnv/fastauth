@@ -13,6 +13,7 @@ class FakeUser:
         self.is_verified = False
         self.is_active = True
         self.last_login = None
+        self.deleted_at = None
 
 
 class FakeUserAdapter(UserAdapter):
@@ -52,3 +53,27 @@ class FakeUserAdapter(UserAdapter):
         user = self.get_by_id(user_id)
         if user:
             user.last_login = datetime.now(UTC)
+
+    def update_email(self, *, user_id, new_email: str):
+        user = self.get_by_id(user_id)
+        if user:
+            old_email = user.email
+            user.email = new_email
+            user.is_verified = False
+            if old_email in self.users:
+                del self.users[old_email]
+            self.users[new_email] = user
+
+    def soft_delete_user(self, *, user_id):
+        from datetime import UTC
+
+        user = self.get_by_id(user_id)
+        if user:
+            user.deleted_at = datetime.now(UTC)
+            user.is_active = False
+
+    def hard_delete_user(self, *, user_id):
+        user = self.get_by_id(user_id)
+        if user:
+            if user.email in self.users:
+                del self.users[user.email]

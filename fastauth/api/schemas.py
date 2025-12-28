@@ -40,3 +40,21 @@ class EmailVerificationRequest(BaseModel):
 
 class EmailVerificationConfirm(BaseModel):
     token: str
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class DeleteAccountRequest(BaseModel):
+    password: str
+    hard_delete: bool = False
+
+
+class RequestEmailChangeRequest(BaseModel):
+    new_email: EmailStr
+
+
+class ConfirmEmailChangeRequest(BaseModel):
+    token: str
