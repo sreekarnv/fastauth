@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
@@ -11,6 +12,7 @@ class FakeUser:
         self.hashed_password = hash_password(password)
         self.is_verified = False
         self.is_active = True
+        self.last_login = None
 
 
 class FakeUserAdapter(UserAdapter):
@@ -43,3 +45,10 @@ class FakeUserAdapter(UserAdapter):
         user = self.get_by_id(user_id)
         if user:
             user.hashed_password = hashed_password
+
+    def update_last_login(self, user_id):
+        from datetime import UTC
+
+        user = self.get_by_id(user_id)
+        if user:
+            user.last_login = datetime.now(UTC)

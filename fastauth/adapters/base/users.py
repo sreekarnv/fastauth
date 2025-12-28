@@ -70,3 +70,13 @@ class UserAdapter(ABC):
             new_password: New hashed password
         """
         ...
+
+    @abstractmethod
+    def update_last_login(self, user_id: uuid.UUID) -> None:
+        """
+        Update user's last login timestamp.
+
+        Args:
+            user_id: User's unique identifier
+        """
+        ...
