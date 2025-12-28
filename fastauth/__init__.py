@@ -28,8 +28,15 @@ from fastauth.adapters.sqlalchemy.models import (
     User,
     UserRole,
 )
+from fastauth.api.account import router as account_router
 from fastauth.api.auth import router as auth_router
 from fastauth.api.sessions import router as sessions_router
+from fastauth.core.account import (
+    EmailAlreadyExistsError,
+    EmailChangeError,
+    InvalidPasswordError,
+    UserNotFoundError,
+)
 from fastauth.core.email_verification import EmailVerificationError
 from fastauth.core.password_reset import PasswordResetError
 from fastauth.core.refresh_tokens import RefreshTokenError
@@ -52,6 +59,10 @@ __all__ = [
     "UserAlreadyExistsError",
     "InvalidCredentialsError",
     "EmailNotVerifiedError",
+    "InvalidPasswordError",
+    "UserNotFoundError",
+    "EmailChangeError",
+    "EmailAlreadyExistsError",
     "RefreshTokenError",
     "PasswordResetError",
     "EmailVerificationError",
@@ -82,6 +93,7 @@ __all__ = [
     "RolePermission",
     "Session",
     "SQLModel",
+    "account_router",
     "auth_router",
     "sessions_router",
     "Settings",

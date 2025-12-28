@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from fastauth.api.account import router as account_router
 from fastauth.api.auth import router as auth_router
 from fastauth.api.sessions import router as sessions_router
 
@@ -16,6 +17,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(account_router)
 app.include_router(auth_router)
 app.include_router(sessions_router)
 

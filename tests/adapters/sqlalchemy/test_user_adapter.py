@@ -93,11 +93,10 @@ def test_set_password(session: Session):
 
     user = adapter.create_user(email="test@example.com", hashed_password="old_hash")
 
-    adapter.set_password(user_id=user.id, new_password="new_password")
+    adapter.set_password(user_id=user.id, hashed_password="new_hash")
 
     updated_user = adapter.get_by_id(user.id)
-    assert updated_user.hashed_password != "old_hash"
-    assert updated_user.hashed_password != "new_password"
+    assert updated_user.hashed_password == "new_hash"
 
 
 def test_set_password_nonexistent_user(session: Session):
@@ -105,7 +104,7 @@ def test_set_password_nonexistent_user(session: Session):
 
     adapter = SQLAlchemyUserAdapter(session)
 
-    adapter.set_password(user_id=uuid.uuid4(), new_password="new_password")
+    adapter.set_password(user_id=uuid.uuid4(), hashed_password="new_hash")
 
 
 def test_unique_email_constraint(session: Session):
