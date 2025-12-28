@@ -63,6 +63,7 @@ app.dependency_overrides[get_session] = your_custom_session
 **Core Business Logic**
 - Authentication logic
 - Authorization (RBAC)
+- Session management
 - Token management
 - Password hashing
 - Email verification
@@ -110,6 +111,13 @@ app.dependency_overrides[get_session] = your_custom_session
 - Permission checking
 - User authorization
 
+#### Sessions (`fastauth/core/sessions.py`)
+- Session creation and tracking
+- Device fingerprinting
+- Session activity tracking
+- Session revocation
+- Inactive session cleanup
+
 ### Adapters
 
 #### Base Adapters (`fastauth/adapters/base/`)
@@ -136,6 +144,23 @@ class RoleAdapter(ABC):
 
     @abstractmethod
     def get_user_permissions(self, user_id: UUID): ...
+```
+
+**SessionAdapter:**
+```python
+class SessionAdapter(ABC):
+    @abstractmethod
+    def create_session(self, *, user_id: UUID, device: str | None = None,
+                      ip_address: str | None = None, user_agent: str | None = None): ...
+
+    @abstractmethod
+    def get_user_sessions(self, user_id: UUID): ...
+
+    @abstractmethod
+    def delete_session(self, session_id: UUID) -> None: ...
+
+    @abstractmethod
+    def cleanup_inactive_sessions(self, inactive_days: int = 30) -> None: ...
 ```
 
 #### SQLAlchemy Implementation (`fastauth/adapters/sqlalchemy/`)
@@ -281,6 +306,54 @@ Selects appropriate email provider based on configuration.
    ↓
 7. If authorized → Execute route
    If unauthorized → Return 403 Forbidden
+```
+
+### Session Management Flow
+
+```
+Login/Registration:
+1. User successfully authenticates
+   ↓
+2. Extract device info from request
+   - IP address
+   - User agent
+   - Device identifier (optional)
+   ↓
+3. Core creates session (via adapter)
+   ↓
+4. Core updates user's last_login timestamp
+   ↓
+5. Return tokens
+
+List Sessions:
+1. User requests /sessions
+   ↓
+2. Validate access token (get user)
+   ↓
+3. Core retrieves user sessions (via adapter)
+   ↓
+4. Return session list with metadata
+
+Revoke Session:
+1. User requests DELETE /sessions/{session_id}
+   ↓
+2. Validate access token (get user)
+   ↓
+3. Core verifies session ownership
+   ↓
+4. If owned → Delete session (via adapter)
+   If not owned → Return 404 Not Found
+   ↓
+5. Return success
+
+Cleanup Inactive Sessions:
+1. Scheduled job triggers (e.g., daily)
+   ↓
+2. Core queries sessions (via adapter)
+   ↓
+3. Core filters by last_active < cutoff date
+   ↓
+4. Core deletes inactive sessions (via adapter)
 ```
 
 ## Security Architecture
@@ -530,6 +603,7 @@ Exception
 ├── PermissionNotFoundError
 ├── RoleAlreadyExistsError
 ├── PermissionAlreadyExistsError
+├── SessionNotFoundError
 ├── RateLimitExceeded
 └── TokenError
 ```
@@ -584,7 +658,8 @@ export JWT_SECRET_KEY=$(openssl rand -hex 32)
 ## Future Architecture
 
 **Completed:**
-- ✅ **RBAC** - Role-based access control with permissions (implemented)
+- ✅ **RBAC** - Role-based access control with permissions
+- ✅ **Session Management** - Track and manage user sessions across devices
 
 Planned enhancements:
 
@@ -592,11 +667,6 @@ Planned enhancements:
 - Organization context
 - Tenant isolation
 - Per-tenant settings
-
-**Session Management:**
-- Track active sessions
-- Device information
-- Logout from specific device
 
 **Two-Factor Authentication:**
 - TOTP support

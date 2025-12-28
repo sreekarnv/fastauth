@@ -303,6 +303,137 @@ Get all permissions assigned to a role.
 **Raises:**
 - `RoleNotFoundError`: If the role does not exist
 
+### `fastauth.core.sessions`
+
+Session management functions.
+
+#### `create_session(sessions, users, user_id, device, ip_address, user_agent)`
+
+Create a new session for a user and update their last login timestamp.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `users` (UserAdapter): User adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `device` (str, optional): Device information
+- `ip_address` (str, optional): IP address of the client
+- `user_agent` (str, optional): User agent string
+
+**Returns:**
+- Session object
+
+**Example:**
+```python
+from fastauth.core.sessions import create_session
+
+session = create_session(
+    sessions=session_adapter,
+    users=user_adapter,
+    user_id=user.id,
+    device="iPhone 13",
+    ip_address="192.168.1.1",
+    user_agent="Mozilla/5.0"
+)
+```
+
+#### `get_user_sessions(sessions, user_id)`
+
+Get all active sessions for a user.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `user_id` (UUID): User's unique identifier
+
+**Returns:**
+- List of session objects
+
+**Example:**
+```python
+from fastauth.core.sessions import get_user_sessions
+
+sessions_list = get_user_sessions(
+    sessions=session_adapter,
+    user_id=user.id
+)
+```
+
+#### `delete_session(sessions, session_id, user_id)`
+
+Delete a specific session with ownership verification.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `session_id` (UUID): Session's unique identifier
+- `user_id` (UUID): User's unique identifier (for authorization)
+
+**Raises:**
+- `SessionNotFoundError`: If session doesn't exist or doesn't belong to user
+
+**Example:**
+```python
+from fastauth.core.sessions import delete_session
+
+delete_session(
+    sessions=session_adapter,
+    session_id=session_id,
+    user_id=user.id
+)
+```
+
+#### `delete_all_user_sessions(sessions, user_id, except_session_id)`
+
+Delete all sessions for a user, optionally excluding the current session.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `except_session_id` (UUID, optional): Session ID to keep (current session)
+
+**Example:**
+```python
+from fastauth.core.sessions import delete_all_user_sessions
+
+# Delete all sessions except current
+delete_all_user_sessions(
+    sessions=session_adapter,
+    user_id=user.id,
+    except_session_id=current_session_id
+)
+
+# Delete all sessions
+delete_all_user_sessions(
+    sessions=session_adapter,
+    user_id=user.id
+)
+```
+
+#### `update_session_activity(sessions, session_id)`
+
+Update the last active timestamp for a session.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `session_id` (UUID): Session's unique identifier
+
+#### `cleanup_inactive_sessions(sessions, inactive_days)`
+
+Remove sessions that haven't been active for a specified number of days.
+
+**Parameters:**
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `inactive_days` (int): Number of days of inactivity before cleanup (default: 30)
+
+**Example:**
+```python
+from fastauth.core.sessions import cleanup_inactive_sessions
+
+# Remove sessions inactive for 30+ days
+cleanup_inactive_sessions(
+    sessions=session_adapter,
+    inactive_days=30
+)
+```
+
 ## Adapters
 
 ### Base Adapters
@@ -361,6 +492,19 @@ Abstract base class for role and permission operations.
 - `get_role_permissions(role_id)` - Get all permissions for a role
 - `get_user_permissions(user_id)` - Get all permissions for a user (from all roles)
 
+#### `SessionAdapter`
+
+Abstract base class for session management operations.
+
+**Methods:**
+- `create_session(user_id, device, ip_address, user_agent)` - Create a new session
+- `get_session_by_id(session_id)` - Retrieve session by ID
+- `get_user_sessions(user_id)` - Get all sessions for a user
+- `delete_session(session_id)` - Delete a specific session
+- `delete_user_sessions(user_id, except_session_id)` - Delete all user sessions (optionally except one)
+- `update_last_active(session_id)` - Update session's last active timestamp
+- `cleanup_inactive_sessions(inactive_days)` - Remove inactive sessions
+
 ### SQLAlchemy Adapters
 
 #### `SQLAlchemyUserAdapter`
@@ -402,6 +546,24 @@ from fastauth.adapters.sqlalchemy import SQLAlchemyRoleAdapter
 
 role_adapter = SQLAlchemyRoleAdapter(session)
 role = role_adapter.create_role(name="admin", description="Administrator role")
+```
+
+#### `SQLAlchemySessionAdapter`
+
+SQLAlchemy implementation of SessionAdapter.
+
+**Example:**
+```python
+from sqlmodel import Session
+from fastauth.adapters.sqlalchemy import SQLAlchemySessionAdapter
+
+session_adapter = SQLAlchemySessionAdapter(session)
+session = session_adapter.create_session(
+    user_id=user.id,
+    device="iPhone 13",
+    ip_address="192.168.1.1",
+    user_agent="Mozilla/5.0"
+)
 ```
 
 ## API Routes
@@ -567,6 +729,76 @@ Resend verification email.
 
 **Response:** `200 OK`
 
+### Session Management Endpoints
+
+All routes are prefixed with `/sessions` and require authentication.
+
+#### `GET /sessions`
+
+List all active sessions for the authenticated user.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "sessions": [
+    {
+      "id": "uuid",
+      "device": "iPhone 13",
+      "ip_address": "192.168.1.1",
+      "user_agent": "Mozilla/5.0...",
+      "last_active": "2024-01-01T12:00:00",
+      "created_at": "2024-01-01T00:00:00"
+    }
+  ]
+}
+```
+
+#### `DELETE /sessions/{session_id}`
+
+Delete a specific session (logout from specific device).
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Parameters:**
+- `session_id` (UUID): ID of the session to delete
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Session deleted successfully"
+}
+```
+
+**Error Responses:**
+- `404 Not Found` - Session not found or doesn't belong to user
+- `401 Unauthorized` - Invalid or missing access token
+
+#### `DELETE /sessions/all`
+
+Delete all sessions for the authenticated user (logout from all devices).
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "All sessions deleted successfully"
+}
+```
+
+**Note:** This endpoint deletes all sessions, which can be useful when a user suspects unauthorized access and wants to force logout from all devices.
+
 ## Security
 
 ### JWT Functions
@@ -724,6 +956,27 @@ SQLAlchemy role-permission junction model (many-to-many).
 - `permission_id` (UUID): Permission reference (primary key)
 - `created_at` (datetime): Creation timestamp
 
+### Session
+
+SQLAlchemy session model.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `user_id` (UUID): User reference
+- `device` (str, optional): Device information
+- `ip_address` (str, optional): Client IP address
+- `user_agent` (str, optional): User agent string
+- `last_active` (datetime): Last activity timestamp
+- `created_at` (datetime): Creation timestamp
+
+**Example:**
+```python
+from fastauth.adapters.sqlalchemy.models import Session
+
+# Sessions are automatically created on login/register
+# and tracked across the user's devices
+```
+
 ## Settings
 
 ### `Settings`
@@ -843,5 +1096,6 @@ def delete_user(id: str):
 - `PermissionNotFoundError` - Permission does not exist
 - `RoleAlreadyExistsError` - Role with the name already exists
 - `PermissionAlreadyExistsError` - Permission with the name already exists
+- `SessionNotFoundError` - Session not found or doesn't belong to user
 - `RateLimitExceeded` - Too many attempts
 - `TokenError` - Invalid or expired JWT token

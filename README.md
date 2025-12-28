@@ -11,6 +11,7 @@ FastAuth is a flexible, database-agnostic authentication library for FastAPI tha
 ## Features
 
 - **Complete Authentication Flow** - Registration, login, logout, and token refresh
+- **Session Management** - Track and manage active user sessions across devices
 - **Role-Based Access Control (RBAC)** - Fine-grained authorization with roles and permissions
 - **Email Verification** - Secure email verification with expiring tokens
 - **Password Reset** - Self-service password reset via email
@@ -57,7 +58,7 @@ pip install fastauth
 ```python
 from fastapi import FastAPI, Depends
 from sqlmodel import Session, SQLModel, create_engine
-from fastauth import auth_router
+from fastauth import auth_router, sessions_router
 from fastauth.api import dependencies
 from fastauth.adapters.sqlalchemy.models import User
 
@@ -78,8 +79,9 @@ app = FastAPI(title="My App")
 # Initialize database
 init_db()
 
-# Include FastAuth router
+# Include FastAuth routers
 app.include_router(auth_router)
+app.include_router(sessions_router)
 
 # Override session dependency
 app.dependency_overrides[dependencies.get_session] = get_session
@@ -144,6 +146,8 @@ That's it! You now have a working authentication system.
 
 FastAuth automatically adds these endpoints to your application:
 
+### Authentication
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/auth/register` | Register a new user |
@@ -155,6 +159,14 @@ FastAuth automatically adds these endpoints to your application:
 | `POST` | `/auth/email-verification/request` | Request email verification |
 | `POST` | `/auth/email-verification/confirm` | Verify email with token |
 | `POST` | `/auth/email-verification/resend` | Resend verification email |
+
+### Session Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/sessions` | List all active sessions for authenticated user |
+| `DELETE` | `/sessions/all` | Delete all user sessions (logout from all devices) |
+| `DELETE` | `/sessions/{session_id}` | Delete a specific session |
 
 ## Architecture
 
@@ -333,6 +345,106 @@ has_access = check_permission(
 if has_access:
     # Perform action
     pass
+```
+
+### Session Management
+
+Track and manage user sessions across multiple devices for enhanced security:
+
+#### Viewing Active Sessions
+
+Sessions are automatically created when users log in or register. Users can view all their active sessions:
+
+```python
+from fastapi import Depends
+from fastauth.api.dependencies import get_current_user
+from fastauth.adapters.sqlalchemy.models import User
+
+@app.get("/my-sessions")
+def get_my_sessions(current_user: User = Depends(get_current_user)):
+    return {"user_id": current_user.id}
+```
+
+#### Session Information
+
+Each session contains:
+- **Device** - Device name or identifier
+- **IP Address** - Client IP address
+- **User Agent** - Browser/client information
+- **Last Active** - Last activity timestamp
+- **Created At** - Session creation time
+
+#### Revoking Sessions
+
+Users can revoke individual sessions (e.g., logout from a specific device):
+
+```bash
+curl -X DELETE "http://localhost:8000/sessions/{session_id}" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+Or logout from all devices at once:
+
+```bash
+curl -X DELETE "http://localhost:8000/sessions/all" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Programmatic Session Management
+
+```python
+from fastauth import create_session, get_user_sessions, delete_session
+from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
+
+
+session = create_session(
+    sessions=session_adapter,
+    users=user_adapter,
+    user_id=user.id,
+    device="iPhone 13",
+    ip_address="192.168.1.1",
+    user_agent="Mozilla/5.0"
+)
+
+user_sessions = get_user_sessions(
+    sessions=session_adapter,
+    user_id=user.id
+)
+
+delete_session(
+    sessions=session_adapter,
+    session_id=session.id,
+    user_id=user.id
+)
+```
+
+#### Session Cleanup
+
+Automatically cleanup inactive sessions:
+
+```python
+from fastauth import cleanup_inactive_sessions
+
+cleanup_inactive_sessions(
+    sessions=session_adapter,
+    inactive_days=30
+)
+```
+
+This can be scheduled as a background task:
+
+```python
+from fastapi import FastAPI
+from apscheduler.schedulers.background import BackgroundScheduler
+
+app = FastAPI()
+
+def cleanup_old_sessions():
+    cleanup_inactive_sessions(sessions=session_adapter, inactive_days=30)
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(cleanup_old_sessions, 'interval', days=1)
+scheduler.start()
 ```
 
 ### Using Different Databases
