@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SQLAlchemy adapter for RBAC operations (SQLAlchemyRoleAdapter)
   - Support for many-to-many user-role and role-permission relationships
   - 47 comprehensive tests for RBAC functionality (110 total tests)
+- Session Management system
+  - Session model to track active user sessions with device info, IP address, and user agent
+  - SessionAdapter interface and SQLAlchemySessionAdapter implementation
+  - Automatic session creation on login and registration
+  - `last_login` timestamp tracking on User model
+  - Core functions for session management (create_session, get_user_sessions, delete_session, cleanup_inactive_sessions)
+  - REST API endpoints for session management:
+    - `GET /sessions` - List all active sessions for authenticated user
+    - `DELETE /sessions/all` - Delete all user sessions
+    - `DELETE /sessions/{session_id}` - Delete specific session
+  - Session activity tracking and automated cleanup of inactive sessions
+  - Full authorization controls - users can only manage their own sessions
+  - 36 comprehensive tests for session functionality (146 total tests)
 
 ### Fixed
 - UUID conversion bug in `get_current_user()` dependency (was passing string to SQLAlchemy, now converts to UUID)

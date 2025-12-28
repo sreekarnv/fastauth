@@ -6,6 +6,7 @@ from fastauth.adapters.sqlalchemy.email_verification import (
 )
 from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
 from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
+from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
 from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
 from fastauth.api.dependencies import get_session
 from fastauth.api.schemas import (
@@ -35,6 +36,7 @@ from fastauth.core.refresh_tokens import (
     revoke_refresh_token,
     rotate_refresh_token,
 )
+from fastauth.core.sessions import create_session
 from fastauth.core.users import (
     EmailNotVerifiedError,
     InvalidCredentialsError,
@@ -81,11 +83,20 @@ def register(
         )
 
     refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
+    sessions = SQLAlchemySessionAdapter(session=session)
 
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
         refresh_tokens=refresh_tokens,
         user_id=user.id,
+    )
+
+    create_session(
+        sessions=sessions,
+        users=users,
+        user_id=user.id,
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
     )
 
     return TokenResponse(
@@ -132,11 +143,20 @@ def login(
     login_rate_limiter.reset(key)
 
     refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
+    sessions = SQLAlchemySessionAdapter(session=session)
 
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
         refresh_tokens=refresh_tokens,
         user_id=user.id,
+    )
+
+    create_session(
+        sessions=sessions,
+        users=users,
+        user_id=user.id,
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
     )
 
     return TokenResponse(

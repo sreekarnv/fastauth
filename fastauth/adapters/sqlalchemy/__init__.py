@@ -6,6 +6,7 @@ from .models import (
     RefreshToken,
     Role,
     RolePermission,
+    Session,
     SQLModel,
     User,
     UserRole,
@@ -13,6 +14,7 @@ from .models import (
 from .password_reset import SQLAlchemyPasswordResetAdapter
 from .refresh_tokens import SQLAlchemyRefreshTokenAdapter
 from .roles import SQLAlchemyRoleAdapter
+from .sessions import SQLAlchemySessionAdapter
 from .users import SQLAlchemyUserAdapter
 
 __all__ = [
@@ -21,6 +23,7 @@ __all__ = [
     "SQLAlchemyPasswordResetAdapter",
     "SQLAlchemyEmailVerificationAdapter",
     "SQLAlchemyRoleAdapter",
+    "SQLAlchemySessionAdapter",
     "User",
     "RefreshToken",
     "PasswordResetToken",
@@ -29,5 +32,6 @@ __all__ = [
     "Permission",
     "UserRole",
     "RolePermission",
+    "Session",
     "SQLModel",
 ]

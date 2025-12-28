@@ -5,6 +5,7 @@ from fastauth.adapters.base import (
     PasswordResetAdapter,
     RefreshTokenAdapter,
     RoleAdapter,
+    SessionAdapter,
     UserAdapter,
 )
 from fastauth.adapters.sqlalchemy import (
@@ -12,6 +13,7 @@ from fastauth.adapters.sqlalchemy import (
     SQLAlchemyPasswordResetAdapter,
     SQLAlchemyRefreshTokenAdapter,
     SQLAlchemyRoleAdapter,
+    SQLAlchemySessionAdapter,
     SQLAlchemyUserAdapter,
 )
 from fastauth.adapters.sqlalchemy.models import (
@@ -21,11 +23,13 @@ from fastauth.adapters.sqlalchemy.models import (
     RefreshToken,
     Role,
     RolePermission,
+    Session,
     SQLModel,
     User,
     UserRole,
 )
 from fastauth.api.auth import router as auth_router
+from fastauth.api.sessions import router as sessions_router
 from fastauth.core.email_verification import EmailVerificationError
 from fastauth.core.password_reset import PasswordResetError
 from fastauth.core.refresh_tokens import RefreshTokenError
@@ -35,6 +39,7 @@ from fastauth.core.roles import (
     RoleAlreadyExistsError,
     RoleNotFoundError,
 )
+from fastauth.core.sessions import SessionNotFoundError
 from fastauth.core.users import (
     EmailNotVerifiedError,
     InvalidCredentialsError,
@@ -54,16 +59,19 @@ __all__ = [
     "PermissionNotFoundError",
     "RoleAlreadyExistsError",
     "PermissionAlreadyExistsError",
+    "SessionNotFoundError",
     "UserAdapter",
     "RefreshTokenAdapter",
     "PasswordResetAdapter",
     "EmailVerificationAdapter",
     "RoleAdapter",
+    "SessionAdapter",
     "SQLAlchemyUserAdapter",
     "SQLAlchemyRefreshTokenAdapter",
     "SQLAlchemyPasswordResetAdapter",
     "SQLAlchemyEmailVerificationAdapter",
     "SQLAlchemyRoleAdapter",
+    "SQLAlchemySessionAdapter",
     "User",
     "RefreshToken",
     "PasswordResetToken",
@@ -72,7 +80,9 @@ __all__ = [
     "Permission",
     "UserRole",
     "RolePermission",
+    "Session",
     "SQLModel",
     "auth_router",
+    "sessions_router",
     "Settings",
 ]

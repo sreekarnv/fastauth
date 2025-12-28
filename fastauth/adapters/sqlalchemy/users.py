@@ -39,3 +39,12 @@ class SQLAlchemyUserAdapter(UserAdapter):
         user.hashed_password = hash_password(new_password)
         self.session.add(user)
         self.session.commit()
+
+    def update_last_login(self, user_id) -> None:
+        from datetime import UTC, datetime
+
+        user = self.get_by_id(user_id)
+        if user:
+            user.last_login = datetime.now(UTC)
+            self.session.add(user)
+            self.session.commit()

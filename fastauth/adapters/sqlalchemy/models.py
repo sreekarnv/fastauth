@@ -21,6 +21,7 @@ class User(SQLModel, table=True):
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
     is_verified: bool = Field(default=False)
+    last_login: datetime | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -150,4 +151,27 @@ class RolePermission(SQLModel, table=True):
         primary_key=True,
     )
 
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class Session(SQLModel, table=True):
+    __tablename__ = "sessions"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id: uuid.UUID = Field(
+        foreign_key="users.id",
+        nullable=False,
+        index=True,
+    )
+
+    device: str | None = None
+    ip_address: str | None = None
+    user_agent: str | None = None
+
+    last_active: datetime = Field(default_factory=lambda: datetime.now(UTC))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
