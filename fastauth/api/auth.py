@@ -82,6 +82,21 @@ def register(
             detail="User already exists",
         )
 
+    verifications = SQLAlchemyEmailVerificationAdapter(session=session)
+    verification_token = request_email_verification(
+        users=users,
+        verifications=verifications,
+        email=user.email,
+    )
+
+    if verification_token:
+        email_client = get_email_client()
+        email_client.send_verification_email(
+            to=user.email,
+            token=verification_token,
+        )
+        print(f"Email verification token for {user.email}: {verification_token}")
+
     refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
     sessions = SQLAlchemySessionAdapter(session=session)
 
@@ -296,9 +311,11 @@ def email_verification_confirm(
         )
     except EmailVerificationError:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired verification token",
         )
+
+    return None
 
 
 @router.post("/email-verification/resend", status_code=204)
