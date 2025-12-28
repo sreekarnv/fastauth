@@ -434,6 +434,138 @@ cleanup_inactive_sessions(
 )
 ```
 
+### `fastauth.core.account`
+
+Account management functions for authenticated users.
+
+#### `change_password(users, sessions, user_id, current_password, new_password, current_session_id)`
+
+Change a user's password with verification.
+
+**Parameters:**
+- `users` (UserAdapter): User adapter for database operations
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `current_password` (str): Current password for verification
+- `new_password` (str): New password to set
+- `current_session_id` (UUID, optional): Session ID to preserve during logout
+
+**Raises:**
+- `UserNotFoundError`: If the user doesn't exist
+- `InvalidPasswordError`: If the current password is incorrect
+
+**Example:**
+```python
+from fastauth.core.account import change_password
+
+change_password(
+    users=user_adapter,
+    sessions=session_adapter,
+    user_id=user.id,
+    current_password="old_password",
+    new_password="new_password",
+    current_session_id=current_session.id  # Optional: preserve current session
+)
+```
+
+**Note:** Automatically invalidates all other sessions for security.
+
+#### `delete_account(users, sessions, user_id, password, hard_delete)`
+
+Delete a user account with soft or hard delete.
+
+**Parameters:**
+- `users` (UserAdapter): User adapter for database operations
+- `sessions` (SessionAdapter): Session adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `password` (str): Password for verification
+- `hard_delete` (bool): If True, permanently delete; if False, soft delete (default: False)
+
+**Raises:**
+- `UserNotFoundError`: If the user doesn't exist
+- `InvalidPasswordError`: If the password is incorrect
+
+**Example:**
+```python
+from fastauth.core.account import delete_account
+
+# Soft delete (deactivate account, preserve data)
+delete_account(
+    users=user_adapter,
+    sessions=session_adapter,
+    user_id=user.id,
+    password="user_password",
+    hard_delete=False
+)
+
+# Hard delete (permanent removal)
+delete_account(
+    users=user_adapter,
+    sessions=session_adapter,
+    user_id=user.id,
+    password="user_password",
+    hard_delete=True
+)
+```
+
+**Note:** Soft delete sets `deleted_at` timestamp and deactivates account. Hard delete permanently removes user from database. Both invalidate all sessions.
+
+#### `request_email_change(users, email_changes, user_id, new_email, expires_in_minutes)`
+
+Request an email change with verification token.
+
+**Parameters:**
+- `users` (UserAdapter): User adapter for database operations
+- `email_changes` (EmailChangeAdapter): Email change adapter for database operations
+- `user_id` (UUID): User's unique identifier
+- `new_email` (str): New email address
+- `expires_in_minutes` (int): Token expiration time in minutes (default: 60)
+
+**Returns:**
+- Verification token string if successful, None if user not found
+
+**Raises:**
+- `EmailAlreadyExistsError`: If the new email already exists
+
+**Example:**
+```python
+from fastauth.core.account import request_email_change
+
+token = request_email_change(
+    users=user_adapter,
+    email_changes=email_change_adapter,
+    user_id=user.id,
+    new_email="newemail@example.com",
+    expires_in_minutes=60
+)
+```
+
+#### `confirm_email_change(users, email_changes, token)`
+
+Confirm an email change with verification token.
+
+**Parameters:**
+- `users` (UserAdapter): User adapter for database operations
+- `email_changes` (EmailChangeAdapter): Email change adapter for database operations
+- `token` (str): Verification token
+
+**Raises:**
+- `EmailChangeError`: If token is invalid or expired
+- `EmailAlreadyExistsError`: If the new email is no longer available
+
+**Example:**
+```python
+from fastauth.core.account import confirm_email_change
+
+confirm_email_change(
+    users=user_adapter,
+    email_changes=email_change_adapter,
+    token=verification_token
+)
+```
+
+**Note:** Email change resets `is_verified` to False, requiring re-verification.
+
 ## Adapters
 
 ### Base Adapters
@@ -448,6 +580,10 @@ Abstract base class for user database operations.
 - `create_user(email, hashed_password)` - Create new user
 - `mark_verified(user_id)` - Mark email as verified
 - `set_password(user_id, new_password)` - Update password
+- `update_last_login(user_id)` - Update last login timestamp
+- `update_email(user_id, new_email)` - Update user's email address
+- `soft_delete_user(user_id)` - Soft delete user (set deleted_at timestamp)
+- `hard_delete_user(user_id)` - Permanently delete user from database
 
 #### `RefreshTokenAdapter`
 
@@ -504,6 +640,15 @@ Abstract base class for session management operations.
 - `delete_user_sessions(user_id, except_session_id)` - Delete all user sessions (optionally except one)
 - `update_last_active(session_id)` - Update session's last active timestamp
 - `cleanup_inactive_sessions(inactive_days)` - Remove inactive sessions
+
+#### `EmailChangeAdapter`
+
+Abstract base class for email change token operations.
+
+**Methods:**
+- `create(user_id, new_email, token_hash, expires_at)` - Create email change request with token
+- `get_valid(token_hash)` - Get valid (not used) email change record by token hash
+- `mark_used(token_hash)` - Mark email change token as used
 
 ### SQLAlchemy Adapters
 
@@ -563,6 +708,24 @@ session = session_adapter.create_session(
     device="iPhone 13",
     ip_address="192.168.1.1",
     user_agent="Mozilla/5.0"
+)
+```
+
+#### `SQLAlchemyEmailChangeAdapter`
+
+SQLAlchemy implementation of EmailChangeAdapter.
+
+**Example:**
+```python
+from sqlmodel import Session
+from fastauth.adapters.sqlalchemy import SQLAlchemyEmailChangeAdapter
+
+email_change_adapter = SQLAlchemyEmailChangeAdapter(session)
+email_change_adapter.create(
+    user_id=user.id,
+    new_email="newemail@example.com",
+    token_hash="hashed_token",
+    expires_at=datetime.now(UTC) + timedelta(hours=1)
 )
 ```
 
@@ -799,6 +962,137 @@ Authorization: Bearer {access_token}
 
 **Note:** This endpoint deletes all sessions, which can be useful when a user suspects unauthorized access and wants to force logout from all devices.
 
+### Account Management Endpoints
+
+All routes are prefixed with `/account` and require authentication (except confirm-email-change).
+
+#### `POST /account/change-password`
+
+Change the authenticated user's password.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "current_password": "old_password123",
+  "new_password": "new_password456"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Current password is incorrect
+- `401 Unauthorized` - Invalid or missing access token
+- `404 Not Found` - User not found
+
+**Note:** Automatically invalidates all other sessions for security.
+
+#### `DELETE /account/delete`
+
+Delete the authenticated user's account.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "password": "user_password",
+  "hard_delete": false
+}
+```
+
+**Parameters:**
+- `password` (string, required): User's password for verification
+- `hard_delete` (boolean, optional): If true, permanently delete; if false, soft delete (default: false)
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Account deactivated successfully"
+}
+```
+
+OR (for hard delete):
+```json
+{
+  "message": "Account permanently deleted successfully"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Password is incorrect
+- `401 Unauthorized` - Invalid or missing access token
+- `404 Not Found` - User not found
+
+**Note:** Soft delete sets `deleted_at` timestamp and deactivates account. Hard delete permanently removes user. Both invalidate all sessions.
+
+#### `POST /account/request-email-change`
+
+Request an email change with verification token.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "new_email": "newemail@example.com"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Email change requested. Please verify the token to complete the change.",
+  "token": "email-change-verification-token"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Email already exists
+- `401 Unauthorized` - Invalid or missing access token
+- `404 Not Found` - User not found
+
+**Note:** Token expires in 60 minutes. In production, send this token via email instead of returning it in the response.
+
+#### `POST /account/confirm-email-change`
+
+Confirm an email change with verification token.
+
+**Request Body:**
+```json
+{
+  "token": "email-change-verification-token"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Email changed successfully"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Invalid, expired, or already used token, or email no longer available
+
+**Note:** Email change resets `is_verified` to False, requiring re-verification of the new email.
+
 ## Security
 
 ### JWT Functions
@@ -880,6 +1174,9 @@ SQLAlchemy user model.
 - `hashed_password` (str): Hashed password
 - `is_active` (bool): Whether user is active
 - `is_verified` (bool): Whether email is verified
+- `is_superuser` (bool): Whether user has superuser privileges
+- `last_login` (datetime, optional): Last login timestamp
+- `deleted_at` (datetime, optional): Soft delete timestamp
 - `created_at` (datetime): Creation timestamp
 
 ### RefreshToken
@@ -913,6 +1210,19 @@ SQLAlchemy email verification token model.
 **Fields:**
 - `id` (UUID): Unique identifier
 - `user_id` (UUID): User reference
+- `token_hash` (str): Token hash (unique)
+- `expires_at` (datetime): Expiration time
+- `used` (bool): Whether token is used
+- `created_at` (datetime): Creation timestamp
+
+### EmailChangeToken
+
+SQLAlchemy email change token model.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `user_id` (UUID): User reference
+- `new_email` (str): New email address to change to
 - `token_hash` (str): Token hash (unique)
 - `expires_at` (datetime): Expiration time
 - `used` (bool): Whether token is used
@@ -1097,5 +1407,9 @@ def delete_user(id: str):
 - `RoleAlreadyExistsError` - Role with the name already exists
 - `PermissionAlreadyExistsError` - Permission with the name already exists
 - `SessionNotFoundError` - Session not found or doesn't belong to user
+- `InvalidPasswordError` - Current password is incorrect (account management)
+- `UserNotFoundError` - User not found (account management)
+- `EmailChangeError` - Invalid or expired email change token
+- `EmailAlreadyExistsError` - Email address already exists
 - `RateLimitExceeded` - Too many attempts
 - `TokenError` - Invalid or expired JWT token

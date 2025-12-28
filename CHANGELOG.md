@@ -28,6 +28,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Session activity tracking and automated cleanup of inactive sessions
   - Full authorization controls - users can only manage their own sessions
   - 36 comprehensive tests for session functionality (146 total tests)
+- Account Management features
+  - Change password endpoint with current password verification
+  - Account deletion with soft delete (deactivation) and hard delete (permanent removal) options
+  - Email change with token-based verification flow
+  - Password verification requirement for all sensitive operations
+  - Automatic session invalidation on password change and account deletion
+  - EmailChangeAdapter interface and SQLAlchemyEmailChangeAdapter implementation
+  - Core functions for account management (change_password, delete_account, request_email_change, confirm_email_change)
+  - REST API endpoints for account management:
+    - `POST /account/change-password` - Change password while authenticated
+    - `DELETE /account/delete` - Delete account with soft/hard delete options
+    - `POST /account/request-email-change` - Request email change with verification token
+    - `POST /account/confirm-email-change` - Confirm email change with token
+  - Extended UserAdapter with update_email(), soft_delete_user(), hard_delete_user() methods
+  - Added deleted_at field to User model for soft delete support
+  - EmailChangeToken model for email change verification
+  - 32 comprehensive tests for account management (178 total tests)
 
 ### Fixed
 - UUID conversion bug in `get_current_user()` dependency (was passing string to SQLAlchemy, now converts to UUID)
