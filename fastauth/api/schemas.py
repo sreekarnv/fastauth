@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -58,3 +60,19 @@ class RequestEmailChangeRequest(BaseModel):
 
 class ConfirmEmailChangeRequest(BaseModel):
     token: str
+
+
+class OAuthAuthorizationResponse(BaseModel):
+    authorization_url: str
+
+
+class OAuthCallbackRequest(BaseModel):
+    code: str
+    state: str
+
+
+class OAuthLinkResponse(BaseModel):
+    provider: str
+    email: str | None
+    name: str | None
+    linked_at: datetime

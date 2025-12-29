@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     smtp_from_email: str = "no-reply@example.com"
     smtp_use_tls: bool = True
 
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
+    github_client_id: str | None = None
+    github_client_secret: str | None = None
+    microsoft_client_id: str | None = None
+    microsoft_client_secret: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
