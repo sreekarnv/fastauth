@@ -52,7 +52,7 @@ FastAuth is a flexible, database-agnostic authentication library for FastAPI tha
 ### Installation
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 
 ### Basic Setup

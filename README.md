@@ -26,7 +26,7 @@ FastAuth is a flexible, database-agnostic authentication library for FastAPI tha
 ### From PyPI (Coming Soon)
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 
 ### From Source
@@ -50,7 +50,7 @@ Here's a complete authentication system in under 5 minutes:
 ### 1. Install FastAuth
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 
 ### 2. Create Your Application

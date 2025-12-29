@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-12-29
+
 ### Added
+- MkDocs documentation site with auto-generated API reference
+  - Material theme with dark/light mode support
+  - Auto-generated API reference using mkdocstrings (Google-style docstrings)
+  - GitHub Pages deployment workflow
+  - Comprehensive navigation covering all modules
+  - Search functionality and code syntax highlighting
+  - Live documentation at https://sreekarnv.github.io/fastauth/
 - OAuth 2.0 authentication framework
   - OAuth provider integration with state management
   - Google OAuth provider with PKCE (Proof Key for Code Exchange) support
@@ -109,5 +118,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/sreekarnv/fastauth/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sreekarnv/fastauth/releases/tag/v0.1.0

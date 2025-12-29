@@ -13,7 +13,7 @@ Get up and running with FastAuth in under 10 minutes. This guide covers installa
 ### From PyPI (Recommended)
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 
 ### From Source

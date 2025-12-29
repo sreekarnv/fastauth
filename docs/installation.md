@@ -10,7 +10,7 @@ FastAuth can be installed via pip, Poetry, or from source.
 ## Install from PyPI
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 
 ## Install with Poetry

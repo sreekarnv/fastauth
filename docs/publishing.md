@@ -339,7 +339,7 @@ python -m venv prod-test
 source prod-test/bin/activate
 
 # Install from PyPI
-pip install fastauth
+pip install sreekarnv-fastauth
 
 # Verify
 python -c "import fastauth; print(fastauth.__version__)"
@@ -363,7 +363,7 @@ python -c "import fastauth; print(fastauth.__version__)"
 ## Installation
 
 ```bash
-pip install fastauth
+pip install sreekarnv-fastauth
 ```
 ```
 
@@ -595,7 +595,7 @@ git push origin v0.2.0
 poetry publish
 
 # Verify
-pip install fastauth
+pip install sreekarnv-fastauth
 python -c "import fastauth; print(fastauth.__version__)"
 ```
 
