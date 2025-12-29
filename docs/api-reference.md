@@ -434,6 +434,120 @@ cleanup_inactive_sessions(
 )
 ```
 
+### `fastauth.core.oauth`
+
+OAuth 2.0 authentication functions.
+
+#### `initiate_oauth_flow(oauth_states, provider, redirect_uri, state_data, use_pkce)`
+
+Initiate an OAuth 2.0 authorization flow.
+
+**Parameters:**
+- `oauth_states` (OAuthStateAdapter): OAuth state adapter for database operations
+- `provider` (OAuthProvider): OAuth provider instance (e.g., GoogleOAuthProvider)
+- `redirect_uri` (str): Callback URL after OAuth authorization
+- `state_data` (dict, optional): Additional data to store in state
+- `use_pkce` (bool): Whether to use PKCE (Proof Key for Code Exchange) (default: False)
+
+**Returns:**
+- Dict with `authorization_url` (str) and `state` (str)
+
+**Example:**
+```python
+from fastauth.core.oauth import initiate_oauth_flow
+from fastauth.providers import GoogleOAuthProvider
+
+provider = GoogleOAuthProvider(
+    client_id="your-client-id",
+    client_secret="your-client-secret"
+)
+
+result = initiate_oauth_flow(
+    oauth_states=oauth_state_adapter,
+    provider=provider,
+    redirect_uri="http://localhost:8000/auth/oauth/google/callback",
+    use_pkce=True
+)
+# result = {"authorization_url": "https://...", "state": "..."}
+```
+
+#### `complete_oauth_flow(oauth_states, oauth_accounts, users, provider, code, state, link_user_id)`
+
+Complete an OAuth 2.0 authorization flow and create or link account.
+
+**Parameters:**
+- `oauth_states` (OAuthStateAdapter): OAuth state adapter
+- `oauth_accounts` (OAuthAccountAdapter): OAuth account adapter
+- `users` (UserAdapter): User adapter
+- `provider` (OAuthProvider): OAuth provider instance
+- `code` (str): Authorization code from OAuth provider
+- `state` (str): State token to validate
+- `link_user_id` (UUID, optional): User ID to link account to (if authenticated)
+
+**Returns:**
+- Tuple of (User object, bool indicating if new user was created)
+
+**Raises:**
+- `OAuthError`: If state is invalid, expired, or code exchange fails
+
+**Example:**
+```python
+from fastauth.core.oauth import complete_oauth_flow
+
+user, is_new = await complete_oauth_flow(
+    oauth_states=oauth_state_adapter,
+    oauth_accounts=oauth_account_adapter,
+    users=user_adapter,
+    provider=provider,
+    code="authorization_code",
+    state="state_token"
+)
+```
+
+#### `get_linked_accounts(oauth_accounts, user_id)`
+
+Get all OAuth accounts linked to a user.
+
+**Parameters:**
+- `oauth_accounts` (OAuthAccountAdapter): OAuth account adapter
+- `user_id` (UUID): User's unique identifier
+
+**Returns:**
+- List of OAuthAccount objects
+
+**Example:**
+```python
+from fastauth.core.oauth import get_linked_accounts
+
+accounts = get_linked_accounts(
+    oauth_accounts=oauth_account_adapter,
+    user_id=user.id
+)
+```
+
+#### `unlink_oauth_account(oauth_accounts, account_id, user_id)`
+
+Unlink an OAuth account from a user.
+
+**Parameters:**
+- `oauth_accounts` (OAuthAccountAdapter): OAuth account adapter
+- `account_id` (UUID): OAuth account's unique identifier
+- `user_id` (UUID): User's unique identifier (for authorization)
+
+**Raises:**
+- `OAuthAccountNotFoundError`: If account doesn't exist or doesn't belong to user
+
+**Example:**
+```python
+from fastauth.core.oauth import unlink_oauth_account
+
+unlink_oauth_account(
+    oauth_accounts=oauth_account_adapter,
+    account_id=account_id,
+    user_id=user.id
+)
+```
+
 ### `fastauth.core.account`
 
 Account management functions for authenticated users.
@@ -650,6 +764,26 @@ Abstract base class for email change token operations.
 - `get_valid(token_hash)` - Get valid (not used) email change record by token hash
 - `mark_used(token_hash)` - Mark email change token as used
 
+#### `OAuthAccountAdapter`
+
+Abstract base class for OAuth account operations.
+
+**Methods:**
+- `create(user_id, provider, provider_user_id, access_token, refresh_token, expires_at)` - Create OAuth account link
+- `get_by_provider_user_id(provider, provider_user_id)` - Get OAuth account by provider and provider user ID
+- `get_by_user_id(user_id)` - Get all OAuth accounts for a user
+- `get_by_id(account_id)` - Get OAuth account by ID
+- `delete(account_id)` - Delete OAuth account link
+
+#### `OAuthStateAdapter`
+
+Abstract base class for OAuth state token operations.
+
+**Methods:**
+- `create(state_hash, provider, redirect_uri, code_verifier, expires_at, state_data)` - Create OAuth state token
+- `get_valid(state_hash)` - Get valid (not expired) state record by hash
+- `delete(state_hash)` - Delete used state token
+
 ### SQLAlchemy Adapters
 
 #### `SQLAlchemyUserAdapter`
@@ -726,6 +860,46 @@ email_change_adapter.create(
     new_email="newemail@example.com",
     token_hash="hashed_token",
     expires_at=datetime.now(UTC) + timedelta(hours=1)
+)
+```
+
+#### `SQLAlchemyOAuthAccountAdapter`
+
+SQLAlchemy implementation of OAuthAccountAdapter.
+
+**Example:**
+```python
+from sqlmodel import Session
+from fastauth.adapters.sqlalchemy import SQLAlchemyOAuthAccountAdapter
+
+oauth_account_adapter = SQLAlchemyOAuthAccountAdapter(session)
+oauth_account = oauth_account_adapter.create(
+    user_id=user.id,
+    provider="google",
+    provider_user_id="google_user_123",
+    access_token="encrypted_access_token",
+    refresh_token="encrypted_refresh_token",
+    expires_at=datetime.now(UTC) + timedelta(hours=1)
+)
+```
+
+#### `SQLAlchemyOAuthStateAdapter`
+
+SQLAlchemy implementation of OAuthStateAdapter.
+
+**Example:**
+```python
+from sqlmodel import Session
+from fastauth.adapters.sqlalchemy import SQLAlchemyOAuthStateAdapter
+
+oauth_state_adapter = SQLAlchemyOAuthStateAdapter(session)
+oauth_state_adapter.create(
+    state_hash="hashed_state_token",
+    provider="google",
+    redirect_uri="http://localhost:8000/callback",
+    code_verifier="pkce_code_verifier",
+    expires_at=datetime.now(UTC) + timedelta(minutes=10),
+    state_data={"link_user_id": str(user.id)}
 )
 ```
 
@@ -1093,6 +1267,130 @@ Confirm an email change with verification token.
 
 **Note:** Email change resets `is_verified` to False, requiring re-verification of the new email.
 
+### OAuth Authentication Endpoints
+
+All routes are prefixed with `/oauth`.
+
+#### `POST /oauth/{provider}/authorize`
+
+Initiate OAuth 2.0 authorization flow.
+
+**Path Parameters:**
+- `provider` (str): OAuth provider name (e.g., "google")
+
+**Request Body:**
+```json
+{
+  "redirect_uri": "http://localhost:8000/auth/oauth/google/callback",
+  "use_pkce": true
+}
+```
+
+**Parameters:**
+- `redirect_uri` (string, required): Callback URL after OAuth authorization
+- `use_pkce` (boolean, optional): Use PKCE for enhanced security (default: false)
+
+**Response:** `200 OK`
+```json
+{
+  "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?...",
+  "state": "state_token_string"
+}
+```
+
+**Note:** Redirect user to `authorization_url`. The `state` token is stored server-side for validation.
+
+#### `POST /oauth/{provider}/callback`
+
+Complete OAuth 2.0 authorization and create/link account.
+
+**Path Parameters:**
+- `provider` (str): OAuth provider name (e.g., "google")
+
+**Request Body:**
+```json
+{
+  "code": "authorization_code_from_provider",
+  "state": "state_token_from_authorize"
+}
+```
+
+**Parameters:**
+- `code` (string, required): Authorization code from OAuth provider
+- `state` (string, required): State token from authorize endpoint
+
+**Response:** `200 OK`
+```json
+{
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ...",
+  "token_type": "bearer",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "is_verified": true,
+    "is_active": true
+  }
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Invalid state, expired state, or code exchange failed
+- `401 Unauthorized` - OAuth provider authentication failed
+
+**Note:** Creates new user if first-time OAuth login, or logs in existing user.
+
+#### `GET /oauth/accounts`
+
+List all OAuth accounts linked to the authenticated user.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "accounts": [
+    {
+      "id": "uuid",
+      "provider": "google",
+      "provider_user_id": "google_user_123",
+      "created_at": "2024-01-01T00:00:00"
+    }
+  ]
+}
+```
+
+**Error Responses:**
+- `401 Unauthorized` - Invalid or missing access token
+
+#### `DELETE /oauth/accounts/{account_id}`
+
+Unlink an OAuth account from the authenticated user.
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Path Parameters:**
+- `account_id` (UUID): ID of the OAuth account to unlink
+
+**Response:** `200 OK`
+```json
+{
+  "message": "OAuth account unlinked successfully"
+}
+```
+
+**Error Responses:**
+- `404 Not Found` - OAuth account not found or doesn't belong to user
+- `401 Unauthorized` - Invalid or missing access token
+
+**Note:** User must have a password set or at least one other OAuth account linked before unlinking.
+
 ## Security
 
 ### JWT Functions
@@ -1287,6 +1585,50 @@ from fastauth.adapters.sqlalchemy.models import Session
 # and tracked across the user's devices
 ```
 
+### OAuthAccount
+
+SQLAlchemy OAuth account model for linking OAuth providers to users.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `user_id` (UUID): User reference
+- `provider` (str): OAuth provider name (e.g., "google", "github")
+- `provider_user_id` (str): User ID from OAuth provider
+- `access_token` (str): Encrypted OAuth access token
+- `refresh_token` (str, optional): Encrypted OAuth refresh token
+- `expires_at` (datetime, optional): Access token expiration time
+- `created_at` (datetime): Creation timestamp
+
+**Example:**
+```python
+from fastauth.adapters.sqlalchemy.models import OAuthAccount
+
+# OAuth accounts are automatically created/linked
+# when users authenticate via OAuth providers
+```
+
+### OAuthState
+
+SQLAlchemy OAuth state token model for CSRF protection.
+
+**Fields:**
+- `id` (UUID): Unique identifier
+- `state_hash` (str): Hashed state token (unique)
+- `provider` (str): OAuth provider name
+- `redirect_uri` (str): Callback URL
+- `code_verifier` (str, optional): PKCE code verifier
+- `state_data` (JSON, optional): Additional state data
+- `expires_at` (datetime): Expiration time
+- `created_at` (datetime): Creation timestamp
+
+**Example:**
+```python
+from fastauth.adapters.sqlalchemy.models import OAuthState
+
+# OAuth states are automatically created during authorization
+# and validated during callback to prevent CSRF attacks
+```
+
 ## Settings
 
 ### `Settings`
@@ -1300,6 +1642,10 @@ Configuration class using Pydantic settings.
 - `refresh_token_expire_days` (int): Refresh token expiration
 - `require_email_verification` (bool): Require email verification
 - `email_provider` (str): Email provider type
+- `oauth_google_client_id` (str, optional): Google OAuth client ID
+- `oauth_google_client_secret` (str, optional): Google OAuth client secret
+- `oauth_google_redirect_uri` (str, optional): Google OAuth redirect URI
+- `oauth_state_expire_minutes` (int): OAuth state token expiration (default: 10)
 
 **Example:**
 ```python
@@ -1308,7 +1654,10 @@ from fastauth import Settings
 settings = Settings(
     jwt_secret_key="your-secret-key",
     access_token_expire_minutes=60,
-    require_email_verification=True
+    require_email_verification=True,
+    oauth_google_client_id="your-google-client-id",
+    oauth_google_client_secret="your-google-client-secret",
+    oauth_google_redirect_uri="http://localhost:8000/auth/oauth/google/callback"
 )
 ```
 
@@ -1411,5 +1760,8 @@ def delete_user(id: str):
 - `UserNotFoundError` - User not found (account management)
 - `EmailChangeError` - Invalid or expired email change token
 - `EmailAlreadyExistsError` - Email address already exists
+- `OAuthError` - OAuth authentication error (invalid state, code exchange failed, etc.)
+- `OAuthAccountNotFoundError` - OAuth account not found or doesn't belong to user
+- `OAuthProviderNotFoundError` - OAuth provider not configured or not found
 - `RateLimitExceeded` - Too many attempts
 - `TokenError` - Invalid or expired JWT token
