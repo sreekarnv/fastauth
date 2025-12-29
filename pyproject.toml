@@ -1,14 +1,14 @@
 [project]
 name = "fastauth"
 version = "0.1.0"
-description = "Authentication for FastAPI"
+description = "Production-ready authentication for FastAPI applications"
 authors = [
-    {name = "Sreekar Nutulapati",email = "sreekarnv1@gmail.com"}
+    {name = "Sreekar Nutulapati", email = "sreekarnv1@gmail.com"}
 ]
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 requires-python = ">=3.11"
-keywords = ["fastapi", "authentication", "auth", "jwt", "oauth"]
+keywords = ["fastapi", "authentication", "auth", "jwt", "oauth", "rbac", "session"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -20,15 +20,27 @@ classifiers = [
     "Framework :: FastAPI",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Security",
 ]
 dependencies = [
-    "fastapi[all] (>=0.125.0,<0.126.0)",
-    "argon2-cffi (>=25.1.0,<26.0.0)",
-    "python-jose (>=3.5.0,<4.0.0)",
-    "pydantic-settings (>=2.12.0,<3.0.0)",
-    "sqlmodel (>=0.0.27,<0.0.28)",
-    "httpx (>=0.27.0,<0.28.0)"
+    "fastapi[all] >=0.125.0,<0.126.0",
+    "argon2-cffi >=25.1.0,<26.0.0",
+    "python-jose >=3.5.0,<4.0.0",
+    "pydantic-settings >=2.12.0,<3.0.0",
+    "sqlmodel >=0.0.27,<0.0.28",
+    "httpx >=0.27.0,<0.28.0"
 ]
+
+[project.urls]
+Homepage = "https://github.com/sreekarnv/fastauth"
+Repository = "https://github.com/sreekarnv/fastauth"
+Documentation = "https://sreekarnv.github.io/fastauth/"
+"Bug Tracker" = "https://github.com/sreekarnv/fastauth/issues"
+Changelog = "https://github.com/sreekarnv/fastauth/blob/main/CHANGELOG.md"
+
+[project.scripts]
+test = "pytest:main"
+test-cov = "scripts.test_with_coverage:run_tests_with_coverage"
 
 
 [build-system]
@@ -36,12 +48,7 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "fastauth"
-version = "0.1.0"
-description = "Authentication for FastAPI"
-authors = ["Sreekar Nutulapati <sreekarnv1@gmail.com>"]
-readme = "README.md"
-license = "MIT"
+# Poetry-specific configuration
 packages = [{include = "fastauth"}]
 exclude = [
     "tests",
@@ -50,6 +57,8 @@ exclude = [
     ".claude",
     "*.pyc",
     "__pycache__",
+    "docs",
+    "site",
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -59,10 +68,13 @@ ruff = "^0.14.10"
 black = "^25.12.0"
 pre-commit = "^4.0.0"
 pytest-html = "^4.1.1"
-
-[tool.poetry.scripts]
-test = "pytest:main"
-test-cov = "scripts.test_with_coverage:run_tests_with_coverage"
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.0"
+mkdocstrings = {extras = ["python"], version = "^0.26.0"}
+mkdocs-gen-files = "^0.5.0"
+mkdocs-literate-nav = "^0.6.1"
+mkdocs-section-index = "^0.3.8"
+griffe = ">=0.36,<0.45"
 
 [tool.black]
 line-length = 88
