@@ -39,4 +39,7 @@ def client_fixture():
     with TestClient(app) as client:
         yield client
 
+    # Dispose engine to close all connections
+    engine.dispose()
+
     settings.require_email_verification = original_value

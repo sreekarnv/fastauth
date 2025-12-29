@@ -200,3 +200,63 @@ class Session(SQLModel, table=True):
 
     last_active: datetime = Field(default_factory=lambda: datetime.now(UTC))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class OAuthAccount(SQLModel, table=True):
+    __tablename__ = "oauth_accounts"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id: uuid.UUID = Field(
+        foreign_key="users.id",
+        nullable=False,
+        index=True,
+    )
+
+    provider: str = Field(nullable=False, index=True)
+    provider_user_id: str = Field(nullable=False, index=True)
+
+    access_token_hash: str = Field(nullable=False)
+    refresh_token_hash: str | None = None
+
+    expires_at: datetime | None = None
+
+    email: str | None = None
+    name: str | None = None
+    avatar_url: str | None = None
+
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class OAuthState(SQLModel, table=True):
+    __tablename__ = "oauth_states"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+    )
+
+    state_hash: str = Field(unique=True, index=True)
+
+    provider: str = Field(nullable=False)
+    redirect_uri: str = Field(nullable=False)
+
+    code_challenge: str | None = None
+    code_challenge_method: str | None = None
+
+    user_id: uuid.UUID | None = Field(
+        foreign_key="users.id",
+        nullable=True,
+        index=True,
+    )
+
+    expires_at: datetime
+    used: bool = Field(default=False)
+
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
