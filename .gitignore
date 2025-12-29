@@ -50,6 +50,10 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+test-results/
+
+# Test command reference (optional - can be committed)
+# TEST_COMMANDS.md
 
 # Translations
 *.mo
