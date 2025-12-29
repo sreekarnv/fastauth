@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- OAuth 2.0 authentication framework
+  - OAuth provider integration with state management
+  - Google OAuth provider with PKCE (Proof Key for Code Exchange) support
+  - OAuth account linking and unlinking functionality
+  - OAuthAccountAdapter and OAuthStateAdapter interfaces
+  - SQLAlchemyOAuthAccountAdapter and SQLAlchemyOAuthStateAdapter implementations
+  - Secure state token generation and validation with expiration
+  - Core functions for OAuth flows (initiate_oauth_flow, complete_oauth_flow, get_linked_accounts, unlink_oauth_account)
+  - REST API endpoints for OAuth:
+    - `POST /oauth/{provider}/authorize` - Initiate OAuth flow
+    - `POST /oauth/{provider}/callback` - Complete OAuth authentication
+    - `GET /oauth/accounts` - List linked OAuth accounts
+    - `DELETE /oauth/accounts/{account_id}` - Unlink OAuth account
+  - OAuthAccount and OAuthState models for OAuth data persistence
+  - OAuth-specific schemas (OAuthAuthorizeRequest, OAuthCallbackRequest, OAuthAccountResponse, etc.)
+  - httpx dependency for OAuth provider HTTP requests
+  - Extensible provider system for adding new OAuth providers
+  - 17 comprehensive tests for OAuth flows and security (195 total tests)
+- Comprehensive test reporting infrastructure
+  - Timestamped test report folders (test-results/YYYYMMDD_HHMMSS/)
+  - Multiple report formats: HTML (interactive), JUnit XML (CI/CD), detailed logs
+  - Coverage reports (HTML + XML) automatically organized in timestamped folders
+  - pytest-html integration for rich HTML test reports
+  - Poetry scripts for convenient test execution:
+    - `poetry run test` - Run tests
+    - `poetry run test-cov` - Run tests with full coverage reporting
+  - Reorganized test scripts into scripts/ package (scripts/test_with_coverage.py)
+  - TEST_COMMANDS.md developer reference guide
+  - Enhanced pytest configuration with verbose output and strict markers
 - Role-Based Access Control (RBAC) system
   - Role and Permission models for fine-grained authorization
   - `require_role()` and `require_permission()` FastAPI dependencies for route protection
@@ -48,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - UUID conversion bug in `get_current_user()` dependency (was passing string to SQLAlchemy, now converts to UUID)
+- ResourceWarnings from unclosed database connections in tests (reduced from 101 to 4 warnings by properly disposing SQLAlchemy engines)
 
 ## [0.1.0] - 2024-12-27
 
