@@ -118,6 +118,14 @@ app.dependency_overrides[get_session] = your_custom_session
 - Session revocation
 - Inactive session cleanup
 
+#### OAuth (`fastauth/core/oauth.py`)
+- OAuth 2.0 provider integration
+- Authorization flow initiation
+- Code exchange and token validation
+- User account creation and linking
+- OAuth account management
+- PKCE support for enhanced security
+
 ### Adapters
 
 #### Base Adapters (`fastauth/adapters/base/`)
@@ -161,6 +169,37 @@ class SessionAdapter(ABC):
 
     @abstractmethod
     def cleanup_inactive_sessions(self, inactive_days: int = 30) -> None: ...
+```
+
+**OAuthAccountAdapter:**
+```python
+class OAuthAccountAdapter(ABC):
+    @abstractmethod
+    def create(self, *, user_id: UUID, provider: str, provider_user_id: str,
+              access_token: str, refresh_token: str | None = None, expires_at: datetime | None = None): ...
+
+    @abstractmethod
+    def get_by_provider_user_id(self, provider: str, provider_user_id: str): ...
+
+    @abstractmethod
+    def get_by_user_id(self, user_id: UUID): ...
+
+    @abstractmethod
+    def delete(self, account_id: UUID) -> None: ...
+```
+
+**OAuthStateAdapter:**
+```python
+class OAuthStateAdapter(ABC):
+    @abstractmethod
+    def create(self, *, state_hash: str, provider: str, redirect_uri: str,
+              code_verifier: str | None = None, expires_at: datetime, state_data: dict | None = None): ...
+
+    @abstractmethod
+    def get_valid(self, state_hash: str): ...
+
+    @abstractmethod
+    def delete(self, state_hash: str) -> None: ...
 ```
 
 #### SQLAlchemy Implementation (`fastauth/adapters/sqlalchemy/`)
@@ -306,6 +345,67 @@ Selects appropriate email provider based on configuration.
    ↓
 7. If authorized → Execute route
    If unauthorized → Return 403 Forbidden
+```
+
+### OAuth 2.0 Authentication Flow
+
+```
+Authorization Initiation:
+1. User clicks "Sign in with Google"
+   ↓
+2. Frontend: POST /oauth/google/authorize
+   ↓
+3. Core generates state token (CSRF protection)
+   - Random token created
+   - Hashed and stored (via OAuthStateAdapter)
+   - Expires in 10 minutes
+   ↓
+4. Core optionally generates PKCE challenge
+   - Code verifier (random string)
+   - Code challenge (SHA-256 hash of verifier)
+   ↓
+5. Core builds authorization URL
+   - Includes client_id, redirect_uri, state
+   - Includes code_challenge if PKCE enabled
+   ↓
+6. Return authorization URL to frontend
+   ↓
+7. Frontend redirects user to authorization URL
+
+OAuth Callback:
+1. User authenticates with OAuth provider
+   ↓
+2. User grants permissions
+   ↓
+3. OAuth provider redirects to callback URL
+   - Includes authorization code
+   - Includes state token
+   ↓
+4. Frontend: POST /oauth/google/callback
+   - Sends code and state
+   ↓
+5. Core validates state token (via OAuthStateAdapter)
+   - Checks state exists and not expired
+   - Deletes state token (single-use)
+   ↓
+6. Core exchanges code for access token
+   - Sends code + code_verifier (if PKCE)
+   - Receives access_token and refresh_token
+   ↓
+7. Core fetches user info from OAuth provider
+   - Uses access_token
+   - Gets email, provider_user_id, name
+   ↓
+8. Core creates or links user account
+   - If OAuth account exists → return existing user
+   - If email exists → link OAuth to existing user
+   - If new user → create user + OAuth account
+   ↓
+9. Core encrypts and stores OAuth tokens (via OAuthAccountAdapter)
+   ↓
+10. Create session and JWT tokens
+    ↓
+11. Return JWT tokens to frontend
 ```
 
 ### Session Management Flow
@@ -660,6 +760,8 @@ export JWT_SECRET_KEY=$(openssl rand -hex 32)
 **Completed:**
 - ✅ **RBAC** - Role-based access control with permissions
 - ✅ **Session Management** - Track and manage user sessions across devices
+- ✅ **OAuth 2.0** - Third-party authentication with Google (PKCE support)
+- ✅ **Account Management** - Password change, email change, account deletion
 
 Planned enhancements:
 
