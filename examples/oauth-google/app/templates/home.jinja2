@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FastAuth OAuth Example</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+			}
+			.button {
+				display: inline-block;
+				padding: 12px 24px;
+				background-color: #4285f4;
+				color: white;
+				text-decoration: none;
+				border-radius: 4px;
+				font-weight: 500;
+			}
+			.button:hover {
+				background-color: #357ae8;
+			}
+			.section {
+				margin: 30px 0;
+				padding: 20px;
+				background-color: #f5f5f5;
+				border-radius: 8px;
+			}
+			h1 {
+				color: #333;
+			}
+			h2 {
+				color: #666;
+			}
+			code {
+				background-color: #e8e8e8;
+				padding: 2px 6px;
+				border-radius: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>FastAuth OAuth Example</h1>
+		<p>This example demonstrates Google OAuth integration with FastAuth.</p>
+
+		<div class="section">
+			<h2>Try it out!</h2>
+			<a href="/oauth/google/authorize" class="button">Sign in with Google</a>
+		</div>
+
+		<div class="section">
+			<h2>What this demo shows:</h2>
+			<ul>
+				<li>Google OAuth login flow</li>
+				<li>Automatic user creation from OAuth profile</li>
+				<li>Linking OAuth accounts to existing users</li>
+				<li>Viewing linked OAuth accounts</li>
+				<li>Unlinking OAuth accounts</li>
+			</ul>
+		</div>
+
+		<div class="section">
+			<h2>API Endpoints:</h2>
+			<ul>
+				<li><code>GET /oauth/google/authorize</code> - Initiate OAuth flow</li>
+				<li>
+					<code>POST /oauth/google/callback</code> - Handle OAuth callback
+				</li>
+				<li>
+					<code>GET /oauth/accounts</code> - List linked accounts (requires
+					auth)
+				</li>
+				<li>
+					<code>DELETE /oauth/accounts/{id}</code> - Unlink account (requires
+					auth)
+				</li>
+				<li><code>GET /profile</code> - View user profile (requires auth)</li>
+			</ul>
+		</div>
+
+		<div class="section">
+			<h2>Documentation:</h2>
+			<p>Visit <a href="/docs">/docs</a> for interactive API documentation</p>
+		</div>
+	</body>
+</html>

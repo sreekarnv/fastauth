@@ -20,6 +20,21 @@ A simple FastAPI application showing the core FastAuth features:
 
 ---
 
+### [OAuth with Google Example](./oauth-google/) 🆕
+
+Complete Google OAuth ("Sign in with Google") integration:
+- Google OAuth 2.0 authentication flow with PKCE
+- Automatic user creation from OAuth profile
+- Link/unlink OAuth accounts to existing users
+- View user profile with linked accounts
+- Secure state management for CSRF protection
+
+**Best for:** Adding social login, understanding OAuth flows, account linking
+
+**[View Example →](./oauth-google/)**
+
+---
+
 ## Running the Examples
 
 Each example is self-contained with its own README and setup instructions.

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>User Profile</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+			}
+
+			.profile-section {
+				background-color: #f8f9fa;
+				padding: 20px;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+
+			.back {
+				display: inline-block;
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>User Profile</h1>
+
+		<div class="profile-section">
+			<h2>Basic Information</h2>
+			<p><strong>User ID:</strong> {{ user.id }}</p>
+			<p><strong>Email:</strong> {{ user.email }}</p>
+			<p><strong>Email Verified:</strong> {{ user.is_verified }}</p>
+			<p><strong>Active:</strong> {{ user.is_active }}</p>
+			<p><strong>Created:</strong> {{ user.created_at }}</p>
+		</div>
+
+		<div class="profile-section">
+			<h2>Linked OAuth Accounts</h2>
+			<ul>
+				{% if oauth_accounts | length > 0 %}
+				<!--  -->
+				{% for account in oauth_accounts %}
+				<li>
+					<strong>{{ account.provider }}</strong
+					>: {{account.email or 'N/A'}} (linked on {{ account.created_at }})
+				</li>
+				{% endfor %}
+				<!--  -->
+				{% else %}
+				<li>No OAuth accounts linked</li>
+				{% endif %}
+			</ul>
+			<a href="/oauth-accounts?access_token={{ access_token }}"
+				>Manage OAuth Accounts →</a
+			>
+		</div>
+
+		<a href="/" class="back">Back to Home</a>
+	</body>
+</html>

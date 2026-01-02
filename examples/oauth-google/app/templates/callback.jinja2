@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Login Successful</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+			}
+			.success {
+				background-color: d4edda;
+				color: 155724;
+				padding: 20px;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+			.token-box {
+				background-color: f8f9fa;
+				padding: 15px;
+				border-radius: 4px;
+				word-break: break-all;
+				margin: 10px 0;
+			}
+			.button {
+				display: inline-block;
+				padding: 10px 20px;
+				background-color: #007bff;
+				color: white;
+				text-decoration: none;
+				border-radius: 4px;
+				margin: 10px 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Login Successful!</h1>
+		<div class="success">
+			<p>You've successfully logged in with Google!</p>
+			<p><strong>User Email:</strong> {{ user.email }}</p>
+			<p>
+				<strong>Status:</strong>
+				{{'New user created' if is_new_user else
+				'Existing user logged in'}}
+			</p>
+		</div>
+
+		<h2>Access Token:</h2>
+		<div class="token-box">
+			<code>{{ access_token }}</code>
+		</div>
+
+		<h2>Refresh Token:</h2>
+		<div class="token-box">
+			<code>{{ refresh_token }}</code>
+		</div>
+
+		<h2>What you can do next:</h2>
+		<a href="/profile?access_token={{ access_token }}" class="button"
+			>View Profile</a
+		>
+		<a href="/oauth-accounts?access_token={{ access_token }}" class="button"
+			>View Linked Accounts</a
+		>
+		<a href="/docs" class="button">API Docs</a>
+		<a href="/" class="button">Home</a>
+
+		<h3>Pro Tip:</h3>
+		<p>In a real application, you would:</p>
+		<ul>
+			<li>Store tokens in httpOnly cookies or secure storage</li>
+			<li>Redirect to your frontend with tokens</li>
+			<li>Use the access token in Authorization header for API calls</li>
+		</ul>
+	</body>
+</html>
