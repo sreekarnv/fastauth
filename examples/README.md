@@ -20,7 +20,7 @@ A simple FastAPI application showing the core FastAuth features:
 
 ---
 
-### [OAuth with Google Example](./oauth-google/) 🆕
+### [OAuth with Google Example](./oauth-google/)
 
 Complete Google OAuth ("Sign in with Google") integration:
 - Google OAuth 2.0 authentication flow with PKCE
@@ -32,6 +32,21 @@ Complete Google OAuth ("Sign in with Google") integration:
 **Best for:** Adding social login, understanding OAuth flows, account linking
 
 **[View Example →](./oauth-google/)**
+
+---
+
+### [RBAC Blog Example](./rbac-blog/) 🆕
+
+Role-Based Access Control (RBAC) in a blog application:
+- Three roles: Admin, Editor, Viewer with different permission levels
+- Four permissions: create_post, edit_post, publish_post, delete_post
+- Protected routes using `require_role()` and `require_permission()` dependencies
+- Blog post management with permission-based access control
+- Seed script to set up roles, permissions, and test users
+
+**Best for:** Understanding RBAC, implementing permissions, protecting routes
+
+**[View Example →](./rbac-blog/)**
 
 ---
 
