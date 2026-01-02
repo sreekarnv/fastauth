@@ -35,7 +35,7 @@ Complete Google OAuth ("Sign in with Google") integration:
 
 ---
 
-### [RBAC Blog Example](./rbac-blog/) 🆕
+### [RBAC Blog Example](./rbac-blog/)
 
 Role-Based Access Control (RBAC) in a blog application:
 - Three roles: Admin, Editor, Viewer with different permission levels
@@ -47,6 +47,22 @@ Role-Based Access Control (RBAC) in a blog application:
 **Best for:** Understanding RBAC, implementing permissions, protecting routes
 
 **[View Example →](./rbac-blog/)**
+
+---
+
+### [Session Management Example](./session-devices/) 🆕
+
+Multi-device session tracking and management:
+- Session creation on login with device tracking
+- View all active sessions across devices
+- Revoke individual sessions remotely
+- Sign out from all devices (except current)
+- Session metadata (IP address, user agent, device info, last active)
+- Session ID embedded in JWT tokens
+
+**Best for:** Multi-device apps, security features, session management
+
+**[View Example →](./session-devices/)**
 
 ---
 
