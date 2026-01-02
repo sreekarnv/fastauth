@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FastAuth Session Management Example</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 900px;
+				margin: 50px auto;
+				padding: 20px;
+				background-color: #f5f5f5;
+			}
+			.container {
+				background-color: white;
+				padding: 30px;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			.nav {
+				margin: 20px 0;
+			}
+			h1 {
+				color: #333;
+				border-bottom: 3px solid #2196f3;
+				padding-bottom: 10px;
+			}
+			h2 {
+				color: #666;
+				margin-top: 30px;
+			}
+			.feature {
+				background-color: #e3f2fd;
+				padding: 15px;
+				margin: 10px 0;
+				border-left: 4px solid #2196f3;
+				border-radius: 4px;
+			}
+			.endpoint {
+				background-color: #fff3e0;
+				padding: 10px;
+				margin: 8px 0;
+				border-radius: 4px;
+				font-family: monospace;
+			}
+			.method {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 3px;
+				font-weight: bold;
+				margin-right: 10px;
+			}
+			.get {
+				background-color: #4caf50;
+				color: white;
+			}
+			.post {
+				background-color: #2196f3;
+				color: white;
+			}
+			.delete {
+				background-color: #f44336;
+				color: white;
+			}
+			.button {
+				display: inline-block;
+				padding: 12px 24px;
+				background-color: #2196f3;
+				color: white;
+				text-decoration: none;
+				border-radius: 4px;
+				margin: 10px 10px 10px 0;
+			}
+			.button:hover {
+				background-color: #1976d2;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>FastAuth Session Management Example</h1>
+			<p>
+				This example demonstrates
+				<strong>multi-device session tracking and management</strong>.
+			</p>
+
+			<div class="nav">
+				<a href="/docs" class="button">API Documentation</a>
+				<a href="/redoc" class="button">ReDoc</a>
+			</div>
+
+			<h2>Features</h2>
+
+			<div class="feature">
+				<strong>Session Creation on Login</strong>
+				<p>
+					Each login creates a unique session with device and location tracking
+				</p>
+			</div>
+
+			<div class="feature">
+				<strong>View All Sessions</strong>
+				<p>See all active sessions across different devices with metadata</p>
+			</div>
+
+			<div class="feature">
+				<strong>Revoke Individual Sessions</strong>
+				<p>Remotely sign out from specific devices</p>
+			</div>
+
+			<div class="feature">
+				<strong>Sign Out from All Devices</strong>
+				<p>Revoke all sessions except the current one with one click</p>
+			</div>
+
+			<div class="feature">
+				<strong>Session Metadata</strong>
+				<p>Track device info, IP address, user agent, last active timestamp</p>
+			</div>
+
+			<h2>API Endpoints</h2>
+
+			<h3>Authentication</h3>
+			<div class="endpoint">
+				<span class="method post">POST</span> /register - Register new user
+			</div>
+			<div class="endpoint">
+				<span class="method post">POST</span> /login - Login and create session
+			</div>
+			<div class="endpoint">
+				<span class="method get">GET</span> /me - Get current user with session
+				count
+			</div>
+
+			<h3>Session Management</h3>
+			<div class="endpoint">
+				<span class="method get">GET</span> /sessions - List all active sessions
+			</div>
+			<div class="endpoint">
+				<span class="method delete">DELETE</span> /sessions/{id} - Revoke
+				specific session
+			</div>
+			<div class="endpoint">
+				<span class="method post">POST</span> /sessions/revoke-all - Sign out
+				from all devices
+			</div>
+
+			<h2>Quick Test</h2>
+			<ol>
+				<li>Register a user: <code>POST /register</code></li>
+				<li>Login from multiple "devices" (different user agents)</li>
+				<li>View all sessions: <code>GET /sessions</code></li>
+				<li>Revoke a session: <code>DELETE /sessions/{id}</code></li>
+				<li>Sign out from all: <code>POST /sessions/revoke-all</code></li>
+			</ol>
+
+			<h2>Learn More</h2>
+			<p>
+				Check out the <a href="/docs">interactive API documentation</a> to test
+				the endpoints!
+			</p>
+		</div>
+	</body>
+</html>
