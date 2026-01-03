@@ -59,17 +59,17 @@ Visit `http://localhost:8000/docs` to see the auto-generated API documentation.
 
 - **[Getting Started](getting-started/installation.md)** - Install and setup in 5 minutes
 - **[Guides](guides/authentication.md)** - Authentication, RBAC, sessions, OAuth
-- **[API Reference](reference/api.md)** - Complete API documentation
-- **[Examples](../examples/)** - Working example applications
+- **[API Reference](reference/index.md)** - Complete API documentation
+- **[Examples](https://github.com/sreekarnv/fastauth/tree/main/examples)** - Working example applications
 
 ## Examples
 
 Check out complete working examples:
 
-- **[OAuth with Google](../examples/oauth-google/)** - Social login with PKCE
-- **[RBAC Blog](../examples/rbac-blog/)** - Role-based access control
-- **[Session Management](../examples/session-devices/)** - Multi-device tracking
-- **[Basic App](../examples/basic/)** - Simple authentication
+- **[OAuth with Google](https://github.com/sreekarnv/fastauth/tree/main/examples/oauth-google)** - Social login with PKCE
+- **[RBAC Blog](https://github.com/sreekarnv/fastauth/tree/main/examples/rbac-blog)** - Role-based access control
+- **[Session Management](https://github.com/sreekarnv/fastauth/tree/main/examples/session-devices)** - Multi-device tracking
+- **[Basic App](https://github.com/sreekarnv/fastauth/tree/main/examples/basic)** - Simple authentication
 
 ## Security
 

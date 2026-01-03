@@ -379,7 +379,7 @@ def get_session_dashboard(
 
 ## Complete Example
 
-See the [Session Devices Example](../../examples/session-devices/) for a full implementation with:
+See the [Session Devices Example](https://github.com/sreekarnv/fastauth/tree/main/examples/session-devices) for a full implementation with:
 - Session creation on login/register
 - Device detection from user agent
 - Session listing with current session indicator
@@ -390,4 +390,4 @@ See the [Session Devices Example](../../examples/session-devices/) for a full im
 
 - **[Authentication](authentication.md)** - User login and registration
 - **[Protecting Routes](protecting-routes.md)** - Secure endpoints
-- **[Session Example](../../examples/session-devices/)** - Complete working example
+- **[Session Example](https://github.com/sreekarnv/fastauth/tree/main/examples/session-devices)** - Complete working example

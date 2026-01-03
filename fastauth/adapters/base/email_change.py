@@ -1,6 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any
 
 
 class EmailChangeAdapter(ABC):
@@ -16,7 +17,7 @@ class EmailChangeAdapter(ABC):
         new_email: str,
         token_hash: str,
         expires_at: datetime,
-    ):
+    ) -> Any:
         """
         Create an email change request with a token.
 
@@ -29,7 +30,7 @@ class EmailChangeAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_valid(self, *, token_hash: str):
+    def get_valid(self, *, token_hash: str) -> Any:
         """
         Get a valid (not used) email change record by token hash.
 

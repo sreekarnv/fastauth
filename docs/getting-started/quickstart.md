@@ -113,4 +113,4 @@ curl -X GET "http://localhost:8000/protected" \
 - **[Protecting Routes](../guides/protecting-routes.md)** - Secure your endpoints
 - **[RBAC Guide](../guides/rbac.md)** - Roles and permissions
 - **[OAuth Guide](../guides/oauth.md)** - Social login with Google, GitHub
-- **[Examples](../../examples/)** - Working example projects
+- **[Examples](https://github.com/sreekarnv/fastauth/tree/main/examples)** - Working example projects

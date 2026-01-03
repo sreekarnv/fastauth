@@ -371,7 +371,7 @@ assign_permission_to_role(role_adapter, "admin", "delete:users")
 
 ## Complete Example
 
-See the [RBAC Blog Example](../../examples/rbac-blog/) for a full working implementation with:
+See the [RBAC Blog Example](https://github.com/sreekarnv/fastauth/tree/main/examples/rbac-blog) for a full working implementation with:
 - Three roles (viewer, editor, admin)
 - Four permissions (create, edit, publish, delete)
 - Protected routes
@@ -381,4 +381,4 @@ See the [RBAC Blog Example](../../examples/rbac-blog/) for a full working implem
 
 - **[Authentication](authentication.md)** - User registration and login
 - **[Protecting Routes](protecting-routes.md)** - Secure endpoints
-- **[RBAC Blog Example](../../examples/rbac-blog/)** - Complete working example
+- **[RBAC Blog Example](https://github.com/sreekarnv/fastauth/tree/main/examples/rbac-blog)** - Complete working example

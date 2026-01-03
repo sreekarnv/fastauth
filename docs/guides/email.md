@@ -412,5 +412,5 @@ PASSWORD_RESET_URL=https://yourdomain.com/reset-password?token={token}
 ## Next Steps
 
 - **[Authentication](authentication.md)** - Registration and login
-- **[Configuration](../reference/configuration.md)** - All environment variables
+- **[Configuration](../configuration.md)** - All environment variables
 - **[Testing](../testing.md)** - Test your email flows

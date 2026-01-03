@@ -311,7 +311,7 @@ async def google_callback(code: str, state: str, session: Session):
 
 ## Complete Example
 
-See the [OAuth Google Example](../../examples/oauth-google/) for a full working implementation with:
+See the [OAuth Google Example](https://github.com/sreekarnv/fastauth/tree/main/examples/oauth-google) for a full working implementation with:
 - Google OAuth integration
 - PKCE flow
 - Account linking/unlinking
@@ -322,4 +322,4 @@ See the [OAuth Google Example](../../examples/oauth-google/) for a full working 
 
 - **[Authentication](authentication.md)** - Traditional email/password auth
 - **[Sessions](sessions.md)** - Track user sessions
-- **[OAuth Example](../../examples/oauth-google/)** - Complete working example
+- **[OAuth Example](https://github.com/sreekarnv/fastauth/tree/main/examples/oauth-google)** - Complete working example

@@ -1,6 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any
 
 
 class OAuthAccountAdapter(ABC):
@@ -24,7 +25,7 @@ class OAuthAccountAdapter(ABC):
         email: str | None = None,
         name: str | None = None,
         avatar_url: str | None = None,
-    ):
+    ) -> Any:
         """
         Create a new OAuth account link.
 
@@ -45,7 +46,7 @@ class OAuthAccountAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_by_provider_user_id(self, *, provider: str, provider_user_id: str):
+    def get_by_provider_user_id(self, *, provider: str, provider_user_id: str) -> Any:
         """
         Get OAuth account by provider and provider user ID.
 
@@ -59,7 +60,9 @@ class OAuthAccountAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_by_user_id(self, *, user_id: uuid.UUID, provider: str | None = None):
+    def get_by_user_id(
+        self, *, user_id: uuid.UUID, provider: str | None = None
+    ) -> list[Any]:
         """
         Get OAuth accounts for a user, optionally filtered by provider.
 
