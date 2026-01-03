@@ -5,6 +5,7 @@
 FastAuth is a flexible, database-agnostic authentication library for FastAPI that provides secure user authentication, session management, and authorization out of the box.
 
 [![CI](https://github.com/sreekarnv/fastauth/actions/workflows/ci.yml/badge.svg)](https://github.com/sreekarnv/fastauth/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/sreekarnv/fastauth/branch/main/graph/badge.svg)](https://codecov.io/gh/sreekarnv/fastauth)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
