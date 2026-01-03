@@ -105,7 +105,7 @@ FastAuth follows security best practices:
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/sreekarnv/fastauth/blob/main/CONTRIBUTING.md) for guidelines.
 
 ```bash
 # Setup development environment
