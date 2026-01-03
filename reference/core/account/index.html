@@ -3296,14 +3296,14 @@
 
 
 <h2 id="fastauth.core.account" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <span class="doc doc-object-name doc-module-name">account</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">account</span>
 
 
 <a href="#fastauth.core.account" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
 
@@ -3319,22 +3319,21 @@
 
 
 <h4 id="fastauth.core.account.InvalidPasswordError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">InvalidPasswordError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">InvalidPasswordError</span>
 
 
 <a href="#fastauth.core.account.InvalidPasswordError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when the current password is incorrect.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3343,22 +3342,21 @@
 
 
 <h4 id="fastauth.core.account.UserNotFoundError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">UserNotFoundError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">UserNotFoundError</span>
 
 
 <a href="#fastauth.core.account.UserNotFoundError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when the user is not found.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3367,22 +3365,21 @@
 
 
 <h4 id="fastauth.core.account.EmailChangeError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">EmailChangeError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">EmailChangeError</span>
 
 
 <a href="#fastauth.core.account.EmailChangeError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when there's an error with email change.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3391,33 +3388,30 @@
 
 
 <h4 id="fastauth.core.account.EmailAlreadyExistsError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">EmailAlreadyExistsError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">EmailAlreadyExistsError</span>
 
 
 <a href="#fastauth.core.account.EmailAlreadyExistsError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when the new email already exists.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 <h3 id="fastauth.core.account-functions">Functions<a href="#fastauth.core.account-functions" class="headerlink" title="Permanent link">&para;</a></h3>
 
-
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.account.change_password" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">change_password</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">change_password</span>
 
 
 <a href="#fastauth.core.account.change_password" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -3432,147 +3426,145 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Change a user's password.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>users</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>sessions</code></td>
-          <td>
-                <code><span title="fastauth.adapters.base.sessions.SessionAdapter">SessionAdapter</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Session adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>ID of the user changing their password</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>current_password</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Current password for verification</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>new_password</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>New password to set</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>current_session_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional session ID to preserve during logout</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>users</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>sessions</code></td>
+            <td>
+                  <code><span title="fastauth.adapters.base.sessions.SessionAdapter">SessionAdapter</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Session adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>ID of the user changing their password</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>current_password</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Current password for verification</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>new_password</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>New password to set</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>current_session_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional session ID to preserve during logout</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.UserNotFoundError" href="#fastauth.core.account.UserNotFoundError">UserNotFoundError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the user doesn't exist</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.InvalidPasswordError" href="#fastauth.core.account.InvalidPasswordError">InvalidPasswordError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the current password is incorrect</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.UserNotFoundError" href="#fastauth.core.account.UserNotFoundError">UserNotFoundError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the user doesn't exist</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.InvalidPasswordError" href="#fastauth.core.account.InvalidPasswordError">InvalidPasswordError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the current password is incorrect</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/account.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/account.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
@@ -3648,18 +3640,16 @@
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="n">except_session_id</span><span class="o">=</span><span class="n">current_session_id</span><span class="p">,</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.account.request_email_change" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">request_email_change</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">request_email_change</span>
 
 
 <a href="#fastauth.core.account.request_email_change" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -3673,147 +3663,144 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span> <span class="o">|</span> <span class="kc">None</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Request an email change for a user.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>users</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>email_changes</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.email_change.EmailChangeAdapter" href="../../adapters/base/email_change/#fastauth.adapters.base.email_change.EmailChangeAdapter">EmailChangeAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Email change adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>users</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>email_changes</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.email_change.EmailChangeAdapter" href="../../adapters/base/email_change/#fastauth.adapters.base.email_change.EmailChangeAdapter">EmailChangeAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Email change adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>ID of the user requesting email change</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>new_email</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>New email address</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>expires_in_minutes</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Token expiration time in minutes</p>
+              </div>
+            </td>
+            <td>
+                  <code>60</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>ID of the user requesting email change</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>str | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Verification token if successful, None if user not found</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>new_email</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>New email address</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>expires_in_minutes</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Token expiration time in minutes</p>
-            </div>
-          </td>
-          <td>
-                <code>60</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailAlreadyExistsError" href="#fastauth.core.account.EmailAlreadyExistsError">EmailAlreadyExistsError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the new email already exists</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>str | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Verification token if successful, None if user not found</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailAlreadyExistsError" href="#fastauth.core.account.EmailAlreadyExistsError">EmailAlreadyExistsError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the new email already exists</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/account.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-67"> 67</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/account.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-67"> 67</a></span>
 <span class="normal"><a href="#__codelineno-0-68"> 68</a></span>
 <span class="normal"><a href="#__codelineno-0-69"> 69</a></span>
 <span class="normal"><a href="#__codelineno-0-70"> 70</a></span>
@@ -3903,18 +3890,16 @@
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="k">return</span> <span class="n">raw_token</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.account.confirm_email_change" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">confirm_email_change</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">confirm_email_change</span>
 
 
 <a href="#fastauth.core.account.confirm_email_change" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -3923,105 +3908,103 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Confirm an email change with a verification token.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>users</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>email_changes</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.email_change.EmailChangeAdapter" href="../../adapters/base/email_change/#fastauth.adapters.base.email_change.EmailChangeAdapter">EmailChangeAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Email change adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>token</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Verification token</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>users</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>email_changes</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.email_change.EmailChangeAdapter" href="../../adapters/base/email_change/#fastauth.adapters.base.email_change.EmailChangeAdapter">EmailChangeAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Email change adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>token</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Verification token</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailChangeError" href="#fastauth.core.account.EmailChangeError">EmailChangeError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If token is invalid or expired</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailAlreadyExistsError" href="#fastauth.core.account.EmailAlreadyExistsError">EmailAlreadyExistsError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the new email already exists</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailChangeError" href="#fastauth.core.account.EmailChangeError">EmailChangeError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If token is invalid or expired</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.EmailAlreadyExistsError" href="#fastauth.core.account.EmailAlreadyExistsError">EmailAlreadyExistsError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the new email already exists</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/account.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-114">114</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/account.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-114">114</a></span>
 <span class="normal"><a href="#__codelineno-0-115">115</a></span>
 <span class="normal"><a href="#__codelineno-0-116">116</a></span>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span>
@@ -4101,18 +4084,16 @@
 </span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>    <span class="n">users</span><span class="o">.</span><span class="n">update_email</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">new_email</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">new_email</span><span class="p">)</span>
 </span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>    <span class="n">email_changes</span><span class="o">.</span><span class="n">mark_used</span><span class="p">(</span><span class="n">token_hash</span><span class="o">=</span><span class="n">token_hash</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.account.delete_account" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">delete_account</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">delete_account</span>
 
 
 <a href="#fastauth.core.account.delete_account" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -4126,133 +4107,131 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Delete a user account (soft or hard delete).</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>users</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>sessions</code></td>
-          <td>
-                <code><span title="fastauth.adapters.base.sessions.SessionAdapter">SessionAdapter</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Session adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>ID of the user to delete</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>password</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Password for verification</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hard_delete</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If True, permanently delete the user; if False, soft delete</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>users</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>sessions</code></td>
+            <td>
+                  <code><span title="fastauth.adapters.base.sessions.SessionAdapter">SessionAdapter</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Session adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>ID of the user to delete</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>password</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Password for verification</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hard_delete</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, permanently delete the user; if False, soft delete</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.UserNotFoundError" href="#fastauth.core.account.UserNotFoundError">UserNotFoundError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the user doesn't exist</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.account.InvalidPasswordError" href="#fastauth.core.account.InvalidPasswordError">InvalidPasswordError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the password is incorrect</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.UserNotFoundError" href="#fastauth.core.account.UserNotFoundError">UserNotFoundError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the user doesn't exist</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.account.InvalidPasswordError" href="#fastauth.core.account.InvalidPasswordError">InvalidPasswordError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the password is incorrect</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/account.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-156">156</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/account.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-156">156</a></span>
 <span class="normal"><a href="#__codelineno-0-157">157</a></span>
 <span class="normal"><a href="#__codelineno-0-158">158</a></span>
 <span class="normal"><a href="#__codelineno-0-159">159</a></span>
@@ -4326,8 +4305,8 @@
 </span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a>        <span class="n">users</span><span class="o">.</span><span class="n">soft_delete_user</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -4335,7 +4314,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 

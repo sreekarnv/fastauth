@@ -3296,14 +3296,14 @@
 
 
 <h2 id="fastauth.core.oauth" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <span class="doc doc-object-name doc-module-name">oauth</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">oauth</span>
 
 
 <a href="#fastauth.core.oauth" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
 
@@ -3319,22 +3319,21 @@
 
 
 <h4 id="fastauth.core.oauth.OAuthError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">OAuthError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">OAuthError</span>
 
 
 <a href="#fastauth.core.oauth.OAuthError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Base exception for OAuth errors.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3343,22 +3342,21 @@
 
 
 <h4 id="fastauth.core.oauth.OAuthStateError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">OAuthStateError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">OAuthStateError</span>
 
 
 <a href="#fastauth.core.oauth.OAuthStateError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when OAuth state token is invalid or expired.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3367,22 +3365,21 @@
 
 
 <h4 id="fastauth.core.oauth.OAuthAccountAlreadyLinkedError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">OAuthAccountAlreadyLinkedError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">OAuthAccountAlreadyLinkedError</span>
 
 
 <a href="#fastauth.core.oauth.OAuthAccountAlreadyLinkedError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when OAuth account is already linked to a different user.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3391,33 +3388,30 @@
 
 
 <h4 id="fastauth.core.oauth.OAuthProviderNotFoundError" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">OAuthProviderNotFoundError</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">OAuthProviderNotFoundError</span>
 
 
 <a href="#fastauth.core.oauth.OAuthProviderNotFoundError" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code>Exception</code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code>Exception</code></p>
 
-  
+
       <p>Raised when OAuth provider is not found.</p>
 
 
-  </div>
-
+    </div>
 
 </div>
 <h3 id="fastauth.core.oauth-functions">Functions<a href="#fastauth.core.oauth-functions" class="headerlink" title="Permanent link">&para;</a></h3>
 
-
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.oauth.initiate_oauth_flow" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">initiate_oauth_flow</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">initiate_oauth_flow</span>
 
 
 <a href="#fastauth.core.oauth.initiate_oauth_flow" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -3432,145 +3426,144 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="n">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Initiate OAuth authorization flow.</p>
 <p>Generates state token for CSRF protection and optional PKCE challenge.
 Stores state in database and builds authorization URL.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_states.OAuthStateAdapter" href="../../adapters/base/oauth_states/#fastauth.adapters.base.oauth_states.OAuthStateAdapter">OAuthStateAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth state adapter for database operations</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>provider</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.providers.base.OAuthProvider" href="../../providers/base/#fastauth.providers.base.OAuthProvider">OAuthProvider</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth provider instance</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>redirect_uri</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Callback URL after authorization</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional user ID for linking mode (logged-in user)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>use_pkce</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use PKCE for enhanced security (default: True)</p>
-            </div>
-          </td>
-          <td>
-                <code>True</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>state_ttl_minutes</code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>State token time-to-live in minutes (default: 10)</p>
-            </div>
-          </td>
-          <td>
-                <code>10</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_states.OAuthStateAdapter" href="../../adapters/base/oauth_states/#fastauth.adapters.base.oauth_states.OAuthStateAdapter">OAuthStateAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth state adapter for database operations</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>provider</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.providers.base.OAuthProvider" href="../../providers/base/#fastauth.providers.base.OAuthProvider">OAuthProvider</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth provider instance</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>redirect_uri</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Callback URL after authorization</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional user ID for linking mode (logged-in user)</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>use_pkce</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to use PKCE for enhanced security (default: True)</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>state_ttl_minutes</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>State token time-to-live in minutes (default: 10)</p>
+              </div>
+            </td>
+            <td>
+                  <code>10</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of (authorization_url, state_token, code_verifier)</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>code_verifier is None if PKCE is disabled</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of (authorization_url, state_token, code_verifier)</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>code_verifier is None if PKCE is disabled</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
 
 <details class="example" open>
   <summary>Example</summary>
@@ -3587,9 +3580,9 @@ Stores state in database and builds authorization URL.</p>
 </blockquote>
 </blockquote>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36"> 36</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36"> 36</a></span>
 <span class="normal"><a href="#__codelineno-0-37"> 37</a></span>
 <span class="normal"><a href="#__codelineno-0-38"> 38</a></span>
 <span class="normal"><a href="#__codelineno-0-39"> 39</a></span>
@@ -3727,20 +3720,18 @@ Stores state in database and builds authorization URL.</p>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>
 </span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="k">return</span> <span class="n">authorization_url</span><span class="p">,</span> <span class="n">state_token</span><span class="p">,</span> <span class="n">code_verifier</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.oauth.complete_oauth_flow" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">complete_oauth_flow</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">complete_oauth_flow</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
@@ -3758,8 +3749,8 @@ Stores state in database and builds authorization URL.</p>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tuple</span><span class="p">[</span><span class="n">object</span><span class="p">,</span> <span class="n">bool</span><span class="p">]</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Complete OAuth authorization flow.</p>
 <p>Validates state token, exchanges code for tokens, fetches user info,
 and handles account linking logic.</p>
@@ -3770,190 +3761,187 @@ and handles account linking logic.</p>
 4. If new user → create user with random password, mark verified, link OAuth</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_states.OAuthStateAdapter" href="../../adapters/base/oauth_states/#fastauth.adapters.base.oauth_states.OAuthStateAdapter">OAuthStateAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth state adapter</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>oauth_accounts</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth account adapter</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>users</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User adapter</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>provider</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.providers.base.OAuthProvider" href="../../providers/base/#fastauth.providers.base.OAuthProvider">OAuthProvider</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth provider instance</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>code</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Authorization code from OAuth callback</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>state</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>State token from OAuth callback</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>code_verifier</code></td>
-          <td>
-                <code>str | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Optional PKCE code verifier</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_states.OAuthStateAdapter" href="../../adapters/base/oauth_states/#fastauth.adapters.base.oauth_states.OAuthStateAdapter">OAuthStateAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth state adapter</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>oauth_accounts</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth account adapter</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>users</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.users.UserAdapter" href="../../adapters/base/users/#fastauth.adapters.base.users.UserAdapter">UserAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User adapter</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>provider</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.providers.base.OAuthProvider" href="../../providers/base/#fastauth.providers.base.OAuthProvider">OAuthProvider</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth provider instance</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>code</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Authorization code from OAuth callback</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>state</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>State token from OAuth callback</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>code_verifier</code></td>
+            <td>
+                  <code>str | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional PKCE code verifier</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>tuple[object, bool]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of (user, is_new_user)</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>tuple[object, bool]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of (user, is_new_user)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthStateError" href="#fastauth.core.oauth.OAuthStateError">OAuthStateError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If state token is invalid or expired</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthAccountAlreadyLinkedError" href="#fastauth.core.oauth.OAuthAccountAlreadyLinkedError">OAuthAccountAlreadyLinkedError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If OAuth account is linked to different user</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthError" href="#fastauth.core.oauth.OAuthError">OAuthError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If OAuth flow fails for any reason</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthStateError" href="#fastauth.core.oauth.OAuthStateError">OAuthStateError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If state token is invalid or expired</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthAccountAlreadyLinkedError" href="#fastauth.core.oauth.OAuthAccountAlreadyLinkedError">OAuthAccountAlreadyLinkedError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If OAuth account is linked to different user</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthError" href="#fastauth.core.oauth.OAuthError">OAuthError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If OAuth flow fails for any reason</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-107">107</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-107">107</a></span>
 <span class="normal"><a href="#__codelineno-0-108">108</a></span>
 <span class="normal"><a href="#__codelineno-0-109">109</a></span>
 <span class="normal"><a href="#__codelineno-0-110">110</a></span>
@@ -4295,18 +4283,16 @@ and handles account linking logic.</p>
 </span><span id="__span-0-276"><a id="__codelineno-0-276" name="__codelineno-0-276"></a>
 </span><span id="__span-0-277"><a id="__codelineno-0-277" name="__codelineno-0-277"></a>    <span class="k">return</span> <span class="n">user</span><span class="p">,</span> <span class="kc">True</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.oauth.unlink_oauth_account" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">unlink_oauth_account</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">unlink_oauth_account</span>
 
 
 <a href="#fastauth.core.oauth.unlink_oauth_account" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -4315,95 +4301,93 @@ and handles account linking logic.</p>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Unlink an OAuth provider from a user's account.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>oauth_accounts</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth account adapter</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User ID to unlink from</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>oauth_accounts</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth account adapter</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User ID to unlink from</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>provider</code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Provider name (e.g., 'google', 'github')</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>provider</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Provider name (e.g., 'google', 'github')</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthError" href="#fastauth.core.oauth.OAuthError">OAuthError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If OAuth account not found</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.core.oauth.OAuthError" href="#fastauth.core.oauth.OAuthError">OAuthError</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If OAuth account not found</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-280">280</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-280">280</a></span>
 <span class="normal"><a href="#__codelineno-0-281">281</a></span>
 <span class="normal"><a href="#__codelineno-0-282">282</a></span>
 <span class="normal"><a href="#__codelineno-0-283">283</a></span>
@@ -4451,18 +4435,16 @@ and handles account linking logic.</p>
 </span><span id="__span-0-302"><a id="__codelineno-0-302" name="__codelineno-0-302"></a>    <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">accounts</span><span class="p">:</span>
 </span><span id="__span-0-303"><a id="__codelineno-0-303" name="__codelineno-0-303"></a>        <span class="n">oauth_accounts</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="fastauth.core.oauth.get_linked_accounts" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>          <span class="doc doc-object-name doc-function-name">get_linked_accounts</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">get_linked_accounts</span>
 
 
 <a href="#fastauth.core.oauth.get_linked_accounts" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -4471,81 +4453,79 @@ and handles account linking logic.</p>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">list</span>
 </span></code></pre></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Get all OAuth accounts linked to a user.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>oauth_accounts</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>OAuth account adapter</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>user_id</code></td>
-          <td>
-                <code><span title="uuid.UUID">UUID</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User ID to get linked accounts for</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>oauth_accounts</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter" href="../../adapters/base/oauth_accounts/#fastauth.adapters.base.oauth_accounts.OAuthAccountAdapter">OAuthAccountAdapter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>OAuth account adapter</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>user_id</code></td>
+            <td>
+                  <code><span title="uuid.UUID">UUID</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User ID to get linked accounts for</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of OAuth account records</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>list</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>List of OAuth account records</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-306">306</a></span>
+            <details class="quote">
+              <summary>Source code in <code>fastauth/core/oauth.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-306">306</a></span>
 <span class="normal"><a href="#__codelineno-0-307">307</a></span>
 <span class="normal"><a href="#__codelineno-0-308">308</a></span>
 <span class="normal"><a href="#__codelineno-0-309">309</a></span>
@@ -4577,8 +4557,8 @@ and handles account linking logic.</p>
 </span><span id="__span-0-320"><a id="__codelineno-0-320" name="__codelineno-0-320"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-321"><a id="__codelineno-0-321" name="__codelineno-0-321"></a>    <span class="k">return</span> <span class="n">oauth_accounts</span><span class="o">.</span><span class="n">get_by_user_id</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -4586,7 +4566,7 @@ and handles account linking logic.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
