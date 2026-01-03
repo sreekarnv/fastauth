@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class RoleAdapter(ABC):
@@ -126,7 +127,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_user_permissions(self, user_id: uuid.UUID):
+    def get_user_permissions(self, user_id: uuid.UUID) -> list[Any]:
         """
         Get all permissions for a user (from all their roles).
 

@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password, verify_password
 from fastauth.settings import settings
@@ -20,7 +22,7 @@ def create_user(
     users: UserAdapter,
     email: str,
     password: str,
-):
+) -> Any:
     """
     Create a new user with a hashed password.
 
@@ -51,7 +53,7 @@ def authenticate_user(
     users: UserAdapter,
     email: str,
     password: str,
-):
+) -> Any:
     """
     Authenticate a user by email and password.
 
