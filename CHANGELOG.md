@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-01-03
+
+### Fixed
+- Updated dependency version constraints to allow newer compatible versions
+  - `fastapi[all] >=0.128.0,<0.129.0` (updated from <0.126.0)
+  - `argon2-cffi >=23.1.0` (updated from >=25.1.0,<26.0.0)
+  - `python-jose[cryptography] >=3.3.0` (added [cryptography] extra)
+  - `pydantic-settings >=2.0.0` (updated from >=2.12.0,<3.0.0)
+  - `sqlmodel >=0.0.16` (updated from >=0.0.27,<0.0.28)
+  - `httpx >=0.27.0` (updated from >=0.27.0,<0.28.0)
+
 ## [0.2.0] - 2024-12-29
 
 ### Added
