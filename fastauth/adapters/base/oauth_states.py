@@ -1,6 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any
 
 
 class OAuthStateAdapter(ABC):
@@ -21,7 +22,7 @@ class OAuthStateAdapter(ABC):
         code_challenge_method: str | None = None,
         user_id: uuid.UUID | None = None,
         expires_at: datetime,
-    ):
+    ) -> Any:
         """
         Create a new OAuth state token.
 
@@ -40,7 +41,7 @@ class OAuthStateAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_valid(self, *, state_hash: str):
+    def get_valid(self, *, state_hash: str) -> Any:
         """
         Get a valid (unused, non-expired) state token.
 

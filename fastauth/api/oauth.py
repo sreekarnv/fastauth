@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
@@ -32,7 +34,7 @@ from fastauth.settings import settings
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 
 
-def _get_or_register_provider(provider_name: str):
+def _get_or_register_provider(provider_name: str) -> Any:
     """
     Get or register an OAuth provider.
 
@@ -70,7 +72,7 @@ def authorize(
     request: Request,
     session: Session = Depends(get_session),
     current_user: User | None = None,
-):
+) -> OAuthAuthorizationResponse:
     """
     Initiate OAuth authorization flow.
 
@@ -125,7 +127,7 @@ async def oauth_callback(
     payload: OAuthCallbackRequest,
     request: Request,
     session: Session = Depends(get_session),
-):
+) -> TokenResponse:
     """
     Handle OAuth callback after user authorization.
 
@@ -219,7 +221,7 @@ async def oauth_callback(
 def list_linked_accounts(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-):
+) -> list[OAuthLinkResponse]:
     """
     List all OAuth accounts linked to the current user.
 
@@ -255,7 +257,7 @@ def unlink_provider(
     provider_name: str,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
-):
+) -> None:
     """
     Unlink an OAuth provider from the current user's account.
 

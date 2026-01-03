@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class UserAdapter(ABC):
@@ -11,7 +12,7 @@ class UserAdapter(ABC):
     """
 
     @abstractmethod
-    def get_by_email(self, email: str):
+    def get_by_email(self, email: str) -> Any:
         """
         Retrieve a user by email address.
 
@@ -24,7 +25,7 @@ class UserAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_by_id(self, user_id: uuid.UUID):
+    def get_by_id(self, user_id: uuid.UUID) -> Any:
         """
         Retrieve a user by ID.
 
@@ -37,7 +38,7 @@ class UserAdapter(ABC):
         ...
 
     @abstractmethod
-    def create_user(self, *, email: str, hashed_password: str):
+    def create_user(self, *, email: str, hashed_password: str) -> Any:
         """
         Create a new user.
 
@@ -61,7 +62,7 @@ class UserAdapter(ABC):
         ...
 
     @abstractmethod
-    def set_password(self, *, user_id, hashed_password: str) -> None:
+    def set_password(self, *, user_id: uuid.UUID, hashed_password: str) -> None:
         """
         Update user's password.
 

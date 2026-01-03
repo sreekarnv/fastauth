@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class RoleAdapter(ABC):
@@ -11,7 +12,7 @@ class RoleAdapter(ABC):
     """
 
     @abstractmethod
-    def create_role(self, *, name: str, description: str | None = None):
+    def create_role(self, *, name: str, description: str | None = None) -> Any:
         """
         Create a new role.
 
@@ -25,7 +26,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_role_by_name(self, name: str):
+    def get_role_by_name(self, name: str) -> Any:
         """
         Retrieve a role by name.
 
@@ -38,7 +39,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def create_permission(self, *, name: str, description: str | None = None):
+    def create_permission(self, *, name: str, description: str | None = None) -> Any:
         """
         Create a new permission.
 
@@ -52,7 +53,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_permission_by_name(self, name: str):
+    def get_permission_by_name(self, name: str) -> Any:
         """
         Retrieve a permission by name.
 
@@ -87,7 +88,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_user_roles(self, user_id: uuid.UUID):
+    def get_user_roles(self, user_id: uuid.UUID) -> list[Any]:
         """
         Get all roles assigned to a user.
 
@@ -113,7 +114,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_role_permissions(self, role_id: uuid.UUID):
+    def get_role_permissions(self, role_id: uuid.UUID) -> list[Any]:
         """
         Get all permissions assigned to a role.
 
@@ -126,7 +127,7 @@ class RoleAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_user_permissions(self, user_id: uuid.UUID):
+    def get_user_permissions(self, user_id: uuid.UUID) -> list[Any]:
         """
         Get all permissions for a user (from all their roles).
 

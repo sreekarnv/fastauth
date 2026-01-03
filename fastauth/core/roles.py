@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from fastauth.adapters.base.roles import RoleAdapter
 
@@ -24,7 +25,7 @@ def create_role(
     roles: RoleAdapter,
     name: str,
     description: str | None = None,
-):
+) -> Any:
     """
     Create a new role.
 
@@ -54,7 +55,7 @@ def create_permission(
     roles: RoleAdapter,
     name: str,
     description: str | None = None,
-):
+) -> Any:
     """
     Create a new permission.
 
@@ -186,7 +187,7 @@ def get_user_roles(
     *,
     roles: RoleAdapter,
     user_id: uuid.UUID,
-):
+) -> list[Any]:
     """
     Get all roles assigned to a user.
 
@@ -204,7 +205,7 @@ def get_user_permissions(
     *,
     roles: RoleAdapter,
     user_id: uuid.UUID,
-):
+) -> list[Any]:
     """
     Get all permissions for a user across all their roles.
 
@@ -222,7 +223,7 @@ def get_role_permissions(
     *,
     roles: RoleAdapter,
     role_name: str,
-):
+) -> list[Any]:
     """
     Get all permissions assigned to a role.
 

@@ -1,4 +1,5 @@
 import uuid
+from typing import Any, List
 
 from fastauth.adapters.base.sessions import SessionAdapter
 from fastauth.adapters.base.users import UserAdapter
@@ -16,7 +17,7 @@ def create_session(
     device: str | None = None,
     ip_address: str | None = None,
     user_agent: str | None = None,
-):
+) -> Any:
     """
     Create a new session for a user.
 
@@ -47,7 +48,7 @@ def get_user_sessions(
     *,
     sessions: SessionAdapter,
     user_id: uuid.UUID,
-):
+) -> List[Any]:
     """
     Get all active sessions for a user.
 
