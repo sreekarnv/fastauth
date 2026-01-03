@@ -182,16 +182,21 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-    - Quick Start: quickstart.md
-    - Installation: installation.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Core Concepts: getting-started/core-concepts.md
+  - Guides:
+    - Authentication: guides/authentication.md
+    - Protecting Routes: guides/protecting-routes.md
+    - RBAC: guides/rbac.md
+    - OAuth: guides/oauth.md
+    - Sessions: guides/sessions.md
+    - Email: guides/email.md
+  - Reference:
     - Configuration: configuration.md
-  - User Guide:
     - Architecture: architecture.md
-    - OAuth Integration: oauth.md
     - Testing: testing.md
     - Deployment: deployment.md
-    - Manual Testing: manual-testing.md
-    - Publishing: publishing.md
   - API Reference:
     - reference/index.md
     - Core:
@@ -250,10 +255,7 @@ nav:
       - Base Provider: reference/providers/base.md
       - Google: reference/providers/google.md
     - Settings: reference/settings.md
-  - Contributing:
-    - Contributing Guide: contributing.md
-    - Code of Conduct: code_of_conduct.md
-  - Changelog: changelog.md
+  - Contributing: contributing.md
 
 # Extra
 extra:
