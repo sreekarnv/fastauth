@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-01-04
+
+### Fixed
+- OAuth API endpoint path parameter naming inconsistency
+  - Changed function parameter from `provider_name` to `provider` to match route path `/{provider}/`
+  - Fixes 422 validation errors when calling OAuth endpoints
+  - Affected endpoints: `/oauth/{provider}/authorize`, `/oauth/{provider}/callback`, `/oauth/{provider}/unlink`
+- OAuth SessionMiddleware handling
+  - Added graceful fallback when SessionMiddleware is not configured
+  - Prevents AssertionError crashes in OAuth authorize endpoint
+  - PKCE code_verifier now conditionally stored only when session is available
+
+### Changed
+- Improved test coverage from 85% to 99% (1512/1519 lines covered)
+  - Added 21 new tests across 7 new test files (291 total tests, up from 270)
+  - Enhanced 3 existing test files with comprehensive edge case coverage
+  - 52 out of 58 files now have 100% test coverage
+
+### Added
+- Comprehensive OAuth endpoint tests (tests/api/test_oauth.py)
+  - 16 tests covering authorization, callback, account linking/unlinking flows
+  - Tests for state validation, CSRF protection, and error handling
+  - SessionMiddleware integration tests
+- API dependency error path tests (tests/api/test_dependencies.py)
+  - 6 tests for token validation, user authentication edge cases
+  - Tests for invalid tokens, missing payload, inactive users
+- OAuth adapter tests
+  - tests/adapters/sqlalchemy/test_oauth_account_adapter.py (11 tests)
+  - tests/adapters/sqlalchemy/test_oauth_state_adapter.py (9 tests)
+  - Full CRUD coverage with timezone handling for SQLite compatibility
+- OAuth provider tests (tests/providers/test_google_provider.py)
+  - 15 tests for Google OAuth provider implementation
+  - Token exchange, user info retrieval, refresh token flows
+  - PKCE and authorization URL generation tests
+- Email provider tests (tests/email_providers/test_email_providers.py)
+  - 9 tests for console and SMTP email clients
+  - Factory pattern and configuration tests
+- Enhanced auth endpoint tests (tests/api/test_auth_endpoints.py)
+  - 18 tests for rate limiting, token refresh, logout
+  - Email verification and password reset flow tests
+- Core OAuth edge case tests (tests/core/test_oauth.py)
+  - 8 additional comprehensive tests for OAuth flow scenarios
+  - Timezone-naive datetime handling
+  - Provider exception wrapping and error propagation
+  - User not found edge cases
+  - OAuth account linking to authenticated users
+  - Auto-linking with email verification checks
+  - Unverified user and OAuth email validation
+- Account management error path tests (tests/api/test_account.py)
+  - 3 tests for UserNotFoundError handling
+  - Password change, account deletion, and email change error scenarios
+
 ## [0.2.1] - 2026-01-03
 
 ### Fixed
@@ -18,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `sqlmodel >=0.0.16` (updated from >=0.0.27,<0.0.28)
   - `httpx >=0.27.0` (updated from >=0.27.0,<0.28.0)
 
-## [0.2.0] - 2024-12-29
+## [0.2.0] - 2025-12-29
 
 ### Added
 - MkDocs documentation site with auto-generated API reference
@@ -99,7 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UUID conversion bug in `get_current_user()` dependency (was passing string to SQLAlchemy, now converts to UUID)
 - ResourceWarnings from unclosed database connections in tests (reduced from 101 to 4 warnings by properly disposing SQLAlchemy engines)
 
-## [0.1.0] - 2024-12-27
+## [0.1.0] - 2025-12-27
 
 ### Added
 - Initial release of FastAuth
