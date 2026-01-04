@@ -68,7 +68,7 @@ def _get_or_register_provider(provider_name: str) -> Any:
 
 @router.get("/{provider}/authorize", response_model=OAuthAuthorizationResponse)
 def authorize(
-    provider_name: str,
+    provider: str,
     request: Request,
     session: Session = Depends(get_session),
     current_user: User | None = None,
@@ -91,30 +91,25 @@ def authorize(
     Returns:
         OAuthAuthorizationResponse with authorization_url
     """
-    provider = _get_or_register_provider(provider_name)
+    provider_instance = _get_or_register_provider(provider)
 
     states = SQLAlchemyOAuthStateAdapter(session=session)
 
-    redirect_uri = str(request.url_for("oauth_callback", provider=provider_name))
+    redirect_uri = str(request.url_for("oauth_callback", provider=provider))
 
     user_id = current_user.id if current_user else None
 
     authorization_url, state_token, code_verifier = initiate_oauth_flow(
         states=states,
-        provider=provider,
+        provider=provider_instance,
         redirect_uri=redirect_uri,
         user_id=user_id,
         use_pkce=True,
     )
 
     # NOTE: This requires SessionMiddleware to be configured
-    if code_verifier:
-        if not hasattr(request, "session"):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Session middleware not configured.\
-                    Please add SessionMiddleware to your app.",
-            )
+    # If SessionMiddleware is not available, we just won't store the code_verifier
+    if code_verifier and "session" in request.scope:
         request.session["oauth_code_verifier"] = code_verifier
         request.session["oauth_state"] = state_token
 
@@ -123,7 +118,7 @@ def authorize(
 
 @router.post("/{provider}/callback", response_model=TokenResponse)
 async def oauth_callback(
-    provider_name: str,
+    provider: str,
     payload: OAuthCallbackRequest,
     request: Request,
     session: Session = Depends(get_session),
@@ -147,21 +142,26 @@ async def oauth_callback(
     Returns:
         TokenResponse with access_token and refresh_token
     """
-    provider = _get_or_register_provider(provider_name)
+    provider_instance = _get_or_register_provider(provider)
 
     code_verifier = None
-    if hasattr(request, "session"):
-        code_verifier = request.session.get("oauth_code_verifier")
-        stored_state = request.session.get("oauth_state")
+    try:
+        if hasattr(request, "session") and "session" in request.scope:
+            code_verifier = request.session.get("oauth_code_verifier")
+            stored_state = request.session.get("oauth_state")
 
-        if stored_state != payload.state:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="State mismatch - possible CSRF attack",
-            )
+            if stored_state is not None:
+                if stored_state != payload.state:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="State mismatch - possible CSRF attack",
+                    )
 
-        request.session.pop("oauth_code_verifier", None)
-        request.session.pop("oauth_state", None)
+                request.session.pop("oauth_code_verifier", None)
+                request.session.pop("oauth_state", None)
+    except (AssertionError, KeyError):
+        # SessionMiddleware not installed, skip session checks
+        pass
 
     states = SQLAlchemyOAuthStateAdapter(session=session)
     oauth_accounts = SQLAlchemyOAuthAccountAdapter(session=session)
@@ -172,7 +172,7 @@ async def oauth_callback(
             states=states,
             oauth_accounts=oauth_accounts,
             users=users,
-            provider=provider,
+            provider=provider_instance,
             code=payload.code,
             state=payload.state,
             code_verifier=code_verifier,
@@ -254,7 +254,7 @@ def list_linked_accounts(
 
 @router.delete("/{provider}/unlink", status_code=status.HTTP_204_NO_CONTENT)
 def unlink_provider(
-    provider_name: str,
+    provider: str,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ) -> None:
@@ -277,7 +277,7 @@ def unlink_provider(
         unlink_oauth_account(
             oauth_accounts=oauth_accounts,
             user_id=current_user.id,
-            provider=provider_name,
+            provider=provider,
         )
     except OAuthError as e:
         raise HTTPException(

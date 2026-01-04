@@ -432,3 +432,95 @@ def test_confirm_email_change_email_taken_after_request(client):
 
     assert response.status_code == 400
     assert "no longer available" in response.json()["detail"].lower()
+
+
+def test_change_password_user_not_found_error(client):
+    """Test change password when core function raises UserNotFoundError."""
+    from unittest.mock import patch
+
+    from fastauth.core.account import UserNotFoundError
+
+    client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+
+    login_response = client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+    token = login_response.json()["access_token"]
+
+    with patch("fastauth.api.account.change_password") as mock_change:
+        mock_change.side_effect = UserNotFoundError("User not found")
+
+        response = client.post(
+            "/account/change-password",
+            json={
+                "current_password": "password123",
+                "new_password": "newpassword456",
+            },
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    assert response.status_code == 404
+    assert "User not found" in response.text
+
+
+def test_delete_account_user_not_found_error(client):
+    """Test delete account when core function raises UserNotFoundError."""
+    from unittest.mock import patch
+
+    from fastauth.core.account import UserNotFoundError
+
+    client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+
+    login_response = client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+    token = login_response.json()["access_token"]
+
+    with patch("fastauth.api.account.delete_account") as mock_delete:
+        mock_delete.side_effect = UserNotFoundError("User not found")
+
+        response = client.request(
+            "DELETE",
+            "/account/delete",
+            json={"password": "password123", "hard_delete": False},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    assert response.status_code == 404
+    assert "User not found" in response.text
+
+
+def test_request_email_change_no_token_returned(client):
+    """Test request email change when core function returns None."""
+    from unittest.mock import patch
+
+    client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+
+    login_response = client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+    token = login_response.json()["access_token"]
+
+    with patch("fastauth.api.account.request_email_change") as mock_request:
+        mock_request.return_value = None
+
+        response = client.post(
+            "/account/request-email-change",
+            json={"new_email": "newemail@example.com"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    assert response.status_code == 404
+    assert "User not found" in response.text
