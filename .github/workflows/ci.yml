@@ -158,11 +158,10 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: steps.changes.outputs.code == 'true'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: true
 
       - name: Skip coverage
         if: steps.changes.outputs.code != 'true'
