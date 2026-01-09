@@ -1,0 +1,21 @@
+VERIFY YOUR EMAIL ADDRESS
+{{ app_name }}
+
+Hello!
+
+Thanks for signing up for {{ app_name }}. To complete your registration, please verify your email address by visiting this link:
+
+{{ verification_url }}
+
+This verification link will expire in {{ expires_in_hours }} hours.
+
+WHY VERIFY?
+Email verification helps us ensure your account security and allows us to send you important updates about your account.
+
+---
+
+If you didn't create an account with {{ app_name }}, you can safely ignore this email.
+
+Need help? Contact us at {{ support_email }}
+
+© {{ year }} {{ company_name }}. All rights reserved.
