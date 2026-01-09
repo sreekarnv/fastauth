@@ -1,0 +1,27 @@
+# FastAuth - installed from parent directory
+# Install with: pip install -e ../..
+
+# Or install from PyPI:
+# sreekarnv-fastauth>=0.2.2
+
+# Web framework
+fastapi[all]>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Database
+sqlmodel>=0.0.22
+
+# Template engine
+jinja2>=3.1.4
+
+# Settings management
+pydantic-settings>=2.0.0
+
+# Password hashing
+argon2-cffi>=23.1.0
+
+# JWT
+python-jose[cryptography]>=3.3.0
+
+# HTTP client for endpoint forwarding
+requests>=2.31.0

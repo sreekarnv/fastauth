@@ -50,7 +50,7 @@ Role-Based Access Control (RBAC) in a blog application:
 
 ---
 
-### [Session Management Example](./session-devices/) 🆕
+### [Session Management Example](./session-devices/)
 
 Multi-device session tracking and management:
 - Session creation on login with device tracking
@@ -63,6 +63,23 @@ Multi-device session tracking and management:
 **Best for:** Multi-device apps, security features, session management
 
 **[View Example →](./session-devices/)**
+
+---
+
+### [Custom Email Templates Example](./custom-email-templates/) 🆕
+
+Beautiful, branded email templates with Jinja2:
+- Custom EmailClient implementation extending FastAuth
+- HTML email templates with responsive design
+- Plain text fallbacks for compatibility
+- Verification, password reset, and welcome emails
+- Email preview tool for local testing
+- Easy branding customization (colors, logo, company info)
+- Production-ready SMTP configuration examples
+
+**Best for:** Branding your emails, production deployments, custom email designs
+
+**[View Example →](./custom-email-templates/)**
 
 ---
 

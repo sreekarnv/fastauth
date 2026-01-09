@@ -1,0 +1,26 @@
+# Database
+*.db
+*.db-journal
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Preview files
+preview_*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
