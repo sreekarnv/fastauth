@@ -1,9 +1,8 @@
-from datetime import UTC, datetime, timedelta
-
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
 from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
+from fastauth.security.tokens import utc_from_now, validate_token_expiration
 
 
 class PasswordResetError(Exception):
@@ -24,7 +23,7 @@ def request_password_reset(
     raw_token = generate_refresh_token()
     token_hash = hash_refresh_token(raw_token)
 
-    expires_at = datetime.now(UTC) + timedelta(minutes=expires_in_minutes)
+    expires_at = utc_from_now(minutes=expires_in_minutes)
 
     resets.create(
         user_id=user.id,
@@ -48,12 +47,10 @@ def confirm_password_reset(
     if not record:
         raise PasswordResetError("Invalid or expired reset token")
 
-    expires_at = record.expires_at
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=UTC)
-
-    if expires_at < datetime.now(UTC):
-        raise PasswordResetError("Expired reset token")
+    try:
+        validate_token_expiration(record.expires_at, "Expired reset token")
+    except ValueError as e:
+        raise PasswordResetError(str(e))
 
     hashed = hash_password(new_password)
 

@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
@@ -54,6 +56,7 @@ from fastauth.security.limits import (
 from fastauth.security.rate_limit import RateLimitExceeded
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -95,7 +98,7 @@ def register(
             to=user.email,
             token=verification_token,
         )
-        print(f"Email verification token for {user.email}: {verification_token}")
+        logger.debug(f"Email verification token for {user.email}: {verification_token}")
 
     refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
     sessions = SQLAlchemySessionAdapter(session=session)
@@ -241,7 +244,7 @@ def password_reset_request(
             to=payload.email,
             token=token,
         )
-        print("Password reset token:", token)
+        logger.debug(f"Password reset token: {token}")
 
     return None
 
@@ -333,7 +336,7 @@ def email_verification_request(
             to=payload.email,
             token=token,
         )
-        print("Email verification token:", token)
+        logger.debug(f"Email verification token: {token}")
 
     return None
 
@@ -413,6 +416,6 @@ def resend_email_verification(
             to=payload.email,
             token=token,
         )
-        print("Resent email verification token:", token)
+        logger.debug(f"Resent email verification token: {token}")
 
     return None
