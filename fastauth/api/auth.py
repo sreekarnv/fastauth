@@ -270,6 +270,49 @@ def password_reset_confirm(
     return None
 
 
+@router.get("/password-reset/validate")
+def password_reset_validate(
+    token: str,
+    session: Session = Depends(get_session),
+):
+    """
+    Validate a password reset token via GET with query parameter.
+
+    This endpoint checks if a reset token is valid without consuming it.
+    Useful for showing a password reset form or error message.
+    """
+    from datetime import UTC, datetime
+
+    from fastauth.security.refresh import hash_refresh_token
+
+    resets = SQLAlchemyPasswordResetAdapter(session)
+
+    token_hash = hash_refresh_token(token)
+    record = resets.get_valid(token_hash=token_hash)
+
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    expires_at = record.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
+
+    if expires_at < datetime.now(UTC):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Expired reset token",
+        )
+
+    return {
+        "message": "Valid reset token",
+        "status": "valid",
+        "token": token,
+    }
+
+
 @router.post("/email-verification/request", status_code=204)
 def email_verification_request(
     payload: EmailVerificationRequest,

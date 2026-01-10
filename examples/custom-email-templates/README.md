@@ -287,35 +287,40 @@ Now FastAuth will use your custom email client for all authentication emails!
 
 ### 3. Email Verification Flow with Clickable Links
 
-FastAuth's API uses POST endpoints for verification (`/auth/email-verification/confirm`), but email links need to be GET requests. This example includes wrapper endpoints that make the flow work:
+FastAuth provides GET endpoints for clickable email links:
 
-**The Flow:**
+**Email Verification Flow:**
 1. User registers → FastAuth sends verification email with token
-2. Email contains clickable link: `http://localhost:8000/verify-email?token=abc123`
-3. User clicks link → hits our GET endpoint `/verify-email`
-4. Our endpoint forwards to FastAuth's POST endpoint `/auth/email-verification/confirm`
-5. Returns success/error message to user
+2. Email contains clickable link: `http://localhost:8000/auth/email-verification/confirm?token=abc123`
+3. User clicks link → FastAuth's GET endpoint verifies email directly
+4. Returns: `{"message": "Email verified successfully", "status": "success"}`
 
-**Wrapper Endpoints in `app/main.py`:**
+**Email Change Confirmation Flow:**
+1. User requests email change → FastAuth sends confirmation email
+2. Email contains clickable link: `http://localhost:8000/account/confirm-email-change?token=abc123`
+3. User clicks link → FastAuth's GET endpoint changes email directly
+4. Returns: `{"message": "Email changed successfully", "status": "success"}`
+
+**Password Reset Flow:**
+
+Password reset requires user input, so this example includes a validation endpoint:
 
 ```python
-@app.get("/verify-email")
-def verify_email_redirect(token: str):
-    """Convert GET request from email to POST request for FastAuth API."""
-    response = requests.post(
-        "http://localhost:8000/auth/email-verification/confirm",
-        json={"token": token},
-    )
-    return {"message": "Email verified successfully!"} if response.status_code == 204 else {"error": "Invalid token"}
-
 @app.get("/reset-password")
-def reset_password_page(token: str):
-    """Handle password reset link from email."""
-    # In production, this would render a form for entering new password
-    return {"message": "Password reset token received", "token": token}
+def reset_password_page(token: str, session: Session = Depends(get_session)):
+    """Validate reset token and show password reset form."""
+    # Validate token
+    # If valid, show form; if invalid, show error
+    # Form submits to /auth/password-reset/confirm
 ```
 
-**Why is this needed?** The default FastAuth email client just sends the token as plain text without any URL. For better UX with clickable "Verify Email" buttons, we need these wrapper endpoints.
+**Why is a wrapper needed for password reset?** Unlike email verification (just needs the token), password reset requires the user to enter a new password. The wrapper validates the token and shows a password reset form, which then submits to FastAuth's `/auth/password-reset/confirm` endpoint.
+
+You can also use FastAuth's built-in validation endpoint:
+```bash
+GET /auth/password-reset/validate?token=abc123
+# Returns: {"message": "Valid reset token", "status": "valid", "token": "abc123"}
+```
 
 ## Email Design Best Practices
 

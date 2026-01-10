@@ -198,6 +198,38 @@ def test_password_reset_confirm_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
+def test_password_reset_validate_success(client: TestClient, capsys):
+    """Test password reset token validation via GET endpoint."""
+    client.post(
+        "/auth/register",
+        json={"email": "validate@example.com", "password": "old_password"},
+    )
+
+    client.post("/auth/password-reset/request", json={"email": "validate@example.com"})
+
+    captured = capsys.readouterr()
+    import re
+
+    match = re.search(r"Password reset token: (\S+)", captured.out)
+    assert match
+    token = match.group(1)
+
+    response = client.get(f"/auth/password-reset/validate?token={token}")
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Valid reset token"
+    assert response.json()["status"] == "valid"
+    assert response.json()["token"] == token
+
+
+def test_password_reset_validate_invalid_token(client: TestClient):
+    """Test password reset validation with invalid token."""
+    response = client.get("/auth/password-reset/validate?token=invalid_token")
+
+    assert response.status_code == 400
+    assert "Invalid or expired" in response.json()["detail"]
+
+
 def test_email_verification_request(client: TestClient, capsys):
     """Test email verification request endpoint."""
     client.post(

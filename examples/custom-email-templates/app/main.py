@@ -90,54 +90,59 @@ def send_welcome_email(
     return {"message": f"Welcome email sent to {email}"}
 
 
-@app.get("/verify-email")
-def verify_email_redirect(token: str):
-    """Handle email verification from clickable link.
-
-    This endpoint converts the GET request from email links to the POST request
-    expected by FastAuth's /auth/email-verification/confirm endpoint.
-    """
-    import requests
-
-    response = requests.post(
-        "http://localhost:8000/auth/email-verification/confirm",
-        json={"token": token},
-    )
-
-    if response.status_code == 204:
-        return {
-            "message": "Email verified successfully!",
-            "status": "success",
-            "next_step": "You can now log in to your account",
-        }
-    else:
-        return {
-            "message": "Invalid or expired verification token",
-            "status": "error",
-            "detail": "Please request a new verification email",
-        }
-
-
 @app.get("/reset-password")
-def reset_password_page(token: str):
+def reset_password_page(token: str, session: Session = Depends(get_session)):
     """Handle password reset from clickable link.
 
-    This endpoint accepts the reset token from email links.
-    In a real application, this would render a form where users can enter
-    their new password. For this example, we'll return instructions.
+    This endpoint validates the token and returns \
+        instructions for resetting password.
+    In a real application, this would render an HTML \
+        form where users enter a new password.
     """
+    from datetime import UTC, datetime
+
+    from fastauth.adapters.sqlalchemy.password_reset import (
+        SQLAlchemyPasswordResetAdapter,
+    )
+    from fastauth.security.refresh import hash_refresh_token
+
+    resets = SQLAlchemyPasswordResetAdapter(session)
+    token_hash = hash_refresh_token(token)
+    record = resets.get_valid(token_hash=token_hash)
+
+    if not record:
+        return {
+            "status": "error",
+            "message": "Invalid or expired reset token",
+            "detail": "Please request a new password reset",
+        }
+
+    expires_at = record.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
+
+    if expires_at < datetime.now(UTC):
+        return {
+            "status": "error",
+            "message": "Expired reset token",
+            "detail": "Please request a new password reset",
+        }
+
     return {
-        "message": "Password reset token received",
+        "status": "valid",
+        "message": "Valid reset token - show password reset form",
         "token": token,
         "instructions": (
-            "In a real application, this would show a form to enter a new password."
-            "To complete the reset, make a POST request to /auth/password-reset/confirm"
+            "In a real application, this would show an HTML \
+                form to enter a new password."
+            "To complete the reset, make a POST request \
+                to /auth/password-reset/confirm"
             "with the token and new password."
         ),
         "example_curl": (
-            f'curl -X POST "http://localhost:8000/auth/password-reset/confirm" '
+            f'curl -X POST "http://localhost:8000/auth/password-reset/confirm"'
             f'-H "Content-Type: application/json" '
-            f'-d \'{{"token": "{token}", "password": "newpassword123"}}\''
+            f'-d \'{{"token": "{token}", "new_password": "newpassword123"}}\''
         ),
     }
 

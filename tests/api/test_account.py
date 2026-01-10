@@ -401,6 +401,47 @@ def test_confirm_email_change_invalid_token(client):
     assert response.status_code == 400
 
 
+def test_confirm_email_change_get_success(client, db_session):
+    """Test confirm email change via GET endpoint."""
+    client.post(
+        "/auth/register",
+        json={"email": "test_get@example.com", "password": "password123"},
+    )
+
+    login_response = client.post(
+        "/auth/login",
+        json={"email": "test_get@example.com", "password": "password123"},
+    )
+    token = login_response.json()["access_token"]
+
+    email_change_response = client.post(
+        "/account/request-email-change",
+        json={"new_email": "newemail_get@example.com"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    email_token = email_change_response.json()["token"]
+
+    response = client.get(f"/account/confirm-email-change?token={email_token}")
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Email changed successfully"
+    assert response.json()["status"] == "success"
+
+    from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+
+    user_adapter = SQLAlchemyUserAdapter(db_session)
+    user = user_adapter.get_by_email("newemail_get@example.com")
+    assert user is not None
+    assert user.email == "newemail_get@example.com"
+
+
+def test_confirm_email_change_get_invalid_token(client):
+    """Test confirm email change via GET with invalid token."""
+    response = client.get("/account/confirm-email-change?token=invalid-token")
+
+    assert response.status_code == 400
+
+
 def test_confirm_email_change_email_taken_after_request(client):
     client.post(
         "/auth/register",

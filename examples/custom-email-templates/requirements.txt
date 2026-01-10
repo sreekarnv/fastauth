@@ -22,6 +22,3 @@ argon2-cffi>=23.1.0
 
 # JWT
 python-jose[cryptography]>=3.3.0
-
-# HTTP client for endpoint forwarding
-requests>=2.31.0
