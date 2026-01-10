@@ -4,7 +4,29 @@ Additional tests for auth API endpoints to achieve full coverage.
 
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, StaticPool, create_engine
+
+
+@pytest.fixture(name="test_db")
+def test_db_fixture():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(engine)
+    return engine
+
+
+@pytest.fixture
+def db_session(test_db):
+    with Session(test_db) as session:
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 def test_register_rate_limit_exceeded(client: TestClient):

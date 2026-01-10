@@ -28,7 +28,10 @@ def test_app_fixture():
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 

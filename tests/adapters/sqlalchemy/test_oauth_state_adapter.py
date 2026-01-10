@@ -17,7 +17,10 @@ def session_fixture():
     )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 @pytest.fixture(name="user")
@@ -54,7 +57,6 @@ def test_create_oauth_state(adapter: SQLAlchemyOAuthStateAdapter):
     assert state.code_challenge == "challenge_abc"
     assert state.code_challenge_method == "S256"
     assert state.user_id is None
-    # SQLite doesn't preserve timezone info
     assert (
         state.expires_at.replace(tzinfo=UTC) == expires_at
         or abs((state.expires_at.replace(tzinfo=UTC) - expires_at).total_seconds()) < 1
