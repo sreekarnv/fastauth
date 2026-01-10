@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 
 from fastauth.adapters.sqlalchemy.models import User
 from fastauth.adapters.sqlalchemy.roles import SQLAlchemyRoleAdapter
+from fastauth.core.constants import ErrorMessages
 from fastauth.core.roles import check_permission
 from fastauth.security.jwt import TokenError, decode_access_token
 
@@ -31,7 +32,7 @@ def get_current_user(
     except TokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_TOKEN,
         )
 
     user_id_str = payload.get("sub")
@@ -55,7 +56,7 @@ def get_current_user(
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive",
+            detail=ErrorMessages.USER_NOT_FOUND_OR_INACTIVE,
         )
 
     return user

@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
@@ -24,13 +22,14 @@ from fastauth.core.oauth import (
 from fastauth.core.refresh_tokens import create_refresh_token
 from fastauth.core.sessions import create_session
 from fastauth.providers import GoogleOAuthProvider, get_provider, register_provider
+from fastauth.providers.base import OAuthProvider
 from fastauth.security.jwt import create_access_token
 from fastauth.settings import settings
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 
 
-def _get_or_register_provider(provider_name: str) -> Any:
+def _get_or_register_provider(provider_name: str) -> OAuthProvider:
     """
     Get or register an OAuth provider.
 

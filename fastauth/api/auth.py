@@ -16,6 +16,7 @@ from fastauth.api.schemas import (
     RegisterRequest,
     TokenResponse,
 )
+from fastauth.core.constants import ErrorMessages
 from fastauth.core.email_verification import (
     EmailVerificationError,
     confirm_email_verification,
@@ -66,7 +67,7 @@ def register(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many registration attempts. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_REGISTRATION,
         )
 
     adapters = AdapterFactory(session=session)
@@ -78,7 +79,7 @@ def register(
     except UserAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="User already exists",
+            detail=ErrorMessages.USER_ALREADY_EXISTS,
         )
 
     verification_token = request_email_verification(
@@ -128,7 +129,7 @@ def login(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many login attempts. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_LOGIN,
         )
 
     adapters = AdapterFactory(session=session)
@@ -142,12 +143,12 @@ def login(
     except EmailNotVerifiedError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email address is not verified",
+            detail=ErrorMessages.EMAIL_NOT_VERIFIED,
         )
     except InvalidCredentialsError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            detail=ErrorMessages.INVALID_CREDENTIALS,
         )
 
     login_rate_limiter.reset(key)
@@ -214,7 +215,7 @@ def logout(
     return None
 
 
-@router.post("/password-reset/request", status_code=204)
+@router.post("/password-reset/request", status_code=status.HTTP_204_NO_CONTENT)
 def password_reset_request(
     payload: PasswordResetRequest,
     session: Session = Depends(get_session),
@@ -238,7 +239,7 @@ def password_reset_request(
     return None
 
 
-@router.post("/password-reset/confirm", status_code=204)
+@router.post("/password-reset/confirm", status_code=status.HTTP_204_NO_CONTENT)
 def password_reset_confirm(
     payload: PasswordResetConfirm,
     session: Session = Depends(get_session),
@@ -255,7 +256,7 @@ def password_reset_confirm(
     except PasswordResetError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_RESET_TOKEN,
         )
 
     return None
@@ -284,7 +285,7 @@ def password_reset_validate(
     if not record:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_RESET_TOKEN,
         )
 
     expires_at = record.expires_at
@@ -304,7 +305,7 @@ def password_reset_validate(
     }
 
 
-@router.post("/email-verification/request", status_code=204)
+@router.post("/email-verification/request", status_code=status.HTTP_204_NO_CONTENT)
 def email_verification_request(
     payload: EmailVerificationRequest,
     session: Session = Depends(get_session),
@@ -341,11 +342,11 @@ def _confirm_email_verification_helper(token: str, session: Session) -> None:
     except EmailVerificationError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired verification token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_VERIFICATION_TOKEN,
         )
 
 
-@router.post("/email-verification/confirm", status_code=204)
+@router.post("/email-verification/confirm", status_code=status.HTTP_204_NO_CONTENT)
 def email_verification_confirm(
     payload: EmailVerificationConfirm,
     session: Session = Depends(get_session),
@@ -371,7 +372,7 @@ def email_verification_confirm_get(
     }
 
 
-@router.post("/email-verification/resend", status_code=204)
+@router.post("/email-verification/resend", status_code=status.HTTP_204_NO_CONTENT)
 def resend_email_verification(
     payload: EmailVerificationRequest,
     request: Request,
@@ -384,7 +385,7 @@ def resend_email_verification(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many requests. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_GENERAL,
         )
 
     adapters = AdapterFactory(session=session)

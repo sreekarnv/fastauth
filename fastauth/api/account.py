@@ -21,6 +21,7 @@ from fastauth.core.account import (
     delete_account,
     request_email_change,
 )
+from fastauth.core.constants import ErrorMessages
 
 router = APIRouter(prefix="/account", tags=["account"])
 
@@ -55,12 +56,12 @@ def change_user_password(
     except InvalidPasswordError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect",
+            detail=ErrorMessages.CURRENT_PASSWORD_INVALID,
         )
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+            detail=ErrorMessages.USER_NOT_FOUND,
         )
 
     return MessageResponse(message="Password changed successfully")
@@ -93,12 +94,12 @@ def delete_user_account(
     except InvalidPasswordError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password is incorrect",
+            detail=ErrorMessages.INVALID_PASSWORD,
         )
     except UserNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+            detail=ErrorMessages.USER_NOT_FOUND,
         )
 
     delete_type = "permanently deleted" if request.hard_delete else "deactivated"
@@ -135,13 +136,13 @@ def request_user_email_change(
     except EmailAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already exists",
+            detail=ErrorMessages.EMAIL_ALREADY_EXISTS,
         )
 
     if not token:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
+            detail=ErrorMessages.USER_NOT_FOUND,
         )
 
     return EmailChangeTokenResponse(
