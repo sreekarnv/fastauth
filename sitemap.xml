@@ -101,6 +101,10 @@
          <lastmod>2026-01-10</lastmod>
     </url>
     <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/token/</loc>
+         <lastmod>2026-01-10</lastmod>
+    </url>
+    <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/users/</loc>
          <lastmod>2026-01-10</lastmod>
     </url>
@@ -149,6 +153,10 @@
          <lastmod>2026-01-10</lastmod>
     </url>
     <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/api/adapter_factory/</loc>
+         <lastmod>2026-01-10</lastmod>
+    </url>
+    <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/auth/</loc>
          <lastmod>2026-01-10</lastmod>
     </url>
@@ -170,6 +178,10 @@
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/account/</loc>
+         <lastmod>2026-01-10</lastmod>
+    </url>
+    <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/core/constants/</loc>
          <lastmod>2026-01-10</lastmod>
     </url>
     <url>
@@ -250,6 +262,10 @@
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/refresh/</loc>
+         <lastmod>2026-01-10</lastmod>
+    </url>
+    <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/security/tokens/</loc>
          <lastmod>2026-01-10</lastmod>
     </url>
 </urlset>
