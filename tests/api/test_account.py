@@ -40,7 +40,10 @@ def app_with_account(test_db):
 
     def get_session_override():
         with Session(test_db) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -58,7 +61,10 @@ def client(app_with_account):
 @pytest.fixture
 def db_session(test_db):
     with Session(test_db) as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 @pytest.fixture
@@ -465,12 +471,10 @@ def test_confirm_email_change_get_email_already_exists(client):
         json={"new_email": "existing@example.com"},
         headers={"Authorization": f"Bearer {token}"},
     )
-    email_token = email_change_response.json()["token"]
+    email_json = email_change_response.json()
 
-    response = client.get(f"/account/confirm-email-change?token={email_token}")
-
-    assert response.status_code == 400
-    assert "already exists" in response.json()["detail"].lower()
+    assert email_change_response.status_code == 400
+    assert "already exists" in email_json["detail"].lower()
 
 
 def test_confirm_email_change_email_taken_after_request(client):

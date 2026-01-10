@@ -96,7 +96,10 @@ def oauth_client_fixture():
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -269,7 +272,10 @@ def test_oauth_callback_state_error(mock_complete_flow):
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -310,7 +316,10 @@ def test_oauth_callback_account_already_linked(mock_complete_flow):
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -353,7 +362,10 @@ def test_oauth_callback_general_error(mock_complete_flow):
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -458,7 +470,10 @@ def test_authorize_without_session_middleware():
 
     def get_session_override():
         with Session(engine) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 

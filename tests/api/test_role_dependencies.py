@@ -58,7 +58,10 @@ def app_with_protected_routes(test_db):
 
     def get_session_override():
         with Session(test_db) as session:
-            yield session
+            try:
+                yield session
+            finally:
+                session.close()
 
     app.dependency_overrides[dependencies.get_session] = get_session_override
 
@@ -76,7 +79,10 @@ def client(app_with_protected_routes):
 @pytest.fixture
 def session(test_db):
     with Session(test_db) as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 def test_require_role_with_correct_role(client, session):
