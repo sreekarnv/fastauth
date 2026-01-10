@@ -307,6 +307,35 @@ def test_email_verification_confirm_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
+def test_email_verification_confirm_get_success(client: TestClient, capsys):
+    """Test successful email verification confirmation via GET endpoint."""
+    client.post(
+        "/auth/register",
+        json={"email": "verify-get@example.com", "password": "password123"},
+    )
+
+    captured = capsys.readouterr()
+    import re
+
+    match = re.search(r"Email verification token for .+?: (\S+)", captured.out)
+    assert match
+    token = match.group(1)
+
+    response = client.get(f"/auth/email-verification/confirm?token={token}")
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Email verified successfully"
+    assert response.json()["status"] == "success"
+
+
+def test_email_verification_confirm_get_invalid_token(client: TestClient):
+    """Test email verification confirmation via GET with invalid token."""
+    response = client.get("/auth/email-verification/confirm?token=invalid_token")
+
+    assert response.status_code == 400
+    assert "Invalid or expired" in response.json()["detail"]
+
+
 def test_resend_email_verification(client: TestClient, capsys):
     """Test resending email verification."""
     client.post(
