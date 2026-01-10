@@ -230,6 +230,96 @@ def test_password_reset_validate_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
+def test_password_reset_validate_expired_token(client: TestClient, db_session, capsys):
+    """Test password reset validation with expired token."""
+    from datetime import UTC, datetime, timedelta
+
+    from fastauth.adapters.sqlalchemy.password_reset import (
+        SQLAlchemyPasswordResetAdapter,
+    )
+    from fastauth.security.refresh import hash_refresh_token
+
+    client.post(
+        "/auth/register",
+        json={"email": "expired@example.com", "password": "old_password"},
+    )
+    client.post("/auth/password-reset/request", json={"email": "expired@example.com"})
+
+    captured = capsys.readouterr()
+    import re
+
+    match = re.search(r"Password reset token: (\S+)", captured.out)
+    assert match
+    token = match.group(1)
+
+    token_hash = hash_refresh_token(token)
+    _ = SQLAlchemyPasswordResetAdapter(session=db_session)
+
+    from sqlmodel import select
+
+    from fastauth.adapters.sqlalchemy.models import PasswordResetToken
+
+    statement = select(PasswordResetToken).where(
+        PasswordResetToken.token_hash == token_hash
+    )
+    record = db_session.exec(statement).first()
+    assert record is not None
+
+    record.expires_at = datetime.now(UTC) - timedelta(hours=1)
+    db_session.add(record)
+    db_session.commit()
+
+    response = client.get(f"/auth/password-reset/validate?token={token}")
+
+    assert response.status_code == 400
+    assert "Expired reset token" in response.json()["detail"]
+
+
+def test_password_reset_validate_expired_token_naive_tz(
+    client: TestClient, db_session, capsys
+):
+    """Test password reset validation with expired token (timezone-naive datetime)."""
+    from datetime import datetime, timedelta
+
+    from fastauth.security.refresh import hash_refresh_token
+
+    client.post(
+        "/auth/register",
+        json={"email": "expired_naive@example.com", "password": "old_password"},
+    )
+    client.post(
+        "/auth/password-reset/request", json={"email": "expired_naive@example.com"}
+    )
+
+    captured = capsys.readouterr()
+    import re
+
+    match = re.search(r"Password reset token: (\S+)", captured.out)
+    assert match
+    token = match.group(1)
+
+    token_hash = hash_refresh_token(token)
+
+    from sqlmodel import select
+
+    from fastauth.adapters.sqlalchemy.models import PasswordResetToken
+
+    statement = select(PasswordResetToken).where(
+        PasswordResetToken.token_hash == token_hash
+    )
+    record = db_session.exec(statement).first()
+    assert record is not None
+
+    record.expires_at = datetime.now() - timedelta(hours=1)
+    db_session.add(record)
+    db_session.commit()
+
+    response = client.get(f"/auth/password-reset/validate?token={token}")
+
+    assert response.status_code == 400
+    assert "Expired reset token" in response.json()["detail"]
+
+
 def test_email_verification_request(client: TestClient, capsys):
     """Test email verification request endpoint."""
     client.post(
