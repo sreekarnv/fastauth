@@ -1,7 +1,14 @@
 """Token utility functions.
 
-This module provides utilities for token generation, hashing, validation,
-and datetime operations used throughout FastAuth.
+This module provides centralized utilities for token operations used throughout
+FastAuth, eliminating code duplication across token-based features.
+
+Functions:
+    - generate_secure_token: Create cryptographically secure URL-safe tokens
+    - hash_token: Hash tokens using SHA-256
+    - validate_token_expiration: Check if tokens have expired
+    - utc_now: Get current UTC datetime with timezone info
+    - utc_from_now: Get UTC datetime offset from now
 """
 
 import hashlib

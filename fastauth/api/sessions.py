@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from fastauth.adapters.sqlalchemy.models import User
-from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
+from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.api.dependencies import get_current_user, get_session
 from fastauth.core.sessions import (
     SessionNotFoundError,
@@ -44,10 +44,10 @@ def list_sessions(
     """
     List all active sessions for the current user.
     """
-    sessions_adapter = SQLAlchemySessionAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     user_sessions = get_user_sessions(
-        sessions=sessions_adapter,
+        sessions=adapters.sessions,
         user_id=current_user.id,
     )
 
@@ -75,10 +75,10 @@ def delete_all_sessions(
     Delete all sessions for the current user except the current one.
     Note: This will log out the user from all other devices.
     """
-    sessions_adapter = SQLAlchemySessionAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     delete_all_user_sessions(
-        sessions=sessions_adapter,
+        sessions=adapters.sessions,
         user_id=current_user.id,
         except_session_id=None,
     )
@@ -95,11 +95,11 @@ def delete_user_session(
     """
     Delete a specific session. Users can only delete their own sessions.
     """
-    sessions_adapter = SQLAlchemySessionAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         delete_session(
-            sessions=sessions_adapter,
+            sessions=adapters.sessions,
             session_id=session_id,
             user_id=current_user.id,
         )

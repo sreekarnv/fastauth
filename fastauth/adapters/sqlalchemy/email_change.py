@@ -37,7 +37,7 @@ class SQLAlchemyEmailChangeAdapter(EmailChangeAdapter):
             )
         ).first()
 
-    def mark_used(self, *, token_hash: str) -> None:
+    def invalidate(self, *, token_hash: str) -> None:
         token = self.session.exec(
             select(EmailChangeToken).where(EmailChangeToken.token_hash == token_hash)
         ).first()

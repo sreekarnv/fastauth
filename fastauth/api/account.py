@@ -2,10 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from fastauth.adapters.sqlalchemy.email_change import SQLAlchemyEmailChangeAdapter
 from fastauth.adapters.sqlalchemy.models import User
-from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
-from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.api.dependencies import get_current_user, get_session
 from fastauth.api.schemas import (
     ChangePasswordRequest,
@@ -43,13 +41,12 @@ def change_user_password(
     Requires the current password for verification.
     Invalidates all other sessions after password change for security.
     """
-    users_adapter = SQLAlchemyUserAdapter(session=session)
-    sessions_adapter = SQLAlchemySessionAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         change_password(
-            users=users_adapter,
-            sessions=sessions_adapter,
+            users=adapters.users,
+            sessions=adapters.sessions,
             user_id=current_user.id,
             current_password=request.current_password,
             new_password=request.new_password,
@@ -83,13 +80,12 @@ def delete_user_account(
     Soft delete sets deleted_at timestamp and deactivates the account.
     Hard delete permanently removes the user from the database.
     """
-    users_adapter = SQLAlchemyUserAdapter(session=session)
-    sessions_adapter = SQLAlchemySessionAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         delete_account(
-            users=users_adapter,
-            sessions=sessions_adapter,
+            users=adapters.users,
+            sessions=adapters.sessions,
             user_id=current_user.id,
             password=request.password,
             hard_delete=request.hard_delete,
@@ -126,13 +122,12 @@ def request_user_email_change(
     Generates a verification token that must be confirmed to complete the email change.
     The token expires in 60 minutes by default.
     """
-    users_adapter = SQLAlchemyUserAdapter(session=session)
-    email_changes_adapter = SQLAlchemyEmailChangeAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         token = request_email_change(
-            users=users_adapter,
-            email_changes=email_changes_adapter,
+            users=adapters.users,
+            email_changes=adapters.email_changes,
             user_id=current_user.id,
             new_email=request.new_email,
             expires_in_minutes=60,
@@ -166,13 +161,12 @@ def confirm_user_email_change(
 
     Completes the email change process started with request-email-change.
     """
-    users_adapter = SQLAlchemyUserAdapter(session=session)
-    email_changes_adapter = SQLAlchemyEmailChangeAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         confirm_email_change(
-            users=users_adapter,
-            email_changes=email_changes_adapter,
+            users=adapters.users,
+            email_changes=adapters.email_changes,
             token=request.token,
         )
     except EmailChangeError as e:
@@ -199,13 +193,12 @@ def confirm_user_email_change_get(
 
     This endpoint enables clickable email change confirmation links.
     """
-    users_adapter = SQLAlchemyUserAdapter(session=session)
-    email_changes_adapter = SQLAlchemyEmailChangeAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         confirm_email_change(
-            users=users_adapter,
-            email_changes=email_changes_adapter,
+            users=adapters.users,
+            email_changes=adapters.email_changes,
             token=token,
         )
     except EmailChangeError as e:

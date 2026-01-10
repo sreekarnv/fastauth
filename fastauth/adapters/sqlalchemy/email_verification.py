@@ -32,7 +32,7 @@ class SQLAlchemyEmailVerificationAdapter(EmailVerificationAdapter):
         )
         return self.session.exec(statement).first()
 
-    def mark_used(self, *, token_hash: str) -> None:
+    def invalidate(self, *, token_hash: str) -> None:
         statement = select(EmailVerificationToken).where(
             EmailVerificationToken.token_hash == token_hash,
             EmailVerificationToken.used.is_(False),

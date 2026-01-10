@@ -27,14 +27,14 @@ class SQLAlchemyRefreshTokenAdapter(RefreshTokenAdapter):
         self.session.commit()
         return refresh
 
-    def get_active(self, *, token_hash: str):
+    def get_valid(self, *, token_hash: str):
         statement = select(RefreshToken).where(
             RefreshToken.token_hash == token_hash,
             RefreshToken.revoked.is_(False),
         )
         return self.session.exec(statement).first()
 
-    def revoke(self, *, token_hash: str) -> None:
+    def invalidate(self, *, token_hash: str) -> None:
         statement = select(RefreshToken).where(
             RefreshToken.token_hash == token_hash,
             RefreshToken.revoked.is_(False),

@@ -22,7 +22,7 @@ class FakeEmailChangeAdapter(EmailChangeAdapter):
             return token
         return None
 
-    def mark_used(self, *, token_hash):
+    def invalidate(self, *, token_hash):
         token = self.tokens.get(token_hash)
         if token:
             token.used = True

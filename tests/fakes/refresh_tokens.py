@@ -15,13 +15,13 @@ class FakeRefreshTokenAdapter(RefreshTokenAdapter):
     def create(self, *, user_id, token_hash, expires_at):
         self.tokens[token_hash] = FakeRefreshToken(user_id, expires_at)
 
-    def get_active(self, *, token_hash):
+    def get_valid(self, *, token_hash):
         token = self.tokens.get(token_hash)
         if token and not token.revoked:
             return token
         return None
 
-    def revoke(self, *, token_hash):
+    def invalidate(self, *, token_hash):
         token = self.tokens.get(token_hash)
         if token:
             token.revoked = True
