@@ -90,34 +90,6 @@ def send_welcome_email(
     return {"message": f"Welcome email sent to {email}"}
 
 
-@app.get("/verify-email")
-def verify_email_redirect(token: str):
-    """Handle email verification from clickable link.
-
-    This endpoint converts the GET request from email links to the POST request
-    expected by FastAuth's /auth/email-verification/confirm endpoint.
-    """
-    import requests
-
-    response = requests.post(
-        "http://localhost:8000/auth/email-verification/confirm",
-        json={"token": token},
-    )
-
-    if response.status_code == 204:
-        return {
-            "message": "Email verified successfully!",
-            "status": "success",
-            "next_step": "You can now log in to your account",
-        }
-    else:
-        return {
-            "message": "Invalid or expired verification token",
-            "status": "error",
-            "detail": "Please request a new verification email",
-        }
-
-
 @app.get("/reset-password")
 def reset_password_page(token: str):
     """Handle password reset from clickable link.
