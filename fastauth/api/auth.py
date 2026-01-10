@@ -295,11 +295,8 @@ def email_verification_request(
     return None
 
 
-@router.post("/email-verification/confirm", status_code=204)
-def email_verification_confirm(
-    payload: EmailVerificationConfirm,
-    session: Session = Depends(get_session),
-):
+def _confirm_email_verification_helper(token: str, session: Session) -> None:
+    """Helper function to verify email token."""
     try:
         users = SQLAlchemyUserAdapter(session)
         verifications = SQLAlchemyEmailVerificationAdapter(session)
@@ -307,7 +304,7 @@ def email_verification_confirm(
         confirm_email_verification(
             users=users,
             verifications=verifications,
-            token=payload.token,
+            token=token,
         )
     except EmailVerificationError:
         raise HTTPException(
@@ -315,7 +312,31 @@ def email_verification_confirm(
             detail="Invalid or expired verification token",
         )
 
+
+@router.post("/email-verification/confirm", status_code=204)
+def email_verification_confirm(
+    payload: EmailVerificationConfirm,
+    session: Session = Depends(get_session),
+):
+    """Confirm email verification via POST with JSON payload."""
+    _confirm_email_verification_helper(payload.token, session)
     return None
+
+
+@router.get("/email-verification/confirm")
+def email_verification_confirm_get(
+    token: str,
+    session: Session = Depends(get_session),
+):
+    """Confirm email verification via GET with query parameter.
+
+    This endpoint enables clickable email verification links.
+    """
+    _confirm_email_verification_helper(token, session)
+    return {
+        "message": "Email verified successfully",
+        "status": "success",
+    }
 
 
 @router.post("/email-verification/resend", status_code=204)
