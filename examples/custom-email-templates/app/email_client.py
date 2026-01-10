@@ -81,7 +81,9 @@ class CustomEmailClient(EmailClient):
             to: User's email address
             token: Email verification token
         """
-        verification_url = f"http://localhost:8000/verify-email?token={token}"
+        verification_url = (
+            f"http://localhost:8000/auth/email-verification/confirm?token={token}"
+        )
 
         context = {
             **self.base_context,

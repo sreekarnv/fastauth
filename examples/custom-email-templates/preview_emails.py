@@ -28,7 +28,7 @@ def preview_verification_email():
     context = {
         **client.base_context,
         "user_email": "user@example.com",
-        "verification_url": "http://localhost:8000/verify-email?token=abc123xyz",
+        "verification_url": "http://localhost:8000/auth/email-verification/confirm?token=abc123xyz",
         "token": "abc123xyz",
         "expires_in_hours": 24,
     }
