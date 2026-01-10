@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-01-10
+
+### Added
+- GET endpoints for clickable email links
+  - `GET /auth/email-verification/confirm?token=...` - Direct email verification via clickable link
+  - `GET /account/confirm-email-change?token=...` - Direct email change confirmation via clickable link
+  - `GET /auth/password-reset/validate?token=...` - Validate password reset token before showing form
+  - Enables users to verify emails and confirm changes with single click instead of copying tokens
+  - Returns structured JSON responses with status and messages
+  - Maintains full backward compatibility with existing POST endpoints
+- Custom email templates example (`examples/custom-email-templates/`)
+  - Comprehensive example demonstrating Jinja2 template integration for branded emails
+  - Beautiful responsive HTML email templates with gradient headers and CTA buttons
+  - Plain text fallbacks for email client compatibility
+  - Email preview tool for local testing without sending emails
+  - SMTP testing script supporting MailHog (dev), Gmail, and SendGrid (production)
+  - Password reset wrapper endpoint showing token validation pattern
+  - 380+ line README with setup, testing, and customization guides
+  - Demonstrates EmailClient extension, template inheritance, and MIME multipart emails
+
+### Changed
+- Refactored email verification endpoints to reduce code duplication
+  - Extracted `_confirm_email_verification_helper()` function shared by POST and GET endpoints
+  - Both endpoints now use identical validation logic for consistency
+- Updated custom email templates example
+  - Removed unnecessary `/verify-email` wrapper (uses FastAuth's native GET endpoint)
+  - Simplified `/reset-password` wrapper to validate tokens using FastAuth adapters
+  - Removed `requests` dependency (no longer needed for HTTP forwarding)
+  - Updated email client URLs to use FastAuth's native endpoints
+  - Updated documentation with correct flow diagrams and usage examples
+
+### Tests
+- Added 6 comprehensive tests for new GET endpoints
+  - `test_email_verification_confirm_get_success()` - Valid email verification via GET
+  - `test_email_verification_confirm_get_invalid_token()` - Invalid token error handling
+  - `test_password_reset_validate_success()` - Valid password reset token validation
+  - `test_password_reset_validate_invalid_token()` - Invalid token error handling
+  - `test_confirm_email_change_get_success()` - Valid email change confirmation via GET
+  - `test_confirm_email_change_get_invalid_token()` - Invalid token error handling
+- All tests pass with 99%+ coverage maintained
+
 ## [0.2.2] - 2026-01-04
 
 ### Fixed

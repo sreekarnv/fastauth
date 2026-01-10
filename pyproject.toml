@@ -1,6 +1,6 @@
 [project]
 name = "sreekarnv-fastauth"
-version = "0.2.2"
+version = "0.2.3"
 description = "Production-ready authentication for FastAPI applications"
 authors = [
     {name = "Sreekar Nutulapati", email = "sreekarnv1@gmail.com"}
