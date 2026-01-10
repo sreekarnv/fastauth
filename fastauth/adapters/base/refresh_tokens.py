@@ -1,20 +1,43 @@
-import uuid
-from abc import ABC, abstractmethod
-from datetime import datetime
+"""Refresh token adapter interface.
+
+Defines the abstract interface for refresh token storage and retrieval.
+Inherits from BaseTokenAdapter for common token operations.
+"""
+
+from typing import Any
+
+from fastauth.adapters.base.token import BaseTokenAdapter
 
 
-class RefreshTokenAdapter(ABC):
-    @abstractmethod
-    def create(
-        self,
-        *,
-        user_id: uuid.UUID,
-        token_hash: str,
-        expires_at: datetime,
-    ) -> None: ...
+class RefreshTokenAdapter(BaseTokenAdapter[Any]):
+    """
+    Abstract base class for refresh token database operations.
 
-    @abstractmethod
-    def get_active(self, *, token_hash: str): ...
+    Inherits from BaseTokenAdapter and provides backward compatibility
+    with the get_active() and revoke() methods.
+    """
 
-    @abstractmethod
-    def revoke(self, *, token_hash: str) -> None: ...
+    def get_active(self, *, token_hash: str) -> Any:
+        """
+        Get an active (not revoked) refresh token.
+
+        This is a convenience method that calls get_valid().
+
+        Args:
+            token_hash: Hashed token to look up
+
+        Returns:
+            Token record if found and active, None otherwise
+        """
+        return self.get_valid(token_hash=token_hash)
+
+    def revoke(self, *, token_hash: str) -> None:
+        """
+        Revoke a refresh token.
+
+        This is a convenience method that calls invalidate().
+
+        Args:
+            token_hash: Hashed token to revoke
+        """
+        self.invalidate(token_hash=token_hash)

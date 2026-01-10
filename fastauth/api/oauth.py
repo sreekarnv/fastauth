@@ -1,14 +1,8 @@
-from typing import Any
-
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
 from fastauth.adapters.sqlalchemy.models import User
-from fastauth.adapters.sqlalchemy.oauth_accounts import SQLAlchemyOAuthAccountAdapter
-from fastauth.adapters.sqlalchemy.oauth_states import SQLAlchemyOAuthStateAdapter
-from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
-from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
-from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.api.dependencies import get_current_user, get_session
 from fastauth.api.schemas import (
     OAuthAuthorizationResponse,
@@ -28,13 +22,14 @@ from fastauth.core.oauth import (
 from fastauth.core.refresh_tokens import create_refresh_token
 from fastauth.core.sessions import create_session
 from fastauth.providers import GoogleOAuthProvider, get_provider, register_provider
+from fastauth.providers.base import OAuthProvider
 from fastauth.security.jwt import create_access_token
 from fastauth.settings import settings
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 
 
-def _get_or_register_provider(provider_name: str) -> Any:
+def _get_or_register_provider(provider_name: str) -> OAuthProvider:
     """
     Get or register an OAuth provider.
 
@@ -93,14 +88,14 @@ def authorize(
     """
     provider_instance = _get_or_register_provider(provider)
 
-    states = SQLAlchemyOAuthStateAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     redirect_uri = str(request.url_for("oauth_callback", provider=provider))
 
     user_id = current_user.id if current_user else None
 
     authorization_url, state_token, code_verifier = initiate_oauth_flow(
-        states=states,
+        states=adapters.oauth_states,
         provider=provider_instance,
         redirect_uri=redirect_uri,
         user_id=user_id,
@@ -163,15 +158,13 @@ async def oauth_callback(
         # SessionMiddleware not installed, skip session checks
         pass
 
-    states = SQLAlchemyOAuthStateAdapter(session=session)
-    oauth_accounts = SQLAlchemyOAuthAccountAdapter(session=session)
-    users = SQLAlchemyUserAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         user, _ = await complete_oauth_flow(
-            states=states,
-            oauth_accounts=oauth_accounts,
-            users=users,
+            states=adapters.oauth_states,
+            oauth_accounts=adapters.oauth_accounts,
+            users=adapters.users,
             provider=provider_instance,
             code=payload.code,
             state=payload.state,
@@ -194,18 +187,15 @@ async def oauth_callback(
             detail=str(e),
         )
 
-    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
-    sessions = SQLAlchemySessionAdapter(session=session)
-
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
-        refresh_tokens=refresh_tokens,
+        refresh_tokens=adapters.refresh_tokens,
         user_id=user.id,
     )
 
     create_session(
-        sessions=sessions,
-        users=users,
+        sessions=adapters.sessions,
+        users=adapters.users,
         user_id=user.id,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent"),
@@ -234,10 +224,10 @@ def list_linked_accounts(
     Returns:
         List of linked OAuth accounts
     """
-    oauth_accounts = SQLAlchemyOAuthAccountAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     accounts = get_linked_accounts(
-        oauth_accounts=oauth_accounts,
+        oauth_accounts=adapters.oauth_accounts,
         user_id=current_user.id,
     )
 
@@ -271,11 +261,11 @@ def unlink_provider(
     Returns:
         204 No Content on success
     """
-    oauth_accounts = SQLAlchemyOAuthAccountAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         unlink_oauth_account(
-            oauth_accounts=oauth_accounts,
+            oauth_accounts=adapters.oauth_accounts,
             user_id=current_user.id,
             provider=provider,
         )

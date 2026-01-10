@@ -1,13 +1,9 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
-from fastauth.adapters.sqlalchemy.email_verification import (
-    SQLAlchemyEmailVerificationAdapter,
-)
-from fastauth.adapters.sqlalchemy.password_reset import SQLAlchemyPasswordResetAdapter
-from fastauth.adapters.sqlalchemy.refresh_tokens import SQLAlchemyRefreshTokenAdapter
-from fastauth.adapters.sqlalchemy.sessions import SQLAlchemySessionAdapter
-from fastauth.adapters.sqlalchemy.users import SQLAlchemyUserAdapter
+from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.api.dependencies import get_session
 from fastauth.api.schemas import (
     EmailVerificationConfirm,
@@ -20,6 +16,7 @@ from fastauth.api.schemas import (
     RegisterRequest,
     TokenResponse,
 )
+from fastauth.core.constants import ErrorMessages
 from fastauth.core.email_verification import (
     EmailVerificationError,
     confirm_email_verification,
@@ -54,6 +51,7 @@ from fastauth.security.limits import (
 from fastauth.security.rate_limit import RateLimitExceeded
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -69,23 +67,24 @@ def register(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many registration attempts. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_REGISTRATION,
         )
 
-    users = SQLAlchemyUserAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
-        user = create_user(users=users, email=payload.email, password=payload.password)
+        user = create_user(
+            users=adapters.users, email=payload.email, password=payload.password
+        )
     except UserAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="User already exists",
+            detail=ErrorMessages.USER_ALREADY_EXISTS,
         )
 
-    verifications = SQLAlchemyEmailVerificationAdapter(session=session)
     verification_token = request_email_verification(
-        users=users,
-        verifications=verifications,
+        users=adapters.users,
+        verifications=adapters.verifications,
         email=user.email,
     )
 
@@ -95,20 +94,17 @@ def register(
             to=user.email,
             token=verification_token,
         )
-        print(f"Email verification token for {user.email}: {verification_token}")
-
-    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
-    sessions = SQLAlchemySessionAdapter(session=session)
+        logger.debug(f"Email verification token for {user.email}: {verification_token}")
 
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
-        refresh_tokens=refresh_tokens,
+        refresh_tokens=adapters.refresh_tokens,
         user_id=user.id,
     )
 
     create_session(
-        sessions=sessions,
-        users=users,
+        sessions=adapters.sessions,
+        users=adapters.users,
         user_id=user.id,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent"),
@@ -133,42 +129,39 @@ def login(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many login attempts. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_LOGIN,
         )
 
-    users = SQLAlchemyUserAdapter(session=session)
+    adapters = AdapterFactory(session=session)
 
     try:
         user = authenticate_user(
-            users=users,
+            users=adapters.users,
             email=payload.email,
             password=payload.password,
         )
     except EmailNotVerifiedError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email address is not verified",
+            detail=ErrorMessages.EMAIL_NOT_VERIFIED,
         )
     except InvalidCredentialsError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            detail=ErrorMessages.INVALID_CREDENTIALS,
         )
 
     login_rate_limiter.reset(key)
 
-    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
-    sessions = SQLAlchemySessionAdapter(session=session)
-
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
-        refresh_tokens=refresh_tokens,
+        refresh_tokens=adapters.refresh_tokens,
         user_id=user.id,
     )
 
     create_session(
-        sessions=sessions,
-        users=users,
+        sessions=adapters.sessions,
+        users=adapters.users,
         user_id=user.id,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent"),
@@ -185,10 +178,11 @@ def refresh_token(
     payload: RefreshRequest,
     session: Session = Depends(get_session),
 ):
+    adapters = AdapterFactory(session=session)
+
     try:
-        refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
         result = rotate_refresh_token(
-            refresh_tokens=refresh_tokens,
+            refresh_tokens=adapters.refresh_tokens,
             token=payload.refresh_token,
         )
     except RefreshTokenError:
@@ -212,26 +206,25 @@ def logout(
     payload: LogoutRequest,
     session: Session = Depends(get_session),
 ):
-    refresh_tokens = SQLAlchemyRefreshTokenAdapter(session=session)
+    adapters = AdapterFactory(session=session)
     revoke_refresh_token(
-        refresh_tokens=refresh_tokens,
+        refresh_tokens=adapters.refresh_tokens,
         token=payload.refresh_token,
     )
 
     return None
 
 
-@router.post("/password-reset/request", status_code=204)
+@router.post("/password-reset/request", status_code=status.HTTP_204_NO_CONTENT)
 def password_reset_request(
     payload: PasswordResetRequest,
     session: Session = Depends(get_session),
 ):
-    users = SQLAlchemyUserAdapter(session)
-    resets = SQLAlchemyPasswordResetAdapter(session)
+    adapters = AdapterFactory(session=session)
 
     token = request_password_reset(
-        users=users,
-        resets=resets,
+        users=adapters.users,
+        resets=adapters.password_resets,
         email=payload.email,
     )
 
@@ -241,30 +234,29 @@ def password_reset_request(
             to=payload.email,
             token=token,
         )
-        print("Password reset token:", token)
+        logger.debug(f"Password reset token: {token}")
 
     return None
 
 
-@router.post("/password-reset/confirm", status_code=204)
+@router.post("/password-reset/confirm", status_code=status.HTTP_204_NO_CONTENT)
 def password_reset_confirm(
     payload: PasswordResetConfirm,
     session: Session = Depends(get_session),
 ):
-    users = SQLAlchemyUserAdapter(session)
-    resets = SQLAlchemyPasswordResetAdapter(session)
+    adapters = AdapterFactory(session=session)
 
     try:
         confirm_password_reset(
-            users=users,
-            resets=resets,
+            users=adapters.users,
+            resets=adapters.password_resets,
             token=payload.token,
             new_password=payload.new_password,
         )
     except PasswordResetError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_RESET_TOKEN,
         )
 
     return None
@@ -285,15 +277,15 @@ def password_reset_validate(
 
     from fastauth.security.refresh import hash_refresh_token
 
-    resets = SQLAlchemyPasswordResetAdapter(session)
+    adapters = AdapterFactory(session=session)
 
     token_hash = hash_refresh_token(token)
-    record = resets.get_valid(token_hash=token_hash)
+    record = adapters.password_resets.get_valid(token_hash=token_hash)
 
     if not record:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_RESET_TOKEN,
         )
 
     expires_at = record.expires_at
@@ -313,17 +305,16 @@ def password_reset_validate(
     }
 
 
-@router.post("/email-verification/request", status_code=204)
+@router.post("/email-verification/request", status_code=status.HTTP_204_NO_CONTENT)
 def email_verification_request(
     payload: EmailVerificationRequest,
     session: Session = Depends(get_session),
 ):
-    users = SQLAlchemyUserAdapter(session)
-    verifications = SQLAlchemyEmailVerificationAdapter(session)
+    adapters = AdapterFactory(session=session)
 
     token = request_email_verification(
-        users=users,
-        verifications=verifications,
+        users=adapters.users,
+        verifications=adapters.verifications,
         email=payload.email,
     )
 
@@ -333,30 +324,29 @@ def email_verification_request(
             to=payload.email,
             token=token,
         )
-        print("Email verification token:", token)
+        logger.debug(f"Email verification token: {token}")
 
     return None
 
 
 def _confirm_email_verification_helper(token: str, session: Session) -> None:
     """Helper function to verify email token."""
-    try:
-        users = SQLAlchemyUserAdapter(session)
-        verifications = SQLAlchemyEmailVerificationAdapter(session)
+    adapters = AdapterFactory(session=session)
 
+    try:
         confirm_email_verification(
-            users=users,
-            verifications=verifications,
+            users=adapters.users,
+            verifications=adapters.verifications,
             token=token,
         )
     except EmailVerificationError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired verification token",
+            detail=ErrorMessages.INVALID_OR_EXPIRED_VERIFICATION_TOKEN,
         )
 
 
-@router.post("/email-verification/confirm", status_code=204)
+@router.post("/email-verification/confirm", status_code=status.HTTP_204_NO_CONTENT)
 def email_verification_confirm(
     payload: EmailVerificationConfirm,
     session: Session = Depends(get_session),
@@ -382,7 +372,7 @@ def email_verification_confirm_get(
     }
 
 
-@router.post("/email-verification/resend", status_code=204)
+@router.post("/email-verification/resend", status_code=status.HTTP_204_NO_CONTENT)
 def resend_email_verification(
     payload: EmailVerificationRequest,
     request: Request,
@@ -395,15 +385,14 @@ def resend_email_verification(
     except RateLimitExceeded:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many requests. Try again later.",
+            detail=ErrorMessages.RATE_LIMIT_GENERAL,
         )
 
-    users = SQLAlchemyUserAdapter(session)
-    verifications = SQLAlchemyEmailVerificationAdapter(session)
+    adapters = AdapterFactory(session=session)
 
     token = request_email_verification(
-        users=users,
-        verifications=verifications,
+        users=adapters.users,
+        verifications=adapters.verifications,
         email=payload.email,
     )
 
@@ -413,6 +402,6 @@ def resend_email_verification(
             to=payload.email,
             token=token,
         )
-        print("Resent email verification token:", token)
+        logger.debug(f"Resent email verification token: {token}")
 
     return None

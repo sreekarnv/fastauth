@@ -1,11 +1,11 @@
 import uuid
-from datetime import UTC, datetime, timedelta
 
 from fastauth.adapters.base.refresh_tokens import RefreshTokenAdapter
 from fastauth.security.refresh import (
     generate_refresh_token,
     hash_refresh_token,
 )
+from fastauth.security.tokens import utc_from_now, validate_token_expiration
 
 
 class RefreshTokenError(Exception):
@@ -21,7 +21,7 @@ def create_refresh_token(
     raw_token = generate_refresh_token()
     token_hash = hash_refresh_token(raw_token)
 
-    expires_at = datetime.now(UTC) + timedelta(days=expires_in_days)
+    expires_at = utc_from_now(days=expires_in_days)
 
     refresh_tokens.create(
         user_id=user_id,
@@ -44,12 +44,10 @@ def rotate_refresh_token(
     if not refresh:
         raise RefreshTokenError("Invalid refresh token")
 
-    expires_at = refresh.expires_at
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=UTC)
-
-    if expires_at < datetime.now(UTC):
-        raise RefreshTokenError("Refresh token expired")
+    try:
+        validate_token_expiration(refresh.expires_at, "Refresh token expired")
+    except ValueError as e:
+        raise RefreshTokenError(str(e))
 
     refresh_tokens.revoke(token_hash=token_hash)
 
@@ -59,7 +57,7 @@ def rotate_refresh_token(
     refresh_tokens.create(
         user_id=refresh.user_id,
         token_hash=new_hash,
-        expires_at=datetime.now(UTC) + timedelta(days=expires_in_days),
+        expires_at=utc_from_now(days=expires_in_days),
     )
 
     return new_token, refresh.user_id

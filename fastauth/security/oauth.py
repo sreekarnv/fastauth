@@ -47,8 +47,6 @@ def hash_oauth_token(token: str) -> str:
 
 
 # PKCE (Proof Key for Code Exchange) Implementation
-
-
 def generate_code_verifier() -> str:
     """
     Generate a cryptographically random code verifier for PKCE.

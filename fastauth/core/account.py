@@ -1,11 +1,11 @@
 import uuid
-from datetime import UTC, datetime, timedelta
 
 from fastauth.adapters.base.email_change import EmailChangeAdapter
 from fastauth.adapters.base.sessions import SessionAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password, verify_password
 from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
+from fastauth.security.tokens import utc_from_now, validate_token_expiration
 
 
 class InvalidPasswordError(Exception):
@@ -99,7 +99,7 @@ def request_email_change(
     raw_token = generate_refresh_token()
     token_hash = hash_refresh_token(raw_token)
 
-    expires_at = datetime.now(UTC) + timedelta(minutes=expires_in_minutes)
+    expires_at = utc_from_now(minutes=expires_in_minutes)
 
     email_changes.create(
         user_id=user_id,
@@ -135,14 +135,11 @@ def confirm_email_change(
     if not record:
         raise EmailChangeError("Invalid or expired email change token")
 
-    expires_at = record.expires_at
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=UTC)
+    try:
+        validate_token_expiration(record.expires_at, "Expired email change token")
+    except ValueError as e:
+        raise EmailChangeError(str(e))
 
-    if expires_at < datetime.now(UTC):
-        raise EmailChangeError("Expired email change token")
-
-    # Check if email is still available
     existing_user = users.get_by_email(record.new_email)
     if existing_user:
         raise EmailAlreadyExistsError(
@@ -182,10 +179,8 @@ def delete_account(
     if not verify_password(user.hashed_password, password):
         raise InvalidPasswordError("Password is incorrect")
 
-    # Delete all user sessions
     sessions.delete_user_sessions(user_id=user_id)
 
-    # Delete the user
     if hard_delete:
         users.hard_delete_user(user_id=user_id)
     else:

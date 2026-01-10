@@ -131,8 +131,12 @@ def test_logout_endpoint(client: TestClient):
     assert response.status_code == 204
 
 
-def test_password_reset_request(client: TestClient, capsys):
+def test_password_reset_request(client: TestClient, caplog):
     """Test password reset request endpoint."""
+    import logging
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register", json={"email": "reset@example.com", "password": "password123"}
     )
@@ -143,8 +147,7 @@ def test_password_reset_request(client: TestClient, capsys):
 
     assert response.status_code == 204
 
-    captured = capsys.readouterr()
-    assert "Password reset token:" in captured.out
+    assert any("Password reset token:" in record.message for record in caplog.records)
 
 
 def test_password_reset_request_nonexistent_email(client: TestClient):
@@ -179,8 +182,13 @@ def test_password_reset_request_with_email_client(mock_get_client, client: TestC
     assert mock_email_client.send_password_reset_email.called
 
 
-def test_password_reset_confirm_success(client: TestClient, capsys):
+def test_password_reset_confirm_success(client: TestClient, caplog):
     """Test successful password reset confirmation."""
+    import logging
+    import re
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "reset@example.com", "password": "old_password"},
@@ -188,12 +196,13 @@ def test_password_reset_confirm_success(client: TestClient, capsys):
 
     client.post("/auth/password-reset/request", json={"email": "reset@example.com"})
 
-    captured = capsys.readouterr()
-    import re
-
-    match = re.search(r"Password reset token: (\S+)", captured.out)
-    assert match
-    token = match.group(1)
+    token = None
+    for record in caplog.records:
+        match = re.search(r"Password reset token: (\S+)", record.message)
+        if match:
+            token = match.group(1)
+            break
+    assert token is not None
 
     response = client.post(
         "/auth/password-reset/confirm",
@@ -220,8 +229,13 @@ def test_password_reset_confirm_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
-def test_password_reset_validate_success(client: TestClient, capsys):
+def test_password_reset_validate_success(client: TestClient, caplog):
     """Test password reset token validation via GET endpoint."""
+    import logging
+    import re
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "validate@example.com", "password": "old_password"},
@@ -229,12 +243,13 @@ def test_password_reset_validate_success(client: TestClient, capsys):
 
     client.post("/auth/password-reset/request", json={"email": "validate@example.com"})
 
-    captured = capsys.readouterr()
-    import re
-
-    match = re.search(r"Password reset token: (\S+)", captured.out)
-    assert match
-    token = match.group(1)
+    token = None
+    for record in caplog.records:
+        match = re.search(r"Password reset token: (\S+)", record.message)
+        if match:
+            token = match.group(1)
+            break
+    assert token is not None
 
     response = client.get(f"/auth/password-reset/validate?token={token}")
 
@@ -252,8 +267,12 @@ def test_password_reset_validate_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
-def test_email_verification_request(client: TestClient, capsys):
+def test_email_verification_request(client: TestClient, caplog):
     """Test email verification request endpoint."""
+    import logging
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "verify@example.com", "password": "password123"},
@@ -264,8 +283,9 @@ def test_email_verification_request(client: TestClient, capsys):
     )
 
     assert response.status_code == 204
-    captured = capsys.readouterr()
-    assert "Email verification token:" in captured.out
+    assert any(
+        "Email verification token:" in record.message for record in caplog.records
+    )
 
 
 def test_email_verification_request_nonexistent_email(client: TestClient):
@@ -300,19 +320,25 @@ def test_email_verification_request_with_email_client(
     assert mock_email_client.send_verification_email.called
 
 
-def test_email_verification_confirm_success(client: TestClient, capsys):
+def test_email_verification_confirm_success(client: TestClient, caplog):
     """Test successful email verification confirmation."""
+    import logging
+    import re
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "verify@example.com", "password": "password123"},
     )
 
-    captured = capsys.readouterr()
-    import re
-
-    match = re.search(r"Email verification token for .+?: (\S+)", captured.out)
-    assert match
-    token = match.group(1)
+    token = None
+    for record in caplog.records:
+        match = re.search(r"Email verification token for .+?: (\S+)", record.message)
+        if match:
+            token = match.group(1)
+            break
+    assert token is not None
 
     response = client.post("/auth/email-verification/confirm", json={"token": token})
 
@@ -329,19 +355,25 @@ def test_email_verification_confirm_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
-def test_email_verification_confirm_get_success(client: TestClient, capsys):
+def test_email_verification_confirm_get_success(client: TestClient, caplog):
     """Test successful email verification confirmation via GET endpoint."""
+    import logging
+    import re
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "verify-get@example.com", "password": "password123"},
     )
 
-    captured = capsys.readouterr()
-    import re
-
-    match = re.search(r"Email verification token for .+?: (\S+)", captured.out)
-    assert match
-    token = match.group(1)
+    token = None
+    for record in caplog.records:
+        match = re.search(r"Email verification token for .+?: (\S+)", record.message)
+        if match:
+            token = match.group(1)
+            break
+    assert token is not None
 
     response = client.get(f"/auth/email-verification/confirm?token={token}")
 
@@ -358,8 +390,12 @@ def test_email_verification_confirm_get_invalid_token(client: TestClient):
     assert "Invalid or expired" in response.json()["detail"]
 
 
-def test_resend_email_verification(client: TestClient, capsys):
+def test_resend_email_verification(client: TestClient, caplog):
     """Test resending email verification."""
+    import logging
+
+    caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+
     client.post(
         "/auth/register",
         json={"email": "resend@example.com", "password": "password123"},
@@ -370,8 +406,10 @@ def test_resend_email_verification(client: TestClient, capsys):
     )
 
     assert response.status_code == 204
-    captured = capsys.readouterr()
-    assert "Resent email verification token:" in captured.out
+    assert any(
+        "Resent email verification token:" in record.message
+        for record in caplog.records
+    )
 
 
 def test_resend_email_verification_rate_limit(client: TestClient):

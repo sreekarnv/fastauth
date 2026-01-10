@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlmodel import Session, select
@@ -13,7 +14,7 @@ class SQLAlchemyEmailVerificationAdapter(EmailVerificationAdapter):
     def create(
         self,
         *,
-        user_id,
+        user_id: uuid.UUID,
         token_hash: str,
         expires_at: datetime,
     ) -> None:
@@ -32,7 +33,7 @@ class SQLAlchemyEmailVerificationAdapter(EmailVerificationAdapter):
         )
         return self.session.exec(statement).first()
 
-    def mark_used(self, *, token_hash: str) -> None:
+    def invalidate(self, *, token_hash: str) -> None:
         statement = select(EmailVerificationToken).where(
             EmailVerificationToken.token_hash == token_hash,
             EmailVerificationToken.used.is_(False),

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlmodel import Session, select
@@ -13,7 +14,7 @@ class SQLAlchemyPasswordResetAdapter(PasswordResetAdapter):
     def create(
         self,
         *,
-        user_id,
+        user_id: uuid.UUID,
         token_hash: str,
         expires_at: datetime,
     ) -> None:
@@ -32,7 +33,7 @@ class SQLAlchemyPasswordResetAdapter(PasswordResetAdapter):
         )
         return self.session.exec(statement).first()
 
-    def mark_used(self, *, token_hash: str) -> None:
+    def invalidate(self, *, token_hash: str) -> None:
         statement = select(PasswordResetToken).where(
             PasswordResetToken.token_hash == token_hash,
             PasswordResetToken.used.is_(False),
