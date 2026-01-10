@@ -187,3 +187,39 @@ def confirm_user_email_change(
         )
 
     return MessageResponse(message="Email changed successfully")
+
+
+@router.get("/confirm-email-change")
+def confirm_user_email_change_get(
+    token: str,
+    session: Session = Depends(get_session),
+):
+    """
+    Confirm email change via GET with query parameter.
+
+    This endpoint enables clickable email change confirmation links.
+    """
+    users_adapter = SQLAlchemyUserAdapter(session=session)
+    email_changes_adapter = SQLAlchemyEmailChangeAdapter(session=session)
+
+    try:
+        confirm_email_change(
+            users=users_adapter,
+            email_changes=email_changes_adapter,
+            token=token,
+        )
+    except EmailChangeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except EmailAlreadyExistsError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    return {
+        "message": "Email changed successfully",
+        "status": "success",
+    }

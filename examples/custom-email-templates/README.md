@@ -287,34 +287,40 @@ Now FastAuth will use your custom email client for all authentication emails!
 
 ### 3. Email Verification Flow with Clickable Links
 
-FastAuth provides a GET endpoint for email verification that works with clickable links:
+FastAuth provides GET endpoints for clickable email links:
 
 **Email Verification Flow:**
 1. User registers → FastAuth sends verification email with token
 2. Email contains clickable link: `http://localhost:8000/auth/email-verification/confirm?token=abc123`
-3. User clicks link → hits FastAuth's GET endpoint directly
-4. Returns success message: `{"message": "Email verified successfully", "status": "success"}`
+3. User clicks link → FastAuth's GET endpoint verifies email directly
+4. Returns: `{"message": "Email verified successfully", "status": "success"}`
+
+**Email Change Confirmation Flow:**
+1. User requests email change → FastAuth sends confirmation email
+2. Email contains clickable link: `http://localhost:8000/account/confirm-email-change?token=abc123`
+3. User clicks link → FastAuth's GET endpoint changes email directly
+4. Returns: `{"message": "Email changed successfully", "status": "success"}`
 
 **Password Reset Flow:**
 
-Password reset requires a form since users need to enter a new password. This example includes a wrapper endpoint in `app/main.py`:
+Password reset requires user input, so this example includes a validation endpoint:
 
 ```python
 @app.get("/reset-password")
-def reset_password_page(token: str):
-    """Handle password reset link from email.
-
-    In a real application, this would render a form for entering new password.
-    Users would then submit the form to /auth/password-reset/confirm.
-    """
-    return {
-        "message": "Password reset token received",
-        "token": token,
-        "instructions": "Show password reset form here"
-    }
+def reset_password_page(token: str, session: Session = Depends(get_session)):
+    """Validate reset token and show password reset form."""
+    # Validate token
+    # If valid, show form; if invalid, show error
+    # Form submits to /auth/password-reset/confirm
 ```
 
-**Why is a wrapper needed for password reset?** Unlike email verification (which just needs the token), password reset requires the user to enter a new password. The wrapper endpoint provides a place to show a password reset form, which then submits to FastAuth's `/auth/password-reset/confirm` endpoint.
+**Why is a wrapper needed for password reset?** Unlike email verification (just needs the token), password reset requires the user to enter a new password. The wrapper validates the token and shows a password reset form, which then submits to FastAuth's `/auth/password-reset/confirm` endpoint.
+
+You can also use FastAuth's built-in validation endpoint:
+```bash
+GET /auth/password-reset/validate?token=abc123
+# Returns: {"message": "Valid reset token", "status": "valid", "token": "abc123"}
+```
 
 ## Email Design Best Practices
 
