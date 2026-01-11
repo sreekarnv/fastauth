@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 
 from fastauth.adapters.sqlalchemy.models import User
 from fastauth.adapters.sqlalchemy.roles import SQLAlchemyRoleAdapter
+from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.core.constants import ErrorMessages
 from fastauth.core.roles import check_permission
 from fastauth.security.jwt import TokenError, decode_access_token
@@ -19,6 +20,27 @@ def get_session():
         "get_session must be overridden by the application. "
         "Use app.dependency_overrides[dependencies.get_session] = your_get_session"
     )
+
+
+def get_adapters(session: Session = Depends(get_session)) -> AdapterFactory:
+    """
+    Get adapter factory for the current request.
+
+    This dependency provides access to all database adapters through
+    a single AdapterFactory instance, reducing boilerplate across endpoints.
+
+    Args:
+        session: Database session from get_session dependency
+
+    Returns:
+        AdapterFactory instance for database operations
+
+    Example:
+        @app.post("/auth/register")
+        def register(adapters: AdapterFactory = Depends(get_adapters)):
+            user = create_user(users=adapters.users, ...)
+    """
+    return AdapterFactory(session=session)
 
 
 def get_current_user(
