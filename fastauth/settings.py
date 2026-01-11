@@ -7,6 +7,12 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     require_email_verification: bool = True
 
+    # Token expiration times
+    email_verification_token_expiry_minutes: int = 60
+    password_reset_token_expiry_minutes: int = 30
+    email_change_token_expiry_minutes: int = 60
+    refresh_token_expiry_days: int = 30
+
     email_backend: str = "console"
 
     smtp_host: str | None = None

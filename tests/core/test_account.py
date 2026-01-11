@@ -327,7 +327,7 @@ def test_confirm_email_change_invalid_token(users, email_changes):
 def test_confirm_email_change_expired_token(users, email_changes, test_user):
     from datetime import UTC, datetime, timedelta
 
-    from fastauth.security.refresh import hash_refresh_token
+    from fastauth.security.tokens import hash_token
 
     token = request_email_change(
         users=users,
@@ -337,7 +337,7 @@ def test_confirm_email_change_expired_token(users, email_changes, test_user):
         expires_in_minutes=60,
     )
 
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     email_change_record = email_changes.get_valid(token_hash=token_hash)
     email_change_record.expires_at = datetime.now(UTC) - timedelta(hours=1)
 

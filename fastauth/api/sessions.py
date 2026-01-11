@@ -7,6 +7,7 @@ from sqlmodel import Session
 from fastauth.adapters.sqlalchemy.models import User
 from fastauth.api.adapter_factory import AdapterFactory
 from fastauth.api.dependencies import get_current_user, get_session
+from fastauth.api.schemas import MessageResponse
 from fastauth.core.sessions import (
     SessionNotFoundError,
     delete_all_user_sessions,
@@ -30,10 +31,6 @@ class SessionResponse(BaseModel):
 
 class SessionListResponse(BaseModel):
     sessions: list[SessionResponse]
-
-
-class MessageResponse(BaseModel):
-    message: str
 
 
 @router.get("", response_model=SessionListResponse)

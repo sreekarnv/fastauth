@@ -275,11 +275,11 @@ def password_reset_validate(
     """
     from datetime import UTC, datetime
 
-    from fastauth.security.refresh import hash_refresh_token
+    from fastauth.security.tokens import hash_token
 
     adapters = AdapterFactory(session=session)
 
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     record = adapters.password_resets.get_valid(token_hash=token_hash)
 
     if not record:
