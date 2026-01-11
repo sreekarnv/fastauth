@@ -510,6 +510,37 @@ def test_confirm_email_change_email_taken_after_request(client):
     assert "no longer available" in response.json()["detail"].lower()
 
 
+def test_confirm_email_change_get_email_taken_after_request(client):
+    """Test GET confirm email change when email is taken after request."""
+    client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+
+    login_response = client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "password123"},
+    )
+    token = login_response.json()["access_token"]
+
+    email_change_response = client.post(
+        "/account/request-email-change",
+        json={"new_email": "newemail@example.com"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    email_token = email_change_response.json()["token"]
+
+    client.post(
+        "/auth/register",
+        json={"email": "newemail@example.com", "password": "password123"},
+    )
+
+    response = client.get(f"/account/confirm-email-change?token={email_token}")
+
+    assert response.status_code == 400
+    assert "no longer available" in response.json()["detail"].lower()
+
+
 def test_change_password_user_not_found_error(client):
     """Test change password when core function raises UserNotFoundError."""
     from unittest.mock import patch
