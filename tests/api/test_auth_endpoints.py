@@ -136,6 +136,7 @@ def test_password_reset_request(client: TestClient, caplog):
     import logging
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register", json={"email": "reset@example.com", "password": "password123"}
@@ -162,7 +163,7 @@ def test_password_reset_request_nonexistent_email(client: TestClient):
     assert response.status_code == 204
 
 
-@patch("fastauth.api.auth.get_email_client")
+@patch("fastauth.email.utils.get_email_client")
 def test_password_reset_request_with_email_client(mock_get_client, client: TestClient):
     """Test that password reset sends email via email client."""
     from unittest.mock import MagicMock
@@ -188,6 +189,7 @@ def test_password_reset_confirm_success(client: TestClient, caplog):
     import re
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -235,6 +237,7 @@ def test_password_reset_validate_success(client: TestClient, caplog):
     import re
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -272,6 +275,7 @@ def test_email_verification_request(client: TestClient, caplog):
     import logging
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -284,7 +288,7 @@ def test_email_verification_request(client: TestClient, caplog):
 
     assert response.status_code == 204
     assert any(
-        "Email verification token:" in record.message for record in caplog.records
+        "Email verification token for" in record.message for record in caplog.records
     )
 
 
@@ -297,7 +301,7 @@ def test_email_verification_request_nonexistent_email(client: TestClient):
     assert response.status_code == 204
 
 
-@patch("fastauth.api.auth.get_email_client")
+@patch("fastauth.email.utils.get_email_client")
 def test_email_verification_request_with_email_client(
     mock_get_client, client: TestClient
 ):
@@ -326,6 +330,7 @@ def test_email_verification_confirm_success(client: TestClient, caplog):
     import re
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -361,6 +366,7 @@ def test_email_verification_confirm_get_success(client: TestClient, caplog):
     import re
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -395,6 +401,7 @@ def test_resend_email_verification(client: TestClient, caplog):
     import logging
 
     caplog.set_level(logging.DEBUG, logger="fastauth.api.auth")
+    caplog.set_level(logging.DEBUG, logger="fastauth.email.utils")
 
     client.post(
         "/auth/register",
@@ -445,7 +452,7 @@ def test_resend_email_verification_rate_limit(client: TestClient):
         limits.email_verification_rate_limiter._store.clear()
 
 
-@patch("fastauth.api.auth.get_email_client")
+@patch("fastauth.email.utils.get_email_client")
 def test_resend_email_verification_with_email_client(
     mock_get_client, client: TestClient
 ):
@@ -468,7 +475,7 @@ def test_resend_email_verification_with_email_client(
     assert mock_email_client.send_verification_email.called
 
 
-@patch("fastauth.api.auth.get_email_client")
+@patch("fastauth.email.utils.get_email_client")
 def test_register_sends_verification_email(mock_get_client, client: TestClient):
     """Test that registration sends verification email."""
     from unittest.mock import MagicMock

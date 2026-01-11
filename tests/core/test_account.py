@@ -264,6 +264,21 @@ def test_request_email_change_success(users, email_changes, test_user):
     assert len(token) > 0
 
 
+def test_request_email_change_uses_default_expiry(users, email_changes, test_user):
+    """
+    Test that request_email_change uses settings default when expiry not specified.
+    """
+    token = request_email_change(
+        users=users,
+        email_changes=email_changes,
+        user_id=test_user.id,
+        new_email="newemail@example.com",
+    )
+
+    assert token is not None
+    assert len(token) > 0
+
+
 def test_request_email_change_user_not_found(users, email_changes):
     non_existent_id = uuid.uuid4()
 

@@ -10,6 +10,7 @@ from fastauth.api.schemas import (
     OAuthLinkResponse,
     TokenResponse,
 )
+from fastauth.api.utils import extract_request_metadata
 from fastauth.core.oauth import (
     OAuthAccountAlreadyLinkedError,
     OAuthError,
@@ -193,12 +194,13 @@ async def oauth_callback(
         user_id=user.id,
     )
 
+    metadata = extract_request_metadata(request)
     create_session(
         sessions=adapters.sessions,
         users=adapters.users,
         user_id=user.id,
-        ip_address=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
+        ip_address=metadata.ip_address,
+        user_agent=metadata.user_agent,
     )
 
     return TokenResponse(
