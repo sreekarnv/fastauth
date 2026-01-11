@@ -1,8 +1,13 @@
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
-from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
-from fastauth.security.tokens import utc_from_now, validate_token_expiration
+from fastauth.security.tokens import (
+    generate_secure_token,
+    hash_token,
+    utc_from_now,
+    validate_token_expiration,
+)
+from fastauth.settings import settings
 
 
 class PasswordResetError(Exception):
@@ -14,14 +19,17 @@ def request_password_reset(
     users: UserAdapter,
     resets: PasswordResetAdapter,
     email: str,
-    expires_in_minutes: int = 30,
+    expires_in_minutes: int | None = None,
 ) -> str | None:
     user = users.get_by_email(email)
     if not user:
         return None
 
-    raw_token = generate_refresh_token()
-    token_hash = hash_refresh_token(raw_token)
+    if expires_in_minutes is None:
+        expires_in_minutes = settings.password_reset_token_expiry_minutes
+
+    raw_token = generate_secure_token(48)
+    token_hash = hash_token(raw_token)
 
     expires_at = utc_from_now(minutes=expires_in_minutes)
 
@@ -41,7 +49,7 @@ def confirm_password_reset(
     token: str,
     new_password: str,
 ) -> None:
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
 
     record = resets.get_valid(token_hash=token_hash)
     if not record:

@@ -104,10 +104,10 @@ def reset_password_page(token: str, session: Session = Depends(get_session)):
     from fastauth.adapters.sqlalchemy.password_reset import (
         SQLAlchemyPasswordResetAdapter,
     )
-    from fastauth.security.refresh import hash_refresh_token
+    from fastauth.security.tokens import hash_token
 
     resets = SQLAlchemyPasswordResetAdapter(session)
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     record = resets.get_valid(token_hash=token_hash)
 
     if not record:

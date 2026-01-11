@@ -16,6 +16,7 @@ from fastauth.api.schemas import (
     RegisterRequest,
     TokenResponse,
 )
+from fastauth.api.utils import extract_request_metadata
 from fastauth.core.constants import ErrorMessages
 from fastauth.core.email_verification import (
     EmailVerificationError,
@@ -41,7 +42,7 @@ from fastauth.core.users import (
     authenticate_user,
     create_user,
 )
-from fastauth.email.factory import get_email_client
+from fastauth.email.utils import send_token_email
 from fastauth.security.jwt import create_access_token
 from fastauth.security.limits import (
     email_verification_rate_limiter,
@@ -88,13 +89,7 @@ def register(
         email=user.email,
     )
 
-    if verification_token:
-        email_client = get_email_client()
-        email_client.send_verification_email(
-            to=user.email,
-            token=verification_token,
-        )
-        logger.debug(f"Email verification token for {user.email}: {verification_token}")
+    send_token_email(user.email, verification_token, "verification")
 
     access_token = create_access_token(subject=str(user.id))
     refresh_token = create_refresh_token(
@@ -102,12 +97,13 @@ def register(
         user_id=user.id,
     )
 
+    metadata = extract_request_metadata(request)
     create_session(
         sessions=adapters.sessions,
         users=adapters.users,
         user_id=user.id,
-        ip_address=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
+        ip_address=metadata.ip_address,
+        user_agent=metadata.user_agent,
     )
 
     return TokenResponse(
@@ -159,12 +155,13 @@ def login(
         user_id=user.id,
     )
 
+    metadata = extract_request_metadata(request)
     create_session(
         sessions=adapters.sessions,
         users=adapters.users,
         user_id=user.id,
-        ip_address=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
+        ip_address=metadata.ip_address,
+        user_agent=metadata.user_agent,
     )
 
     return TokenResponse(
@@ -228,13 +225,7 @@ def password_reset_request(
         email=payload.email,
     )
 
-    if token:
-        email_client = get_email_client()
-        email_client.send_password_reset_email(
-            to=payload.email,
-            token=token,
-        )
-        logger.debug(f"Password reset token: {token}")
+    send_token_email(payload.email, token, "password_reset")
 
     return None
 
@@ -275,11 +266,11 @@ def password_reset_validate(
     """
     from datetime import UTC, datetime
 
-    from fastauth.security.refresh import hash_refresh_token
+    from fastauth.security.tokens import hash_token
 
     adapters = AdapterFactory(session=session)
 
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     record = adapters.password_resets.get_valid(token_hash=token_hash)
 
     if not record:
@@ -318,13 +309,7 @@ def email_verification_request(
         email=payload.email,
     )
 
-    if token:
-        email_client = get_email_client()
-        email_client.send_verification_email(
-            to=payload.email,
-            token=token,
-        )
-        logger.debug(f"Email verification token: {token}")
+    send_token_email(payload.email, token, "verification")
 
     return None
 
@@ -396,12 +381,6 @@ def resend_email_verification(
         email=payload.email,
     )
 
-    if token:
-        email_client = get_email_client()
-        email_client.send_verification_email(
-            to=payload.email,
-            token=token,
-        )
-        logger.debug(f"Resent email verification token: {token}")
+    send_token_email(payload.email, token, "verification", is_resend=True)
 
     return None

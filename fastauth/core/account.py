@@ -4,8 +4,13 @@ from fastauth.adapters.base.email_change import EmailChangeAdapter
 from fastauth.adapters.base.sessions import SessionAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password, verify_password
-from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
-from fastauth.security.tokens import utc_from_now, validate_token_expiration
+from fastauth.security.tokens import (
+    generate_secure_token,
+    hash_token,
+    utc_from_now,
+    validate_token_expiration,
+)
+from fastauth.settings import settings
 
 
 class InvalidPasswordError(Exception):
@@ -70,7 +75,7 @@ def request_email_change(
     email_changes: EmailChangeAdapter,
     user_id: uuid.UUID,
     new_email: str,
-    expires_in_minutes: int = 60,
+    expires_in_minutes: int | None = None,
 ) -> str | None:
     """
     Request an email change for a user.
@@ -80,7 +85,8 @@ def request_email_change(
         email_changes: Email change adapter for database operations
         user_id: ID of the user requesting email change
         new_email: New email address
-        expires_in_minutes: Token expiration time in minutes
+        expires_in_minutes: Token expiration time in minutes \
+            (defaults to settings value)
 
     Returns:
         Verification token if successful, None if user not found
@@ -96,8 +102,11 @@ def request_email_change(
     if existing_user:
         raise EmailAlreadyExistsError(f"Email {new_email} already exists")
 
-    raw_token = generate_refresh_token()
-    token_hash = hash_refresh_token(raw_token)
+    if expires_in_minutes is None:
+        expires_in_minutes = settings.email_change_token_expiry_minutes
+
+    raw_token = generate_secure_token(48)
+    token_hash = hash_token(raw_token)
 
     expires_at = utc_from_now(minutes=expires_in_minutes)
 
@@ -129,7 +138,7 @@ def confirm_email_change(
         EmailChangeError: If token is invalid or expired
         EmailAlreadyExistsError: If the new email already exists
     """
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
 
     record = email_changes.get_valid(token_hash=token_hash)
     if not record:

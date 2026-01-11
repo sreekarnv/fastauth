@@ -9,6 +9,7 @@ from fastauth.api.schemas import (
     ChangePasswordRequest,
     ConfirmEmailChangeRequest,
     DeleteAccountRequest,
+    MessageResponse,
     RequestEmailChangeRequest,
 )
 from fastauth.core.account import (
@@ -24,10 +25,6 @@ from fastauth.core.account import (
 from fastauth.core.constants import ErrorMessages
 
 router = APIRouter(prefix="/account", tags=["account"])
-
-
-class MessageResponse(BaseModel):
-    message: str
 
 
 @router.post("/change-password", response_model=MessageResponse)

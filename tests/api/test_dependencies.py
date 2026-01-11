@@ -128,3 +128,24 @@ def test_get_current_user_inactive_user(test_app):
 
     assert response.status_code == 401
     assert "User not found or inactive" in response.text
+
+
+def test_get_adapters():
+    """Test get_adapters dependency function."""
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        adapters = dependencies.get_adapters(session)
+
+        assert adapters is not None
+        assert hasattr(adapters, "users")
+        assert hasattr(adapters, "verifications")
+        assert hasattr(adapters, "refresh_tokens")
+        assert hasattr(adapters, "sessions")
+
+    engine.dispose()

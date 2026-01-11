@@ -264,6 +264,21 @@ def test_request_email_change_success(users, email_changes, test_user):
     assert len(token) > 0
 
 
+def test_request_email_change_uses_default_expiry(users, email_changes, test_user):
+    """
+    Test that request_email_change uses settings default when expiry not specified.
+    """
+    token = request_email_change(
+        users=users,
+        email_changes=email_changes,
+        user_id=test_user.id,
+        new_email="newemail@example.com",
+    )
+
+    assert token is not None
+    assert len(token) > 0
+
+
 def test_request_email_change_user_not_found(users, email_changes):
     non_existent_id = uuid.uuid4()
 
@@ -327,7 +342,7 @@ def test_confirm_email_change_invalid_token(users, email_changes):
 def test_confirm_email_change_expired_token(users, email_changes, test_user):
     from datetime import UTC, datetime, timedelta
 
-    from fastauth.security.refresh import hash_refresh_token
+    from fastauth.security.tokens import hash_token
 
     token = request_email_change(
         users=users,
@@ -337,7 +352,7 @@ def test_confirm_email_change_expired_token(users, email_changes, test_user):
         expires_in_minutes=60,
     )
 
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     email_change_record = email_changes.get_valid(token_hash=token_hash)
     email_change_record.expires_at = datetime.now(UTC) - timedelta(hours=1)
 

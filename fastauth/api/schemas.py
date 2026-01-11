@@ -76,3 +76,9 @@ class OAuthLinkResponse(BaseModel):
     email: str | None
     name: str | None
     linked_at: datetime
+
+
+class MessageResponse(BaseModel):
+    """Standard message response."""
+
+    message: str

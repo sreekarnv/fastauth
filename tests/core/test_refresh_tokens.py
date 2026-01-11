@@ -19,10 +19,10 @@ def refresh_tokens():
 
 def test_rotate_refresh_token_expired(refresh_tokens):
     """Test that expired refresh tokens raise an error during rotation."""
-    from fastauth.security.refresh import generate_refresh_token, hash_refresh_token
+    from fastauth.security.tokens import generate_secure_token, hash_token
 
-    token = generate_refresh_token()
-    token_hash = hash_refresh_token(token)
+    token = generate_secure_token(48)
+    token_hash = hash_token(token)
     user_id = uuid.uuid4()
 
     refresh_tokens.create(

@@ -1,10 +1,12 @@
 from fastauth.adapters.base.email_verification import EmailVerificationAdapter
 from fastauth.adapters.base.users import UserAdapter
-from fastauth.security.email_verification import (
-    generate_email_verification_token,
-    hash_email_verification_token,
+from fastauth.security.tokens import (
+    generate_secure_token,
+    hash_token,
+    utc_from_now,
+    validate_token_expiration,
 )
-from fastauth.security.tokens import utc_from_now, validate_token_expiration
+from fastauth.settings import settings
 
 
 class EmailVerificationError(Exception):
@@ -16,14 +18,17 @@ def request_email_verification(
     users: UserAdapter,
     verifications: EmailVerificationAdapter,
     email: str,
-    expires_in_minutes: int = 60,
+    expires_in_minutes: int | None = None,
 ) -> str | None:
     user = users.get_by_email(email)
     if not user or user.is_verified:
         return None
 
-    raw_token = generate_email_verification_token()
-    token_hash = hash_email_verification_token(raw_token)
+    if expires_in_minutes is None:
+        expires_in_minutes = settings.email_verification_token_expiry_minutes
+
+    raw_token = generate_secure_token(48)
+    token_hash = hash_token(raw_token)
 
     expires_at = utc_from_now(minutes=expires_in_minutes)
 
@@ -42,7 +47,7 @@ def confirm_email_verification(
     verifications: EmailVerificationAdapter,
     token: str,
 ) -> None:
-    token_hash = hash_email_verification_token(token)
+    token_hash = hash_token(token)
 
     record = verifications.get_valid(token_hash=token_hash)
     if not record:

@@ -1,11 +1,13 @@
 import uuid
 
 from fastauth.adapters.base.refresh_tokens import RefreshTokenAdapter
-from fastauth.security.refresh import (
-    generate_refresh_token,
-    hash_refresh_token,
+from fastauth.security.tokens import (
+    generate_secure_token,
+    hash_token,
+    utc_from_now,
+    validate_token_expiration,
 )
-from fastauth.security.tokens import utc_from_now, validate_token_expiration
+from fastauth.settings import settings
 
 
 class RefreshTokenError(Exception):
@@ -16,10 +18,13 @@ def create_refresh_token(
     *,
     refresh_tokens: RefreshTokenAdapter,
     user_id: uuid.UUID,
-    expires_in_days: int = 30,
+    expires_in_days: int | None = None,
 ) -> str:
-    raw_token = generate_refresh_token()
-    token_hash = hash_refresh_token(raw_token)
+    if expires_in_days is None:
+        expires_in_days = settings.refresh_token_expiry_days
+
+    raw_token = generate_secure_token(48)
+    token_hash = hash_token(raw_token)
 
     expires_at = utc_from_now(days=expires_in_days)
 
@@ -36,9 +41,12 @@ def rotate_refresh_token(
     *,
     refresh_tokens: RefreshTokenAdapter,
     token: str,
-    expires_in_days: int = 30,
+    expires_in_days: int | None = None,
 ):
-    token_hash = hash_refresh_token(token)
+    if expires_in_days is None:
+        expires_in_days = settings.refresh_token_expiry_days
+
+    token_hash = hash_token(token)
 
     refresh = refresh_tokens.get_active(token_hash=token_hash)
     if not refresh:
@@ -51,8 +59,8 @@ def rotate_refresh_token(
 
     refresh_tokens.revoke(token_hash=token_hash)
 
-    new_token = generate_refresh_token()
-    new_hash = hash_refresh_token(new_token)
+    new_token = generate_secure_token(48)
+    new_hash = hash_token(new_token)
 
     refresh_tokens.create(
         user_id=refresh.user_id,
@@ -68,5 +76,5 @@ def revoke_refresh_token(
     refresh_tokens: RefreshTokenAdapter,
     token: str,
 ) -> None:
-    token_hash = hash_refresh_token(token)
+    token_hash = hash_token(token)
     refresh_tokens.revoke(token_hash=token_hash)
