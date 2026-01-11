@@ -177,6 +177,10 @@
          <lastmod>2026-01-11</lastmod>
     </url>
     <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/api/utils/</loc>
+         <lastmod>2026-01-11</lastmod>
+    </url>
+    <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/account/</loc>
          <lastmod>2026-01-11</lastmod>
     </url>
@@ -233,15 +237,15 @@
          <lastmod>2026-01-11</lastmod>
     </url>
     <url>
+         <loc>https://sreekarnv.github.io/fastauth/reference/email/utils/</loc>
+         <lastmod>2026-01-11</lastmod>
+    </url>
+    <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/providers/base/</loc>
          <lastmod>2026-01-11</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/providers/google/</loc>
-         <lastmod>2026-01-11</lastmod>
-    </url>
-    <url>
-         <loc>https://sreekarnv.github.io/fastauth/reference/security/email_verification/</loc>
          <lastmod>2026-01-11</lastmod>
     </url>
     <url>
@@ -258,10 +262,6 @@
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/rate_limit/</loc>
-         <lastmod>2026-01-11</lastmod>
-    </url>
-    <url>
-         <loc>https://sreekarnv.github.io/fastauth/reference/security/refresh/</loc>
          <lastmod>2026-01-11</lastmod>
     </url>
     <url>
