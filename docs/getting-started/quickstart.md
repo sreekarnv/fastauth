@@ -8,6 +8,10 @@ Get a working authentication system in 5 minutes.
 pip install sreekarnv-fastauth
 ```
 
+This installs FastAuth with SQLAlchemy adapters. See [Installation](installation.md) for more options.
+
+> **Note:** FastAPI is a peer dependency - your project must have FastAPI installed.
+
 ## Step 2: Create Your App
 
 Create `main.py`:

@@ -28,6 +28,13 @@ FastAuth is a flexible, database-agnostic authentication library for FastAPI tha
 pip install sreekarnv-fastauth
 ```
 
+> **Note:** FastAPI is a peer dependency - your project must have FastAPI installed.
+
+For OAuth providers (Google, GitHub, etc.):
+```bash
+pip install sreekarnv-fastauth[oauth]
+```
+
 ### Create Your App
 
 ```python

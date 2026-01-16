@@ -2,6 +2,12 @@
 
 Integrate social login with Google, GitHub, and other OAuth providers.
 
+!!! note "Installation"
+    OAuth providers require the `oauth` extra:
+    ```bash
+    pip install sreekarnv-fastauth[oauth]
+    ```
+
 ## Overview
 
 FastAuth supports OAuth 2.0 authentication with PKCE for enhanced security. Users can:
