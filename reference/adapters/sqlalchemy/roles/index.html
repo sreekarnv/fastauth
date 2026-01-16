@@ -3318,6 +3318,9 @@
 
     <div class="doc doc-contents first">
 
+      <p>SQLAlchemy role adapter implementation.</p>
+<p>Provides database operations for role-based access control using SQLAlchemy/SQLModel.</p>
+
 
 
   <div class="doc doc-children">
@@ -3328,6 +3331,53 @@
 
 
 <h3 id="fastauth.adapters.sqlalchemy.roles-classes">Classes<a href="#fastauth.adapters.sqlalchemy.roles-classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="fastauth.adapters.sqlalchemy.roles.SQLAlchemyRoleAdapter" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SQLAlchemyRoleAdapter</span>
+
+
+<a href="#fastauth.adapters.sqlalchemy.roles.SQLAlchemyRoleAdapter" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">SQLAlchemyRoleAdapter</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n"><span title="sqlmodel.Session">Session</span></span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="fastauth.adapters.base.roles.RoleAdapter" href="../../base/roles/#fastauth.adapters.base.roles.RoleAdapter">RoleAdapter</a></code></p>
+
+
+      <p>SQLAlchemy implementation of RoleAdapter for RBAC database operations.</p>
+
+                  <details class="quote">
+                    <summary>Source code in <code>fastauth/adapters/sqlalchemy/roles.py</code></summary>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">):</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+</span></code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

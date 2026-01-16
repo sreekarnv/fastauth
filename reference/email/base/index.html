@@ -2874,6 +2874,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label=" base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastauth.email.base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3275,6 +3292,42 @@
 
     <div class="doc doc-contents first">
 
+      <p>Email client base interface.</p>
+<p>Defines the abstract interface for email clients. All email implementations
+(SMTP, console, third-party services) must inherit from EmailClient.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="fastauth.email.base-classes">Classes<a href="#fastauth.email.base-classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="fastauth.email.base.EmailClient" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">EmailClient</span>
+
+
+<a href="#fastauth.email.base.EmailClient" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+
+      <p>Abstract base class for email clients.</p>
+<p>Implementations must provide methods for sending verification
+and password reset emails.</p>
+
+
 
 
   <div class="doc doc-children">
@@ -3285,6 +3338,15 @@
 
 
 
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

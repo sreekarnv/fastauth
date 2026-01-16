@@ -3121,6 +3121,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label=" settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastauth.settings-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3257,6 +3274,42 @@
 
     <div class="doc doc-contents first">
 
+      <p>FastAuth configuration settings.</p>
+<p>All settings can be configured via environment variables or .env file.
+Settings use Pydantic for validation and type coercion.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="fastauth.settings-classes">Classes<a href="#fastauth.settings-classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="fastauth.settings.Settings" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Settings</span>
+
+
+<a href="#fastauth.settings.Settings" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic_settings.BaseSettings">BaseSettings</span></code></p>
+
+
+      <p>FastAuth configuration settings.</p>
+<p>All settings can be overridden via environment variables.
+For example, JWT_SECRET_KEY environment variable overrides jwt_secret_key.</p>
+
+
 
 
   <div class="doc doc-children">
@@ -3267,6 +3320,15 @@
 
 
 
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

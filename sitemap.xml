@@ -2,270 +2,270 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://sreekarnv.github.io/fastauth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/architecture/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/configuration/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/contributing/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/deployment/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/testing/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/getting-started/core-concepts/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/getting-started/installation/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/getting-started/quickstart/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/authentication/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/email/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/oauth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/protecting-routes/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/rbac/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/guides/sessions/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/settings/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/email_change/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/email_verification/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/oauth_accounts/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/oauth_states/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/password_reset/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/refresh_tokens/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/roles/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/sessions/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/token/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/base/users/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/email_change/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/email_verification/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/models/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/oauth_accounts/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/oauth_states/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/password_reset/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/refresh_tokens/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/roles/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/sessions/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/adapters/sqlalchemy/users/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/account/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/adapter_factory/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/auth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/dependencies/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/oauth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/schemas/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/sessions/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/api/utils/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/account/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/constants/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/email_verification/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/hashing/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/oauth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/password_reset/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/refresh_tokens/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/roles/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/sessions/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/core/users/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/email/base/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/email/console/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/email/factory/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/email/smtp/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/email/utils/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/providers/base/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/providers/google/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/jwt/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/limits/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/oauth/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/rate_limit/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
     <url>
          <loc>https://sreekarnv.github.io/fastauth/reference/security/tokens/</loc>
-         <lastmod>2026-01-11</lastmod>
+         <lastmod>2026-01-16</lastmod>
     </url>
 </urlset>
