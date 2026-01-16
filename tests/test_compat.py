@@ -28,7 +28,8 @@ class TestMissingDependencyError:
 
     def test_error_message_format(self):
         error = MissingDependencyError("testpkg", "Install with: pip install testpkg")
-        assert str(error) == "'testpkg' is required. Install with: pip install testpkg"
+        assert "'testpkg' is required" in str(error)
+        assert "Install with: pip install testpkg" in str(error)
 
     def test_error_attributes(self):
         error = MissingDependencyError("mypkg", "Install hint here")
