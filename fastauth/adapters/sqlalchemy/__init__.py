@@ -1,3 +1,25 @@
+"""
+SQLAlchemy adapter implementations for FastAuth.
+
+This module provides SQLAlchemy/SQLModel implementations of all adapter interfaces.
+Use these adapters with any SQLAlchemy-compatible database (PostgreSQL, MySQL, SQLite).
+
+Adapters:
+    SQLAlchemyUserAdapter: User account management
+    SQLAlchemyRefreshTokenAdapter: Refresh token storage
+    SQLAlchemyPasswordResetAdapter: Password reset token storage
+    SQLAlchemyEmailVerificationAdapter: Email verification token storage
+    SQLAlchemyRoleAdapter: Role-based access control
+    SQLAlchemySessionAdapter: User session management
+    SQLAlchemyOAuthAccountAdapter: OAuth account linking
+    SQLAlchemyOAuthStateAdapter: OAuth CSRF state tokens
+
+Models:
+    User, RefreshToken, PasswordResetToken, EmailVerificationToken,
+    Role, Permission, UserRole, RolePermission, Session,
+    OAuthAccount, OAuthState
+"""
+
 from .email_verification import SQLAlchemyEmailVerificationAdapter
 from .models import (
     EmailVerificationToken,

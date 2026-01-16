@@ -1,3 +1,10 @@
+"""
+OAuth provider implementations.
+
+Provides OAuth provider interface and implementations for social login.
+Register providers to enable OAuth authentication flows.
+"""
+
 from fastauth.providers.base import OAuthProvider, OAuthTokens, OAuthUserInfo
 from fastauth.providers.google import GoogleOAuthProvider
 

@@ -1,3 +1,10 @@
+"""
+Role adapter interface.
+
+Defines the abstract interface for role-based access control (RBAC) operations.
+Handles roles, permissions, and their assignments to users.
+"""
+
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any

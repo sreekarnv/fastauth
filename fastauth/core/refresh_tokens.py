@@ -1,3 +1,10 @@
+"""
+Refresh token management core logic.
+
+Provides business logic for refresh token creation, rotation, and revocation.
+Refresh tokens enable persistent authentication without storing passwords.
+"""
+
 import uuid
 
 from fastauth.adapters.base.refresh_tokens import RefreshTokenAdapter
@@ -11,7 +18,7 @@ from fastauth.settings import settings
 
 
 class RefreshTokenError(Exception):
-    pass
+    """Raised when refresh token operations fail."""
 
 
 def create_refresh_token(

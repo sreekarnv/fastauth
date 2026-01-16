@@ -1,3 +1,10 @@
+"""
+Session management API endpoints.
+
+Provides endpoints for managing user sessions including listing,
+viewing, and revoking active sessions.
+"""
+
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status

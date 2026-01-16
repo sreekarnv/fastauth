@@ -1,3 +1,10 @@
+"""
+OAuth state adapter interface.
+
+Defines the abstract interface for OAuth state token storage.
+State tokens prevent CSRF attacks during OAuth authentication flows.
+"""
+
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime

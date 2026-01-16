@@ -1,3 +1,10 @@
+"""
+Email verification core logic.
+
+Provides business logic for email verification token generation and confirmation.
+Used to verify user email addresses during registration.
+"""
+
 from fastauth.adapters.base.email_verification import EmailVerificationAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.security.tokens import (
@@ -10,7 +17,7 @@ from fastauth.settings import settings
 
 
 class EmailVerificationError(Exception):
-    pass
+    """Raised when email verification fails."""
 
 
 def request_email_verification(

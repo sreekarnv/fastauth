@@ -1,3 +1,9 @@
+"""
+SQLAlchemy session adapter implementation.
+
+Provides database operations for user session management using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -9,6 +15,10 @@ from fastauth.adapters.sqlalchemy.models import Session
 
 
 class SQLAlchemySessionAdapter(SessionAdapter):
+    """
+    SQLAlchemy implementation of SessionAdapter for session database operations.
+    """
+
     def __init__(self, session: DBSession):
         self.session = session
 

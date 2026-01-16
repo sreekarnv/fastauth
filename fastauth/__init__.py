@@ -1,3 +1,20 @@
+"""
+FastAuth - Authentication library for FastAPI.
+
+FastAuth provides a complete authentication solution for FastAPI applications
+including user registration, login, password reset, email verification,
+OAuth providers, RBAC, and session management.
+
+Basic usage:
+    from fastapi import FastAPI
+    from fastauth import auth_router, account_router, sessions_router
+
+    app = FastAPI()
+    app.include_router(auth_router)
+    app.include_router(account_router)
+    app.include_router(sessions_router)
+"""
+
 __version__ = "0.2.2"
 
 from fastauth.adapters.base import (

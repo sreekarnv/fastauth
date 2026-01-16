@@ -1,3 +1,9 @@
+"""
+SQLAlchemy OAuth account adapter implementation.
+
+Provides database operations for OAuth account management using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import UTC, datetime
 
@@ -8,6 +14,10 @@ from fastauth.adapters.sqlalchemy.models import OAuthAccount
 
 
 class SQLAlchemyOAuthAccountAdapter(OAuthAccountAdapter):
+    """
+    SQLAlchemy implementation of OAuthAccountAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

@@ -1,3 +1,10 @@
+"""
+Pre-configured rate limiters for authentication endpoints.
+
+Provides rate limiters with sensible defaults for login, registration,
+and email verification endpoints to prevent abuse.
+"""
+
 from fastauth.security.rate_limit import RateLimiter
 
 login_rate_limiter = RateLimiter(

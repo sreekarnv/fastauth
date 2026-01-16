@@ -1,3 +1,10 @@
+"""
+OAuth security utilities.
+
+Provides cryptographic functions for OAuth flows including state tokens,
+PKCE implementation, and authorization URL building.
+"""
+
 import base64
 import hashlib
 import secrets

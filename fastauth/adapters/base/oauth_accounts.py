@@ -1,3 +1,10 @@
+"""
+OAuth account adapter interface.
+
+Defines the abstract interface for OAuth account storage and management.
+Handles linking OAuth provider accounts to internal user accounts.
+"""
+
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime

@@ -1,3 +1,11 @@
+"""
+SQLModel database models for FastAuth.
+
+Defines all database tables used by FastAuth including users, tokens,
+sessions, roles, permissions, and OAuth accounts. All models use SQLModel
+for compatibility with both SQLAlchemy and Pydantic.
+"""
+
 import uuid
 from datetime import UTC, datetime
 
@@ -5,6 +13,10 @@ from sqlmodel import Field, SQLModel
 
 
 class User(SQLModel, table=True):
+    """
+    User account model with authentication and profile fields.
+    """
+
     __tablename__ = "users"
 
     id: uuid.UUID = Field(

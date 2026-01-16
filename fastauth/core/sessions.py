@@ -1,3 +1,10 @@
+"""
+Session management core logic.
+
+Provides business logic for user session management including creation,
+retrieval, and deletion of sessions.
+"""
+
 import uuid
 from typing import Any, List
 

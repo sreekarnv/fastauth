@@ -1,3 +1,10 @@
+"""
+SMTP email client implementation.
+
+Sends emails via SMTP server using standard library smtplib.
+Supports TLS and authentication via settings.
+"""
+
 import smtplib
 from email.message import EmailMessage
 
@@ -6,6 +13,8 @@ from fastauth.settings import settings
 
 
 class SMTPEmailClient(EmailClient):
+    """Email client that sends via SMTP server."""
+
     def _send(self, *, to: str, subject: str, body: str) -> None:
         msg = EmailMessage()
         msg["From"] = settings.smtp_from_email

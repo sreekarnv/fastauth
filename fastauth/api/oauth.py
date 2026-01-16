@@ -1,3 +1,10 @@
+"""
+OAuth authentication API endpoints.
+
+Provides endpoints for OAuth authentication flows including
+authorization URL generation, callback handling, and account linking.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
