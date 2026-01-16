@@ -96,12 +96,20 @@ Each example is self-contained with its own README and setup instructions.
 
 2. Install dependencies:
    ```bash
-   pip install fastapi[all] sqlmodel argon2-cffi python-jose pydantic-settings
+   # Install FastAuth (FastAPI is a peer dependency)
+   pip install sreekarnv-fastauth
+
+   # For OAuth examples, use:
+   pip install sreekarnv-fastauth[oauth]
+
+   # Make sure FastAPI is installed in your project
+   pip install fastapi uvicorn[standard]
    ```
 
-   Or install FastAuth from the parent directory:
+   Or install from the parent directory (for development):
    ```bash
    pip install -e ../..
+   pip install fastapi uvicorn[standard]
    ```
 
 3. Set up environment variables:

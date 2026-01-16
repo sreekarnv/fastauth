@@ -25,18 +25,21 @@ This example demonstrates how to implement **multi-device session tracking and m
 # Navigate to this example directory
 cd examples/session-devices
 
-# Install FastAuth from PyPI
+# Install FastAuth (FastAPI is a peer dependency)
 pip install sreekarnv-fastauth
+
+# Install FastAPI and uvicorn
+pip install fastapi uvicorn[standard]
 
 # OR install from parent directory (for development)
 pip install -e ../..
-
-# Install additional dependencies
-pip install uvicorn[standard]
+pip install fastapi uvicorn[standard]
 
 # OR install all dependencies from requirements.txt
 pip install -r requirements.txt
 ```
+
+> **Note:** FastAPI is a peer dependency and must be installed separately.
 
 ### Step 2: Set Up Environment Variables
 

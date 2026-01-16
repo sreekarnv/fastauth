@@ -3,23 +3,28 @@ OAuth provider implementations.
 
 Provides OAuth provider interface and implementations for social login.
 Register providers to enable OAuth authentication flows.
+
+Requires: pip install sreekarnv-fastauth[oauth] (for provider implementations)
 """
 
+from fastauth._compat import HAS_HTTPX
 from fastauth.providers.base import OAuthProvider, OAuthTokens, OAuthUserInfo
-from fastauth.providers.google import GoogleOAuthProvider
 
 __all__ = [
     "OAuthProvider",
     "OAuthTokens",
     "OAuthUserInfo",
-    "GoogleOAuthProvider",
     "register_provider",
     "get_provider",
     "list_providers",
 ]
 
+if HAS_HTTPX:
+    from fastauth.providers.google import GoogleOAuthProvider  # noqa: F401
 
-# Provider registry: maps provider name to provider instance
+    __all__.append("GoogleOAuthProvider")
+
+
 _PROVIDERS: dict[str, OAuthProvider] = {}
 
 

@@ -24,18 +24,21 @@ This example demonstrates how to implement **Role-Based Access Control (RBAC)** 
 # Navigate to this example directory
 cd examples/rbac-blog
 
-# Install FastAuth from PyPI
+# Install FastAuth (FastAPI is a peer dependency)
 pip install sreekarnv-fastauth
+
+# Install FastAPI and uvicorn
+pip install fastapi uvicorn[standard]
 
 # OR install from parent directory (for development)
 pip install -e ../..
-
-# Install additional dependencies
-pip install uvicorn[standard]
+pip install fastapi uvicorn[standard]
 
 # OR install all dependencies from requirements.txt
 pip install -r requirements.txt
 ```
+
+> **Note:** FastAPI is a peer dependency and must be installed separately.
 
 ### Step 2: Set Up Environment Variables
 

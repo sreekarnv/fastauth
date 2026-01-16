@@ -23,12 +23,25 @@ classifiers = [
     "Topic :: Security",
 ]
 dependencies = [
-    "fastapi[all] (>=0.128.0,<0.129.0)",
-    "argon2-cffi >=23.1.0",
-    "python-jose[cryptography] >=3.3.0",
-    "pydantic-settings >=2.0.0",
-    "sqlmodel >=0.0.16",
-    "httpx >=0.27.0"
+    "argon2-cffi>=23.1.0",
+    "python-jose[cryptography]>=3.3.0",
+    "pydantic-settings>=2.0.0",
+    "email-validator>=2.0.0",
+    "itsdangerous>=2.0.0",
+    "sqlmodel>=0.0.16",
+]
+
+# Note: FastAPI is a peer dependency - users must install it separately.
+# This avoids version conflicts with existing FastAPI installations.
+
+[project.optional-dependencies]
+# OAuth providers (requires HTTP client)
+oauth = [
+    "httpx>=0.27.0",
+]
+# All optional dependencies
+all = [
+    "httpx>=0.27.0",
 ]
 
 [project.urls]
@@ -75,6 +88,10 @@ mkdocs-gen-files = "^0.5.0"
 mkdocs-literate-nav = "^0.6.1"
 mkdocs-section-index = "^0.3.8"
 griffe = ">=0.36,<0.45"
+# Peer/optional dependencies needed for testing
+fastapi = ">=0.100.0"
+httpx = ">=0.27.0"
+pytest-asyncio = ">=0.23.0"
 
 [tool.black]
 line-length = 88

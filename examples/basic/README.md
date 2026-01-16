@@ -33,13 +33,19 @@ From the repository root:
 
 ```bash
 cd examples/basic
-pip install fastapi[all] sqlmodel argon2-cffi python-jose pydantic-settings
+
+# Install FastAuth (FastAPI is a peer dependency)
+pip install sreekarnv-fastauth
+
+# Install FastAPI and uvicorn
+pip install fastapi uvicorn[standard]
 ```
 
-Or with the parent package:
+Or install from the parent directory (for development):
 
 ```bash
 pip install -e ../..
+pip install fastapi uvicorn[standard]
 ```
 
 ### 2. Set Up Environment

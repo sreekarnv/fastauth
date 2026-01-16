@@ -65,18 +65,21 @@ This example demonstrates how to integrate **Google OAuth (Sign in with Google)*
 # Navigate to this example directory
 cd examples/oauth-google
 
-# Install FastAuth from PyPI
-pip install sreekarnv-fastauth
+# Install FastAuth with OAuth support (required for Google OAuth)
+pip install sreekarnv-fastauth[oauth]
+
+# Install FastAPI (peer dependency) and uvicorn
+pip install fastapi uvicorn[standard] itsdangerous
 
 # OR install from parent directory (for development)
 pip install -e ../..
-
-# Install additional dependencies
-pip install uvicorn[standard] itsdangerous
+pip install fastapi uvicorn[standard] itsdangerous
 
 # OR install all dependencies from requirements.txt
 pip install -r requirements.txt
 ```
+
+> **Note:** The `[oauth]` extra is required for OAuth providers. FastAPI is a peer dependency.
 
 ### Step 3: Configure Environment Variables
 
