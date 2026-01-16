@@ -3,22 +3,28 @@ OAuth authentication API endpoints.
 
 Provides endpoints for OAuth authentication flows including
 authorization URL generation, callback handling, and account linking.
+
+Requires: pip install sreekarnv-fastauth[oauth] (for OAuth providers)
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlmodel import Session
+from fastauth._compat import require_httpx
 
-from fastauth.adapters.sqlalchemy.models import User
-from fastauth.api.adapter_factory import AdapterFactory
-from fastauth.api.dependencies import get_current_user, get_session
-from fastauth.api.schemas import (
+require_httpx()
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status  # noqa: E402
+from sqlmodel import Session  # noqa: E402
+
+from fastauth.adapters.sqlalchemy.models import User  # noqa: E402
+from fastauth.api.adapter_factory import AdapterFactory  # noqa: E402
+from fastauth.api.dependencies import get_current_user, get_session  # noqa: E402
+from fastauth.api.schemas import (  # noqa: E402
     OAuthAuthorizationResponse,
     OAuthCallbackRequest,
     OAuthLinkResponse,
     TokenResponse,
 )
-from fastauth.api.utils import extract_request_metadata
-from fastauth.core.oauth import (
+from fastauth.api.utils import extract_request_metadata  # noqa: E402
+from fastauth.core.oauth import (  # noqa: E402
     OAuthAccountAlreadyLinkedError,
     OAuthError,
     OAuthStateError,
@@ -27,12 +33,16 @@ from fastauth.core.oauth import (
     initiate_oauth_flow,
     unlink_oauth_account,
 )
-from fastauth.core.refresh_tokens import create_refresh_token
-from fastauth.core.sessions import create_session
-from fastauth.providers import GoogleOAuthProvider, get_provider, register_provider
-from fastauth.providers.base import OAuthProvider
-from fastauth.security.jwt import create_access_token
-from fastauth.settings import settings
+from fastauth.core.refresh_tokens import create_refresh_token  # noqa: E402
+from fastauth.core.sessions import create_session  # noqa: E402
+from fastauth.providers import (  # noqa: E402
+    GoogleOAuthProvider,
+    get_provider,
+    register_provider,
+)
+from fastauth.providers.base import OAuthProvider  # noqa: E402
+from fastauth.security.jwt import create_access_token  # noqa: E402
+from fastauth.settings import settings  # noqa: E402
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 

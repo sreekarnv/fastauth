@@ -5,6 +5,13 @@ FastAuth provides a complete authentication solution for FastAPI applications
 including user registration, login, password reset, email verification,
 OAuth providers, RBAC, and session management.
 
+Installation:
+    pip install sreekarnv-fastauth        # Core + SQLAlchemy adapters
+    pip install sreekarnv-fastauth[oauth] # + OAuth providers
+    pip install sreekarnv-fastauth[all]   # All features
+
+Note: FastAPI is a peer dependency - your project must have FastAPI installed.
+
 Basic usage:
     from fastapi import FastAPI
     from fastauth import auth_router, account_router, sessions_router
@@ -15,8 +22,11 @@ Basic usage:
     app.include_router(sessions_router)
 """
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
+from fastauth._compat import HAS_FASTAPI, HAS_HTTPX
+
+# Core exports - always available
 from fastauth.adapters.base import (
     EmailVerificationAdapter,
     OAuthAccountAdapter,
@@ -27,6 +37,8 @@ from fastauth.adapters.base import (
     SessionAdapter,
     UserAdapter,
 )
+
+# SQLAlchemy adapters and models - included by default
 from fastauth.adapters.sqlalchemy import (
     OAuthAccount,
     OAuthState,
@@ -51,10 +63,6 @@ from fastauth.adapters.sqlalchemy.models import (
     User,
     UserRole,
 )
-from fastauth.api.account import router as account_router
-from fastauth.api.auth import router as auth_router
-from fastauth.api.oauth import router as oauth_router
-from fastauth.api.sessions import router as sessions_router
 from fastauth.core.account import (
     EmailAlreadyExistsError,
     EmailChangeError,
@@ -83,7 +91,6 @@ from fastauth.core.users import (
     UserAlreadyExistsError,
 )
 from fastauth.providers import (
-    GoogleOAuthProvider,
     OAuthProvider,
     OAuthTokens,
     OAuthUserInfo,
@@ -115,7 +122,7 @@ __all__ = [
     "OAuthStateError",
     "OAuthAccountAlreadyLinkedError",
     "OAuthProviderNotFoundError",
-    # Adapters
+    # Base adapters
     "UserAdapter",
     "RefreshTokenAdapter",
     "PasswordResetAdapter",
@@ -146,19 +153,38 @@ __all__ = [
     "OAuthAccount",
     "OAuthState",
     "SQLModel",
-    # Routers
-    "account_router",
-    "auth_router",
-    "sessions_router",
-    "oauth_router",
-    # OAuth providers
+    # OAuth base
     "OAuthProvider",
     "OAuthTokens",
     "OAuthUserInfo",
-    "GoogleOAuthProvider",
     "get_provider",
     "register_provider",
     "list_providers",
     # Settings
     "Settings",
 ]
+
+# FastAPI routers - requires fastapi (peer dependency)
+if HAS_FASTAPI:
+    from fastauth.api.account import router as account_router  # noqa: F401
+    from fastauth.api.auth import router as auth_router  # noqa: F401
+    from fastauth.api.sessions import router as sessions_router  # noqa: F401
+
+    __all__.extend(
+        [
+            "account_router",
+            "auth_router",
+            "sessions_router",
+        ]
+    )
+
+# OAuth features - requires both fastapi and httpx
+if HAS_FASTAPI and HAS_HTTPX:
+    from fastauth.api.oauth import router as oauth_router  # noqa: F401
+
+    __all__.append("oauth_router")
+
+if HAS_HTTPX:
+    from fastauth.providers import GoogleOAuthProvider  # noqa: F401
+
+    __all__.append("GoogleOAuthProvider")
