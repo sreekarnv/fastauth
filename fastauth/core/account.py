@@ -1,3 +1,10 @@
+"""
+Account management core logic.
+
+Provides business logic for account operations including password change,
+email change, and account deletion.
+"""
+
 import uuid
 
 from fastauth.adapters.base.email_change import EmailChangeAdapter

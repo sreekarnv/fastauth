@@ -1,3 +1,9 @@
+"""
+SQLAlchemy OAuth state adapter implementation.
+
+Provides database operations for OAuth state token storage using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import UTC, datetime
 
@@ -8,6 +14,10 @@ from fastauth.adapters.sqlalchemy.models import OAuthState
 
 
 class SQLAlchemyOAuthStateAdapter(OAuthStateAdapter):
+    """
+    SQLAlchemy implementation of OAuthStateAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

@@ -1,3 +1,9 @@
+"""
+SQLAlchemy user adapter implementation.
+
+Provides database operations for user account management using SQLAlchemy/SQLModel.
+"""
+
 from sqlmodel import Session, select
 
 from fastauth.adapters.base.users import UserAdapter
@@ -5,6 +11,10 @@ from fastauth.adapters.sqlalchemy.models import User
 
 
 class SQLAlchemyUserAdapter(UserAdapter):
+    """
+    SQLAlchemy implementation of UserAdapter for user database operations.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

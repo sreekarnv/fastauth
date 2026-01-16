@@ -1,4 +1,5 @@
-"""Password reset adapter interface.
+"""
+Password reset adapter interface.
 
 Defines the abstract interface for password reset token storage and retrieval.
 Inherits from BaseTokenAdapter for common token operations.

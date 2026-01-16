@@ -1,3 +1,9 @@
+"""
+SQLAlchemy password reset adapter implementation.
+
+Provides database operations for password reset token storage using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import datetime
 
@@ -8,6 +14,10 @@ from fastauth.adapters.sqlalchemy.models import PasswordResetToken
 
 
 class SQLAlchemyPasswordResetAdapter(PasswordResetAdapter):
+    """
+    SQLAlchemy implementation of PasswordResetAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

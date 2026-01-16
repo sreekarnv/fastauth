@@ -1,3 +1,10 @@
+"""
+FastAPI dependency injection functions.
+
+Provides dependencies for authentication, authorization, and database access.
+These dependencies are used across all API endpoints.
+"""
+
 import uuid
 from typing import Callable
 

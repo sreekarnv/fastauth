@@ -1,3 +1,10 @@
+"""
+OAuth provider base interface.
+
+Defines the abstract interface for OAuth providers. All provider implementations
+(Google, GitHub, etc.) must inherit from OAuthProvider.
+"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 

@@ -1,4 +1,5 @@
-"""Email change adapter interface.
+"""
+Email change adapter interface.
 
 Defines the abstract interface for email change token storage and retrieval.
 Inherits from BaseTokenAdapter for common token operations.

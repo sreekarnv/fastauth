@@ -1,3 +1,10 @@
+"""
+JWT token creation and validation.
+
+Provides functions for creating and decoding JWT access tokens
+using the python-jose library.
+"""
+
 from datetime import UTC, datetime, timedelta
 from typing import Any
 

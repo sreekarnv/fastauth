@@ -1,3 +1,10 @@
+"""
+User management core logic.
+
+Provides business logic for user creation and authentication,
+independent of the database implementation.
+"""
+
 from typing import Any
 
 from fastauth.adapters.base.users import UserAdapter

@@ -1,3 +1,10 @@
+"""
+OAuth authentication core logic.
+
+Provides business logic for OAuth flows including authorization URL generation,
+callback handling, and account linking.
+"""
+
 import secrets
 import uuid
 from datetime import UTC, datetime, timedelta

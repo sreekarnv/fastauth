@@ -1,3 +1,9 @@
+"""
+SQLAlchemy role adapter implementation.
+
+Provides database operations for role-based access control using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 
 from sqlmodel import Session, select
@@ -12,6 +18,10 @@ from fastauth.adapters.sqlalchemy.models import (
 
 
 class SQLAlchemyRoleAdapter(RoleAdapter):
+    """
+    SQLAlchemy implementation of RoleAdapter for RBAC database operations.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

@@ -1,7 +1,21 @@
+"""
+FastAuth configuration settings.
+
+All settings can be configured via environment variables or .env file.
+Settings use Pydantic for validation and type coercion.
+"""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """
+    FastAuth configuration settings.
+
+    All settings can be overridden via environment variables.
+    For example, JWT_SECRET_KEY environment variable overrides jwt_secret_key.
+    """
+
     jwt_secret_key: str = "CHANGE_ME_SUPER_SECRET"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30

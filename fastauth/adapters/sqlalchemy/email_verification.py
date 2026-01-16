@@ -1,3 +1,10 @@
+"""
+SQLAlchemy email verification adapter implementation.
+
+Provides database operations for email verification token \
+    storage using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import datetime
 
@@ -8,6 +15,10 @@ from fastauth.adapters.sqlalchemy.models import EmailVerificationToken
 
 
 class SQLAlchemyEmailVerificationAdapter(EmailVerificationAdapter):
+    """
+    SQLAlchemy implementation of EmailVerificationAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

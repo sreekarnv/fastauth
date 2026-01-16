@@ -1,3 +1,9 @@
+"""
+SQLAlchemy email change adapter implementation.
+
+Provides database operations for email change token storage using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import datetime
 
@@ -8,6 +14,10 @@ from fastauth.adapters.sqlalchemy.models import EmailChangeToken
 
 
 class SQLAlchemyEmailChangeAdapter(EmailChangeAdapter):
+    """
+    SQLAlchemy implementation of EmailChangeAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 

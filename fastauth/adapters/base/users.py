@@ -1,3 +1,10 @@
+"""
+User adapter interface.
+
+Defines the abstract interface for user account database operations.
+Handles user creation, retrieval, authentication, and account management.
+"""
+
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any

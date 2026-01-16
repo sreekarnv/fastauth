@@ -1,3 +1,10 @@
+"""
+Authentication API endpoints.
+
+Provides endpoints for user registration, login, logout, token refresh,
+password reset, and email verification.
+"""
+
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status

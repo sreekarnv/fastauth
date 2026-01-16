@@ -1,4 +1,5 @@
-"""Email verification adapter interface.
+"""
+Email verification adapter interface.
 
 Defines the abstract interface for email verification token storage and retrieval.
 Inherits from BaseTokenAdapter for common token operations.

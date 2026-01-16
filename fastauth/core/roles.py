@@ -1,3 +1,10 @@
+"""
+Role-based access control (RBAC) core logic.
+
+Provides business logic for role and permission management including
+creation, assignment, and permission checking.
+"""
+
 import uuid
 from typing import Any
 

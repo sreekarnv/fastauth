@@ -1,3 +1,10 @@
+"""
+Google OAuth provider implementation.
+
+Provides Google OAuth 2.0 authentication using authorization code flow
+with PKCE support.
+"""
+
 import httpx
 
 from fastauth.providers.base import OAuthProvider, OAuthTokens, OAuthUserInfo

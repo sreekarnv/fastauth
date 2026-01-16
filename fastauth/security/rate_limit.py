@@ -1,12 +1,21 @@
+"""
+In-memory rate limiting implementation.
+
+Provides a simple sliding window rate limiter for protecting
+authentication endpoints from brute force attacks.
+"""
+
 import time
 from collections import defaultdict, deque
 
 
 class RateLimitExceeded(Exception):
-    pass
+    """Raised when rate limit is exceeded."""
 
 
 class RateLimiter:
+    """Sliding window rate limiter for authentication endpoints."""
+
     def __init__(
         self,
         *,

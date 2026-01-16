@@ -1,3 +1,10 @@
+"""
+Password reset core logic.
+
+Provides business logic for password reset token generation and confirmation.
+Used when users forget their password and need to reset it.
+"""
+
 from fastauth.adapters.base.password_reset import PasswordResetAdapter
 from fastauth.adapters.base.users import UserAdapter
 from fastauth.core.hashing import hash_password
@@ -11,7 +18,7 @@ from fastauth.settings import settings
 
 
 class PasswordResetError(Exception):
-    pass
+    """Raised when password reset fails."""
 
 
 def request_password_reset(

@@ -1,3 +1,10 @@
+"""
+Email client factory.
+
+Provides factory functions for creating email client instances based on
+configuration. Supports custom email client registration.
+"""
+
 from typing import Dict, Type
 
 from fastauth.email.base import EmailClient

@@ -1,3 +1,10 @@
+"""
+Password hashing utilities using Argon2.
+
+Provides secure password hashing and verification using the Argon2 algorithm,
+which is the winner of the Password Hashing Competition.
+"""
+
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 

@@ -1,3 +1,10 @@
+"""
+Account management API endpoints.
+
+Provides endpoints for account operations like password change,
+email change, and account deletion.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlmodel import Session

@@ -1,9 +1,18 @@
+"""
+Pydantic schemas for API request and response models.
+
+Defines all request/response models used by FastAuth API endpoints.
+All models use Pydantic for validation and serialization.
+"""
+
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
 
 
 class RegisterRequest(BaseModel):
+    """User registration request."""
+
     email: EmailStr
     password: str
 

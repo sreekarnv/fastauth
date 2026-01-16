@@ -1,3 +1,9 @@
+"""
+SQLAlchemy refresh token adapter implementation.
+
+Provides database operations for refresh token storage using SQLAlchemy/SQLModel.
+"""
+
 import uuid
 from datetime import datetime
 
@@ -8,6 +14,10 @@ from fastauth.adapters.sqlalchemy.models import RefreshToken
 
 
 class SQLAlchemyRefreshTokenAdapter(RefreshTokenAdapter):
+    """
+    SQLAlchemy implementation of RefreshTokenAdapter.
+    """
+
     def __init__(self, session: Session):
         self.session = session
 
