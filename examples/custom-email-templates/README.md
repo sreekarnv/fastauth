@@ -33,9 +33,16 @@ Each template includes:
 # From this directory
 pip install -r requirements.txt
 
-# Or install FastAuth from parent directory
+# Or install manually (FastAPI is a peer dependency)
+pip install sreekarnv-fastauth
+pip install fastapi uvicorn[standard] jinja2
+
+# Or install from parent directory (for development)
 pip install -e ../..
+pip install fastapi uvicorn[standard] jinja2
 ```
+
+> **Note:** FastAPI is a peer dependency and must be installed separately.
 
 ### 2. Configure Environment
 
