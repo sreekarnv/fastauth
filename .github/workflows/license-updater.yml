@@ -1,5 +1,9 @@
 name: License Year Updater
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   schedule:
     - cron: "0 0 1 1 *"  # Run January 1st each year
