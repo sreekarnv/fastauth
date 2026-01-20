@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-01-21
+
+### Added
+- Command-line interface (CLI) tool for FastAuth utilities
+  - `fastauth version` - Display FastAuth version
+  - `fastauth check` - Check installation and dependency status
+  - `fastauth generate-secret` - Generate secure secret keys for JWT tokens
+  - `fastauth init` - Initialize new FastAuth project with boilerplate files
+  - `fastauth providers` - List available OAuth providers
+- New `[cli]` optional dependency extra
+  - Install with: `pip install sreekarnv-fastauth[cli]`
+  - Includes `typer>=0.9.0` and `rich>=13.0.0`
+- CLI documentation in docs/guides/cli.md
+- 15 tests for CLI with 100% coverage
+
+### Changed
+- Updated `[all]` extra to include CLI dependencies
+
 ## [0.2.4] - 2026-01-17
 
 ### Changed
@@ -247,7 +265,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.4...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/sreekarnv/fastauth/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/sreekarnv/fastauth/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/sreekarnv/fastauth/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/sreekarnv/fastauth/compare/v0.2.1...v0.2.2
