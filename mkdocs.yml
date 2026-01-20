@@ -268,7 +268,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/sreekarnv/fastauth
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/fastauth/
+      link: https://pypi.org/project/sreekarnv-fastauth/
 
   analytics:
     provider: google
