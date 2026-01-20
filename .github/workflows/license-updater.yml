@@ -49,7 +49,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update license year to ${{ steps.update.outputs.year }}"
+          commit-message: ":page_facing_up: chore: update license year to ${{ steps.update.outputs.year }}"
           title: ":page_facing_up: chore: update license year"
           body: |
             Automated license year update.
