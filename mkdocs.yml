@@ -192,6 +192,7 @@ nav:
     - OAuth: guides/oauth.md
     - Sessions: guides/sessions.md
     - Email: guides/email.md
+    - CLI: guides/cli.md
   - Reference:
     - Configuration: configuration.md
     - Architecture: architecture.md
