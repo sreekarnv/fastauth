@@ -24,7 +24,7 @@ class SQLAlchemyUserAdapter(UserAdapter):
     def get_by_id(self, user_id) -> User:
         return self.session.get(User, user_id)
 
-    def create_user(self, *, email: str, hashed_password: str) -> User:
+    def create_user(self, *, email: str, hashed_password: str | None = None) -> User:
         user = User(
             email=email,
             hashed_password=hashed_password,

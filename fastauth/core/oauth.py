@@ -5,14 +5,12 @@ Provides business logic for OAuth flows including authorization URL generation,
 callback handling, and account linking.
 """
 
-import secrets
 import uuid
 from datetime import UTC, datetime, timedelta
 
 from fastauth.adapters.base.oauth_accounts import OAuthAccountAdapter
 from fastauth.adapters.base.oauth_states import OAuthStateAdapter
 from fastauth.adapters.base.users import UserAdapter
-from fastauth.core.hashing import hash_password
 from fastauth.providers.base import OAuthProvider
 from fastauth.security.oauth import (
     build_authorization_url,
@@ -258,12 +256,9 @@ async def complete_oauth_flow(
 
         return existing_user, False
 
-    random_password = secrets.token_urlsafe(32)
-    hashed_password = hash_password(random_password)
-
     user = users.create_user(
         email=user_info.email,
-        hashed_password=hashed_password,
+        hashed_password=None,
     )
 
     if user_info.email_verified:

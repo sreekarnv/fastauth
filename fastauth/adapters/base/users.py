@@ -45,13 +45,13 @@ class UserAdapter(ABC):
         ...
 
     @abstractmethod
-    def create_user(self, *, email: str, hashed_password: str) -> Any:
+    def create_user(self, *, email: str, hashed_password: str | None = None) -> Any:
         """
         Create a new user.
 
         Args:
             email: User's email address
-            hashed_password: Already hashed password
+            hashed_password: Already hashed password (None for OAuth-only users)
 
         Returns:
             Created user object
