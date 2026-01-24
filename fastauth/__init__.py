@@ -22,7 +22,7 @@ Basic usage:
     app.include_router(sessions_router)
 """
 
-__version__ = "0.2.5"
+__version__ = "0.2.6"
 
 from fastauth._compat import HAS_FASTAPI, HAS_HTTPX
 
