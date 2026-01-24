@@ -920,6 +920,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#oauth-only-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth-Only Users
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#managing-oauth-accounts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3694,6 +3705,14 @@
 </span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>   ↓
 </span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>7. Backend returns JWT tokens
 </span></code></pre></div>
+<h2 id="oauth-only-users">OAuth-Only Users<a class="headerlink" href="#oauth-only-users" title="Permanent link">&para;</a></h2>
+<p>Users who sign up via OAuth do not have a password set (<code>hashed_password=NULL</code>). This means:</p>
+<ul>
+<li>They can only authenticate via their linked OAuth provider(s)</li>
+<li>Password login will fail with "Invalid credentials"</li>
+<li>To enable password login, they must use the password reset flow to set a password</li>
+</ul>
+<p>If a user has both OAuth and a password, they can use either method to sign in.</p>
 <h2 id="managing-oauth-accounts">Managing OAuth Accounts<a class="headerlink" href="#managing-oauth-accounts" title="Permanent link">&para;</a></h2>
 <h3 id="list-linked-accounts">List Linked Accounts<a class="headerlink" href="#list-linked-accounts" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.core.oauth</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_linked_accounts</span>
