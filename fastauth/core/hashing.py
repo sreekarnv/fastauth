@@ -18,10 +18,14 @@ def hash_password(password: str) -> str:
     return _password_hasher.hash(password)
 
 
-def verify_password(hashed_password: str, plain_password: str) -> bool:
+def verify_password(hashed_password: str | None, plain_password: str) -> bool:
     """
     Verify a plaintext password against a stored hash.
+
+    Returns False if hashed_password is None (OAuth-only users).
     """
+    if hashed_password is None:
+        return False
     try:
         return _password_hasher.verify(hashed_password, plain_password)
     except VerifyMismatchError:

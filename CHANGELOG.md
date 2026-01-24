@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-01-24
+
+### Changed
+- `User.hashed_password` is now nullable (`str | None`)
+  - OAuth-only users have `hashed_password=NULL` instead of a random password
+  - `verify_password()` returns `False` when password is `None`
+  - Prevents OAuth-only users from using password login
+
 ## [0.2.5] - 2026-01-21
 
 ### Added
@@ -265,7 +273,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.5...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/sreekarnv/fastauth/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/sreekarnv/fastauth/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/sreekarnv/fastauth/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/sreekarnv/fastauth/compare/v0.2.2...v0.2.3

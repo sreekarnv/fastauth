@@ -29,7 +29,7 @@ class User(SQLModel, table=True):
         unique=True,
         nullable=False,
     )
-    hashed_password: str
+    hashed_password: str | None = None
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
     is_verified: bool = Field(default=False)
