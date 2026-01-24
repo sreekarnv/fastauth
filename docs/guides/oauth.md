@@ -173,6 +173,16 @@ async def google_callback(
 7. Backend returns JWT tokens
 ```
 
+## OAuth-Only Users
+
+Users who sign up via OAuth do not have a password set (`hashed_password=NULL`). This means:
+
+- They can only authenticate via their linked OAuth provider(s)
+- Password login will fail with "Invalid credentials"
+- To enable password login, they must use the password reset flow to set a password
+
+If a user has both OAuth and a password, they can use either method to sign in.
+
 ## Managing OAuth Accounts
 
 ### List Linked Accounts
