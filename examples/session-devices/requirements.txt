@@ -1,8 +1,0 @@
-# FastAuth - Install from PyPI
-sreekarnv-fastauth>=0.2.0
-
-# Web Server
-uvicorn[standard]>=0.27.0
-
-# Optional: For development, you can install from local source instead
-# pip install -e ../..

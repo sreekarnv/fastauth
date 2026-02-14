@@ -1,1 +1,0 @@
-"""OAuth Google Example Application."""

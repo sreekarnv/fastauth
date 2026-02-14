@@ -1,0 +1,65 @@
+[project]
+name = "sreekarnv-fastauth"
+version = "0.3.0"
+description = "NextAuth-inspired pluggable authentication for FastAPI"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Sreekar Nutulapati", email = "sreekarnv1@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Internet :: WWW/HTTP :: Session",
+]
+dependencies = [
+    "cuid2>=2.0.1",
+    "pydantic>=2.12.5",
+]
+
+[project.optional-dependencies]
+fastapi = [
+    "fastapi>=0.129.0",
+    "uvicorn>=0.40.0",
+]
+jwt = [
+    "cryptography>=46.0.5",
+    "joserfc>=1.6.1",
+]
+oauth = [
+    "httpx>=0.28.1",
+]
+sqlalchemy = [
+    "aiosqlite>=0.22.1",
+    "sqlalchemy[asyncio]>=2.0.46",
+]
+postgresql = [
+    "asyncpg>=0.31.0",
+]
+redis = [
+    "redis>=7.1.1",
+]
+argon2 = [
+    "argon2-cffi>=25.1.0",
+]
+email = [
+    "aiosmtplib>=5.1.0",
+    "jinja2>=3.1.6",
+]
+
+standard = ["sreekarnv-fastauth[fastapi,jwt,sqlalchemy,argon2]"]
+all = ["sreekarnv-fastauth[fastapi,jwt,oauth,sqlalchemy,redis,email,argon2]"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fastauth"]
