@@ -1023,7 +1023,7 @@ name = "sreekarnv-fastauth-workspace"
 version = "0.3.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "sreekarnv-fastauth" },
+    { name = "sreekarnv-fastauth", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -1036,7 +1036,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "sreekarnv-fastauth", editable = "packages/fastauth" }]
+requires-dist = [{ name = "sreekarnv-fastauth", extras = ["standard"], editable = "packages/fastauth" }]
 
 [package.metadata.requires-dev]
 dev = [

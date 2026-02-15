@@ -66,7 +66,14 @@ def create_token_pair(user: UserData, config: FastAuthConfig) -> TokenPair:
     }
 
 
-def decode_token(token: str, config: FastAuthConfig) -> Dict[str, Any]:
+def decode_token(token: str, config: FastAuthConfig) -> dict[str, Any]:
     key = OctKey.import_key(config.secret)
     data = jwt.decode(token, key, algorithms=[config.jwt.algorithm])
+
+    claims_requests = jwt.JWTClaimsRegistry(
+        exp={"essential": True},
+        sub={"essential": True},
+    )
+    claims_requests.validate(data.claims)
+
     return data.claims

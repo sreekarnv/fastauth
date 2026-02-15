@@ -5,7 +5,7 @@ description = "FastAuth monorepo workspace root"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "sreekarnv-fastauth",
+    "sreekarnv-fastauth[standard]",
 ]
 
 [tool.uv.sources]
