@@ -21,7 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "cuid2>=2.0.1",
-    "pydantic>=2.12.5",
+    "pydantic[email]>=2.12.5",
 ]
 
 [project.optional-dependencies]

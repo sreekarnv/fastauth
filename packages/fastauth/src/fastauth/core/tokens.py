@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from cuid2 import cuid_wrapper
 from joserfc import jwt

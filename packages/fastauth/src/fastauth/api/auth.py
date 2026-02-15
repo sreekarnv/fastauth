@@ -56,7 +56,9 @@ def create_auth_router(auth: object) -> APIRouter:
                 return provider
         return None
 
-    @router.post("/register", response_model=TokenResponse)
+    @router.post(
+        "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+    )
     async def register(request: Request, body: RegisterRequest) -> TokenResponse:
         from fastauth.app import FastAuth
 
