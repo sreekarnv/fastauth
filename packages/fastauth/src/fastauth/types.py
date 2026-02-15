@@ -1,24 +1,24 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional, TypedDict
+from typing import TypedDict
 
 
 class UserData(TypedDict):
     id: str
     email: str
-    name: Optional[str]
+    name: str | None
     email_verified: bool
     is_active: bool
-    image: Optional[str]
+    image: str | None
 
 
 class SessionData(TypedDict):
     id: str
     user_id: str
     expires_at: datetime
-    ip_address: Optional[str]
-    user_agent: Optional[str]
+    ip_address: str | None
+    user_agent: str | None
 
 
 class TokenData(TypedDict):
@@ -32,14 +32,14 @@ class OAuthAccountData(TypedDict):
     provider: str
     provider_account_id: str
     user_id: str
-    access_token: Optional[str]
-    refresh_token: Optional[str]
-    expires_at: Optional[datetime]
+    access_token: str | None
+    refresh_token: str | None
+    expires_at: datetime | None
 
 
 class RoleData(TypedDict):
     name: str
-    permissions: List[str]
+    permissions: list[str]
 
 
 class TokenPair(TypedDict):
