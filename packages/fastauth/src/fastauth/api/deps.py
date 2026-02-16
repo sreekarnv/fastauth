@@ -22,7 +22,9 @@ async def get_current_user(
         return None
     auth = request.app.state.fastauth
     try:
-        claims = decode_token(credentials.credentials, auth.config)
+        claims = decode_token(
+            credentials.credentials, auth.config, auth.jwks_manager
+        )
         if claims.get("type") != "access":
             return None
         user = await auth.config.adapter.get_user_by_id(claims["sub"])

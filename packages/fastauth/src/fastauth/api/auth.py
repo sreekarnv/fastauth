@@ -87,7 +87,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signup(user)
 
-        tokens = create_token_pair(user, fa.config)
+        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
         return TokenResponse(**tokens)
 
     @router.post("/login", response_model=TokenResponse)
@@ -117,7 +117,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signin(user, "credentials")
 
-        tokens = create_token_pair(user, fa.config)
+        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
         return TokenResponse(**tokens)
 
     @router.post("/logout", response_model=MessageResponse)
@@ -140,7 +140,9 @@ def create_auth_router(auth: object) -> APIRouter:
         fa: FastAuth = request.app.state.fastauth
 
         try:
-            claims = decode_token(body.refresh_token, fa.config)
+            claims = decode_token(
+                body.refresh_token, fa.config, fa.jwks_manager
+            )
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -163,7 +165,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_token_refresh(user)
 
-        tokens = create_token_pair(user, fa.config)
+        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
         return TokenResponse(**tokens)
 
     return router
