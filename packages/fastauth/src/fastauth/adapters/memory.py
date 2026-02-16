@@ -4,13 +4,14 @@ from datetime import datetime, timezone
 
 from cuid2 import cuid_wrapper
 
+from fastauth.core.protocols import UserAdapter
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
-from fastauth.types import TokenData, UserData
+from fastauth.types import RoleData, SessionData, TokenData, UserData
 
 generate_id = cuid_wrapper()
 
 
-class MemoryUserAdapter:
+class MemoryUserAdapter(UserAdapter):
     def __init__(self) -> None:
         self._users: dict[str, UserData] = {}
         self._passwords: dict[str, str | None] = {}
@@ -117,3 +118,110 @@ class MemoryTokenAdapter:
         ]
         for key in to_delete:
             del self._tokens[key]
+
+
+class MemorySessionAdapter:
+    def __init__(self) -> None:
+        self._sessions: dict[str, SessionData] = {}
+
+    async def create_session(self, session: SessionData) -> SessionData:
+        self._sessions[session["id"]] = session
+        return session
+
+    async def get_session(self, session_id: str) -> SessionData | None:
+        session = self._sessions.get(session_id)
+        if not session:
+            return None
+        if session["expires_at"] < datetime.now(timezone.utc):
+            del self._sessions[session_id]
+            return None
+        return session
+
+    async def delete_session(self, session_id: str) -> None:
+        self._sessions.pop(session_id, None)
+
+    async def delete_user_sessions(self, user_id: str) -> None:
+        to_delete = [
+            sid
+            for sid, s in self._sessions.items()
+            if s["user_id"] == user_id
+        ]
+        for sid in to_delete:
+            del self._sessions[sid]
+
+    async def cleanup_expired(self) -> int:
+        now = datetime.now(timezone.utc)
+        expired = [
+            sid
+            for sid, s in self._sessions.items()
+            if s["expires_at"] < now
+        ]
+        for sid in expired:
+            del self._sessions[sid]
+        return len(expired)
+
+
+class MemoryRoleAdapter:
+    def __init__(self) -> None:
+        self._roles: dict[str, RoleData] = {}
+        self._user_roles: dict[str, set[str]] = {}
+
+    async def create_role(
+        self, name: str, permissions: list[str] | None = None
+    ) -> RoleData:
+        role: RoleData = {
+            "name": name,
+            "permissions": permissions or [],
+        }
+        self._roles[name] = role
+        return role
+
+    async def get_role(self, name: str) -> RoleData | None:
+        return self._roles.get(name)
+
+    async def list_roles(self) -> list[RoleData]:
+        return list(self._roles.values())
+
+    async def delete_role(self, name: str) -> None:
+        self._roles.pop(name, None)
+        for user_roles in self._user_roles.values():
+            user_roles.discard(name)
+
+    async def add_permissions(
+        self, role_name: str, permissions: list[str]
+    ) -> None:
+        role = self._roles.get(role_name)
+        if role:
+            existing = set(role["permissions"])
+            existing.update(permissions)
+            role["permissions"] = list(existing)
+
+    async def remove_permissions(
+        self, role_name: str, permissions: list[str]
+    ) -> None:
+        role = self._roles.get(role_name)
+        if role:
+            existing = set(role["permissions"])
+            existing -= set(permissions)
+            role["permissions"] = list(existing)
+
+    async def assign_role(self, user_id: str, role_name: str) -> None:
+        if user_id not in self._user_roles:
+            self._user_roles[user_id] = set()
+        self._user_roles[user_id].add(role_name)
+
+    async def revoke_role(self, user_id: str, role_name: str) -> None:
+        if user_id in self._user_roles:
+            self._user_roles[user_id].discard(role_name)
+
+    async def get_user_roles(self, user_id: str) -> list[str]:
+        return list(self._user_roles.get(user_id, set()))
+
+    async def get_user_permissions(self, user_id: str) -> set[str]:
+        roles = self._user_roles.get(user_id, set())
+        permissions: set[str] = set()
+        for role_name in roles:
+            role = self._roles.get(role_name)
+            if role:
+                permissions.update(role["permissions"])
+        return permissions
