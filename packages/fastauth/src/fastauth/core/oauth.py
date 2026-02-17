@@ -87,7 +87,7 @@ async def complete_oauth_flow(
         )
         is_new = True
 
-    await oauth_adapter.create_oauth_account(
+    _ = await oauth_adapter.create_oauth_account(
         {
             "provider": provider.id,
             "provider_account_id": provider_user["id"],
