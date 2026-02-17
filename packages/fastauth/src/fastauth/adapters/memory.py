@@ -6,7 +6,13 @@ from cuid2 import cuid_wrapper
 
 from fastauth.core.protocols import UserAdapter
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
-from fastauth.types import RoleData, SessionData, TokenData, UserData
+from fastauth.types import (
+    OAuthAccountData,
+    RoleData,
+    SessionData,
+    TokenData,
+    UserData,
+)
 
 generate_id = cuid_wrapper()
 
@@ -225,3 +231,34 @@ class MemoryRoleAdapter:
             if role:
                 permissions.update(role["permissions"])
         return permissions
+
+
+class MemoryOAuthAccountAdapter:
+    def __init__(self) -> None:
+        self._accounts: dict[tuple[str, str], OAuthAccountData] = {}
+
+    async def create_oauth_account(
+        self, account: OAuthAccountData
+    ) -> OAuthAccountData:
+        key = (account["provider"], account["provider_account_id"])
+        self._accounts[key] = account
+        return account
+
+    async def get_oauth_account(
+        self, provider: str, provider_account_id: str
+    ) -> OAuthAccountData | None:
+        return self._accounts.get((provider, provider_account_id))
+
+    async def get_user_oauth_accounts(
+        self, user_id: str
+    ) -> list[OAuthAccountData]:
+        return [
+            a
+            for a in self._accounts.values()
+            if a["user_id"] == user_id
+        ]
+
+    async def delete_oauth_account(
+        self, provider: str, provider_account_id: str
+    ) -> None:
+        self._accounts.pop((provider, provider_account_id), None)

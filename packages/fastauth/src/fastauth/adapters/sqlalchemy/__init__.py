@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import (
 from fastauth.adapters.sqlalchemy.models import Base
 
 if TYPE_CHECKING:
+    from fastauth.adapters.sqlalchemy.oauth import SQLAlchemyOAuthAccountAdapter
     from fastauth.adapters.sqlalchemy.rbac import SQLAlchemyRoleAdapter
     from fastauth.adapters.sqlalchemy.session import SQLAlchemySessionAdapter
     from fastauth.adapters.sqlalchemy.token import SQLAlchemyTokenAdapter
@@ -66,3 +67,9 @@ class SQLAlchemyAdapter:
         from fastauth.adapters.sqlalchemy.rbac import SQLAlchemyRoleAdapter
 
         return SQLAlchemyRoleAdapter(self._session_factory)
+
+    @property
+    def oauth(self) -> SQLAlchemyOAuthAccountAdapter:
+        from fastauth.adapters.sqlalchemy.oauth import SQLAlchemyOAuthAccountAdapter
+
+        return SQLAlchemyOAuthAccountAdapter(self._session_factory)

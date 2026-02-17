@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from fastauth.core.protocols import (
         EmailTransport,
         EventHooks,
+        OAuthAccountAdapter,
         SessionBackend,
         UserAdapter,
     )
@@ -38,6 +39,9 @@ class FastAuthConfig:
     session_backend: SessionBackend | None = None
     email_transport: EmailTransport | None = None
     hooks: EventHooks | None = None
+    oauth_adapter: OAuthAccountAdapter | None = None
+    oauth_state_store: SessionBackend | None = None
+    oauth_redirect_url: str | None = None
     cors_origins: list[str] | None = None
     roles: list[dict[str, Any]] | None = None
     default_role: str | None = None

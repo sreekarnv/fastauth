@@ -95,8 +95,8 @@ class AuthProvider(Protocol):
     auth_type: Literal["oauth", "credentials", "email"]
 
 
-class OAuthProvider(AuthProvider):
-    auth_type = "oauth"
+class OAuthProvider(AuthProvider, Protocol):
+    auth_type: str
 
     async def get_authorization_url(
         self, state: str, redirect_uri: str, **kwargs: Any
@@ -113,8 +113,8 @@ class OAuthProvider(AuthProvider):
     ) -> dict[str, Any] | None: ...
 
 
-class CredentialsProvider(AuthProvider):
-    auth_type = "credentials"
+class CredentialsProvider(AuthProvider, Protocol):
+    auth_type: str
 
     async def authenticate(self, credentials: dict[str, Any]) -> UserData | None: ...
 
