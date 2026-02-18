@@ -53,9 +53,16 @@ email = [
     "aiosmtplib>=5.1.0",
     "jinja2>=3.1.6",
 ]
+cli = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+]
 
 standard = ["sreekarnv-fastauth[fastapi,jwt,sqlalchemy,argon2]"]
-all = ["sreekarnv-fastauth[fastapi,jwt,oauth,sqlalchemy,redis,email,argon2]"]
+all = ["sreekarnv-fastauth[fastapi,jwt,oauth,sqlalchemy,redis,email,argon2,cli]"]
+
+[project.scripts]
+fastauth = "fastauth.cli:app"
 
 [build-system]
 requires = ["hatchling"]
