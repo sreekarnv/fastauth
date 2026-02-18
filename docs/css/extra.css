@@ -32,13 +32,6 @@
     background-clip: text;
 }
 
-[data-md-color-scheme="default"] .hero h1 {
-    background: linear-gradient(135deg, #1e293b 30%, #4338ca 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
 .hero .hero__tagline {
     font-size: 1.15rem;
     font-weight: 500;
