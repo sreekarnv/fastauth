@@ -18,13 +18,16 @@ async def get_current_user(
     request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ):
-    if not credentials:
-        return None
     auth = request.app.state.fastauth
+
+    token_str = request.cookies.get(auth.config.cookie_name_access)
+    if not token_str and credentials:
+        token_str = credentials.credentials
+    if not token_str:
+        return None
+
     try:
-        claims = decode_token(
-            credentials.credentials, auth.config, auth.jwks_manager
-        )
+        claims = decode_token(token_str, auth.config, auth.jwks_manager)
         if claims.get("type") != "access":
             return None
         user = await auth.config.adapter.get_user_by_id(claims["sub"])
@@ -74,9 +77,7 @@ def require_permission(permission: str) -> Any:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="RBAC is not configured",
             )
-        has_perm = await check_user_permission(
-            fa.role_adapter, user["id"], permission
-        )
+        has_perm = await check_user_permission(fa.role_adapter, user["id"], permission)
         if not has_perm:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

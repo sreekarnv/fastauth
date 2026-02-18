@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 from cuid2 import cuid_wrapper
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.deps import require_auth
@@ -17,7 +17,8 @@ from fastauth.exceptions import (
 from fastauth.providers.credentials import CredentialsProvider
 
 if TYPE_CHECKING:
-    from fastauth.types import UserData
+    from fastauth.app import FastAuth
+    from fastauth.types import TokenPair, UserData
 
 generate_token = cuid_wrapper()
 
@@ -57,8 +58,45 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    name: str | None = None
+    image: str | None = None
+    email_verified: bool
+    is_active: bool
+
+
 class MessageResponse(BaseModel):
     message: str
+
+
+def _set_auth_cookies(response: Response, tokens: TokenPair, fa: FastAuth) -> None:
+    cfg = fa.config
+    response.set_cookie(
+        key=cfg.cookie_name_access,
+        value=tokens["access_token"],
+        httponly=cfg.cookie_httponly,
+        secure=cfg.effective_cookie_secure,
+        samesite=cfg.cookie_samesite,
+        max_age=cfg.jwt.access_token_ttl,
+        domain=cfg.cookie_domain,
+    )
+    response.set_cookie(
+        key=cfg.cookie_name_refresh,
+        value=tokens["refresh_token"],
+        httponly=cfg.cookie_httponly,
+        secure=cfg.effective_cookie_secure,
+        samesite=cfg.cookie_samesite,
+        max_age=cfg.jwt.refresh_token_ttl,
+        domain=cfg.cookie_domain,
+    )
+
+
+def _clear_auth_cookies(response: Response, fa: FastAuth) -> None:
+    cfg = fa.config
+    response.delete_cookie(cfg.cookie_name_access, domain=cfg.cookie_domain)
+    response.delete_cookie(cfg.cookie_name_refresh, domain=cfg.cookie_domain)
 
 
 def create_auth_router(auth: object) -> APIRouter:
@@ -73,11 +111,16 @@ def create_auth_router(auth: object) -> APIRouter:
                 return provider
         return None
 
+    @router.get("/me", response_model=UserResponse)
+    async def me(user: UserData = Depends(require_auth)) -> UserData:
+        return user
+
     @router.post(
         "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
     )
-    async def register(request: Request, body: RegisterRequest) -> TokenResponse:
-        from fastauth.app import FastAuth
+    async def register(
+        request: Request, body: RegisterRequest, response: Response
+    ) -> TokenResponse:
 
         fa: FastAuth = request.app.state.fastauth
         provider = _get_credentials_provider()
@@ -105,11 +148,16 @@ def create_auth_router(auth: object) -> APIRouter:
             await fa.config.hooks.on_signup(user)
 
         tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+
+        if fa.config.token_delivery == "cookie":
+            _set_auth_cookies(response, tokens, fa)
+
         return TokenResponse(**tokens)
 
     @router.post("/login", response_model=TokenResponse)
-    async def login(request: Request, body: LoginRequest) -> TokenResponse:
-        from fastauth.app import FastAuth
+    async def login(
+        request: Request, body: LoginRequest, response: Response
+    ) -> TokenResponse:
 
         fa: FastAuth = request.app.state.fastauth
         provider = _get_credentials_provider()
@@ -135,31 +183,49 @@ def create_auth_router(auth: object) -> APIRouter:
             await fa.config.hooks.on_signin(user, "credentials")
 
         tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+
+        if fa.config.token_delivery == "cookie":
+            _set_auth_cookies(response, tokens, fa)
+
         return TokenResponse(**tokens)
 
     @router.post("/logout", response_model=MessageResponse)
     async def logout(
-        request: Request, user: UserData = Depends(require_auth)
+        request: Request,
+        response: Response,
+        user: UserData = Depends(require_auth),
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
 
         fa: FastAuth = request.app.state.fastauth
 
         if fa.config.hooks:
             await fa.config.hooks.on_signout(user)
 
+        if fa.config.token_delivery == "cookie":
+            _clear_auth_cookies(response, fa)
+
         return MessageResponse(message="Logged out")
 
     @router.post("/refresh", response_model=TokenResponse)
-    async def refresh(request: Request, body: RefreshRequest) -> TokenResponse:
-        from fastauth.app import FastAuth
+    async def refresh(
+        request: Request,
+        response: Response,
+        body: RefreshRequest | None = None,
+    ) -> TokenResponse:
 
         fa: FastAuth = request.app.state.fastauth
 
-        try:
-            claims = decode_token(
-                body.refresh_token, fa.config, fa.jwks_manager
+        token_str = request.cookies.get(fa.config.cookie_name_refresh)
+        if not token_str and body:
+            token_str = body.refresh_token
+        if not token_str:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Refresh token required",
             )
+
+        try:
+            claims = decode_token(token_str, fa.config, fa.jwks_manager)
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -183,13 +249,16 @@ def create_auth_router(auth: object) -> APIRouter:
             await fa.config.hooks.on_token_refresh(user)
 
         tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+
+        if fa.config.token_delivery == "cookie":
+            _set_auth_cookies(response, tokens, fa)
+
         return TokenResponse(**tokens)
 
     @router.post("/request-verify-email", response_model=MessageResponse)
     async def request_verify_email(
         request: Request, user: UserData = Depends(require_auth)
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
 
         fa: FastAuth = request.app.state.fastauth
         if not fa.config.token_adapter:
@@ -204,8 +273,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 "token": token,
                 "user_id": user["id"],
                 "token_type": "verification",
-                "expires_at": datetime.now(timezone.utc)
-                + timedelta(hours=24),
+                "expires_at": datetime.now(timezone.utc) + timedelta(hours=24),
             }
         )
 
@@ -217,9 +285,7 @@ def create_auth_router(auth: object) -> APIRouter:
         return MessageResponse(message="Verification email sent")
 
     @router.get("/verify-email", response_model=MessageResponse)
-    async def verify_email_get(
-        request: Request, token: str
-    ) -> MessageResponse:
+    async def verify_email_get(request: Request, token: str) -> MessageResponse:
         return await _verify_email(request, token)
 
     @router.post("/verify-email", response_model=MessageResponse)
@@ -228,10 +294,7 @@ def create_auth_router(auth: object) -> APIRouter:
     ) -> MessageResponse:
         return await _verify_email(request, body.token)
 
-    async def _verify_email(
-        request: Request, token: str
-    ) -> MessageResponse:
-        from fastauth.app import FastAuth
+    async def _verify_email(request: Request, token: str) -> MessageResponse:
 
         fa: FastAuth = request.app.state.fastauth
         if not fa.config.token_adapter:
@@ -240,18 +303,14 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(
-            token, "verification"
-        )
+        stored = await fa.config.token_adapter.get_token(token, "verification")
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired verification token",
             )
 
-        await fa.config.adapter.update_user(
-            stored["user_id"], email_verified=True
-        )
+        await fa.config.adapter.update_user(stored["user_id"], email_verified=True)
         await fa.config.token_adapter.delete_token(token)
 
         user = await fa.config.adapter.get_user_by_id(stored["user_id"])
@@ -264,7 +323,6 @@ def create_auth_router(auth: object) -> APIRouter:
     async def forgot_password(
         request: Request, body: ForgotPasswordRequest
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
 
         fa: FastAuth = request.app.state.fastauth
         if not fa.config.token_adapter:
@@ -281,8 +339,7 @@ def create_auth_router(auth: object) -> APIRouter:
                     "token": token,
                     "user_id": user["id"],
                     "token_type": "password_reset",
-                    "expires_at": datetime.now(timezone.utc)
-                    + timedelta(minutes=30),
+                    "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
                 }
             )
             if fa.email_dispatcher:
@@ -298,7 +355,6 @@ def create_auth_router(auth: object) -> APIRouter:
     async def reset_password(
         request: Request, body: ResetPasswordRequest
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
 
         fa: FastAuth = request.app.state.fastauth
         if not fa.config.token_adapter:
@@ -307,9 +363,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(
-            body.token, "password_reset"
-        )
+        stored = await fa.config.token_adapter.get_token(body.token, "password_reset")
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -317,9 +371,7 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         hashed = hash_password(body.new_password)
-        await fa.config.adapter.set_hashed_password(
-            stored["user_id"], hashed
-        )
+        await fa.config.adapter.set_hashed_password(stored["user_id"], hashed)
         await fa.config.token_adapter.delete_token(body.token)
         await fa.config.token_adapter.delete_user_tokens(
             stored["user_id"], "password_reset"

@@ -49,6 +49,19 @@ class FastAuthConfig:
     roles: list[dict[str, Any]] | None = None
     default_role: str | None = None
     debug: bool = False
+    token_delivery: Literal["json", "cookie"] = "json"
+    cookie_name_access: str = "access_token"
+    cookie_name_refresh: str = "refresh_token"
+    cookie_secure: bool | None = None
+    cookie_httponly: bool = True
+    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    cookie_domain: str | None = None
+
+    @property
+    def effective_cookie_secure(self) -> bool:
+        if self.cookie_secure is not None:
+            return self.cookie_secure
+        return not self.debug
 
     def __post_init__(self) -> None:
         self.validate()
