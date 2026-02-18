@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from fastauth.providers.google import GoogleProvider
 
 
@@ -61,9 +60,7 @@ async def test_exchange_code(provider):
     mock_client.post.return_value = mock_response
 
     with patch("httpx.AsyncClient") as mock_cls:
-        mock_cls.return_value.__aenter__ = AsyncMock(
-            return_value=mock_client
-        )
+        mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
         mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
         result = await provider.exchange_code(
@@ -90,9 +87,7 @@ async def test_get_user_info(provider):
     mock_client.get.return_value = mock_response
 
     with patch("httpx.AsyncClient") as mock_cls:
-        mock_cls.return_value.__aenter__ = AsyncMock(
-            return_value=mock_client
-        )
+        mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
         mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
         user = await provider.get_user_info("google-token")

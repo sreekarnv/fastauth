@@ -163,3 +163,55 @@ async def test_reset_password_invalid_token(client):
         json={"token": "invalid-token", "new_password": "NewPass456#"},
     )
     assert resp.status_code == 400
+
+
+@pytest.fixture
+def no_token_adapter_app():
+    adapter = MemoryUserAdapter()
+    config = FastAuthConfig(
+        secret="super-secret-key-only-for-testing",
+        providers=[CredentialsProvider()],
+        adapter=adapter,
+    )
+    auth = FastAuth(config)
+    _app = FastAPI()
+    auth.mount(_app)
+    return _app
+
+
+@pytest.fixture
+async def no_ta_client(no_token_adapter_app):
+    transport = ASGITransport(app=no_token_adapter_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
+async def test_request_verify_email_no_token_adapter(no_ta_client):
+    resp = await no_ta_client.post(
+        "/auth/register",
+        json={"email": "a@a.com", "password": "Pass123#"},
+    )
+    token = resp.json()["access_token"]
+    resp = await no_ta_client.post(
+        "/auth/request-verify-email",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 400
+
+
+async def test_verify_email_no_token_adapter(no_ta_client):
+    resp = await no_ta_client.post("/auth/verify-email", json={"token": "any"})
+    assert resp.status_code == 400
+
+
+async def test_forgot_password_no_token_adapter(no_ta_client):
+    resp = await no_ta_client.post("/auth/forgot-password", json={"email": "a@a.com"})
+    assert resp.status_code == 400
+
+
+async def test_reset_password_no_token_adapter(no_ta_client):
+    resp = await no_ta_client.post(
+        "/auth/reset-password",
+        json={"token": "any", "new_password": "NewPass456#"},
+    )
+    assert resp.status_code == 400

@@ -1,10 +1,11 @@
 import pytest
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastauth import FastAuth
 from fastauth.adapters.memory import (
     MemoryRoleAdapter,
     MemoryUserAdapter,
 )
+from fastauth.api.deps import require_permission, require_role
 from fastauth.config import FastAuthConfig, JWTConfig
 from fastauth.providers.credentials import CredentialsProvider
 from httpx import ASGITransport, AsyncClient
@@ -235,3 +236,138 @@ async def test_remove_permissions(rbac_client, rbac_app):
 async def test_unauthenticated(rbac_client):
     resp = await rbac_client.get("/auth/roles")
     assert resp.status_code == 401
+
+
+@pytest.fixture
+def permission_app():
+    """App with RBAC configured + routes using require_permission."""
+    adapter = MemoryUserAdapter()
+    role_adapter = MemoryRoleAdapter()
+    config = FastAuthConfig(
+        secret="test-secret-perm",
+        providers=[CredentialsProvider()],
+        adapter=adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+    )
+    auth = FastAuth(config)
+    auth.role_adapter = role_adapter
+
+    _app = FastAPI()
+    auth.mount(_app)
+
+    @_app.get("/need-perm")
+    async def need_perm(user=Depends(require_permission("posts:write"))):
+        return {"ok": True}
+
+    return _app, role_adapter, adapter
+
+
+@pytest.fixture
+async def perm_client(permission_app):
+    _app, _, _ = permission_app
+    transport = ASGITransport(app=_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
+async def _register_login_perm(client: AsyncClient, email: str = "perm@example.com"):
+    await client.post(
+        "/auth/register",
+        json={"email": email, "password": "Password123!", "name": "P"},
+    )
+    resp = await client.post(
+        "/auth/login",
+        json={"email": email, "password": "Password123!"},
+    )
+    return resp.json()["access_token"], email
+
+
+async def test_require_permission_granted(perm_client, permission_app):
+    token, email = await _register_login_perm(perm_client)
+    _, role_adapter, user_adapter = permission_app
+    await role_adapter.create_role("writer", ["posts:write"])
+    user = await user_adapter.get_user_by_email(email)
+    await role_adapter.assign_role(user["id"], "writer")
+
+    resp = await perm_client.get(
+        "/need-perm", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert resp.status_code == 200
+
+
+async def test_require_permission_denied(perm_client):
+    token, _ = await _register_login_perm(perm_client)
+    resp = await perm_client.get(
+        "/need-perm", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert resp.status_code == 403
+
+
+async def test_require_permission_unauthenticated(perm_client):
+    resp = await perm_client.get("/need-perm")
+    assert resp.status_code == 401
+
+
+@pytest.fixture
+def no_rbac_app():
+    """App without RBAC configured but using require_role."""
+    adapter = MemoryUserAdapter()
+    config = FastAuthConfig(
+        secret="test-secret-norbac",
+        providers=[CredentialsProvider()],
+        adapter=adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+    )
+    auth = FastAuth(config)
+
+    _app = FastAPI()
+    auth.mount(_app)
+
+    @_app.get("/need-role")
+    async def need_role(user=Depends(require_role("admin"))):
+        return {"ok": True}
+
+    @_app.get("/need-perm")
+    async def need_perm(user=Depends(require_permission("admin:write"))):
+        return {"ok": True}
+
+    return _app
+
+
+@pytest.fixture
+async def no_rbac_client(no_rbac_app):
+    transport = ASGITransport(app=no_rbac_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
+async def test_require_role_no_rbac_configured(no_rbac_client):
+    await no_rbac_client.post(
+        "/auth/register",
+        json={"email": "x@x.com", "password": "Password123!"},
+    )
+    resp = await no_rbac_client.post(
+        "/auth/login", json={"email": "x@x.com", "password": "Password123!"}
+    )
+    token = resp.json()["access_token"]
+
+    resp = await no_rbac_client.get(
+        "/need-role", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert resp.status_code == 500
+
+
+async def test_require_permission_no_rbac_configured(no_rbac_client):
+    await no_rbac_client.post(
+        "/auth/register",
+        json={"email": "y@y.com", "password": "Password123!"},
+    )
+    resp = await no_rbac_client.post(
+        "/auth/login", json={"email": "y@y.com", "password": "Password123!"}
+    )
+    token = resp.json()["access_token"]
+
+    resp = await no_rbac_client.get(
+        "/need-perm", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert resp.status_code == 500

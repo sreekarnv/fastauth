@@ -76,6 +76,33 @@ class TestJWTSessionStrategy:
         new_result = await strategy.refresh(result["access_token"])
         assert new_result is None
 
+    async def test_invalidate_is_noop(self, config, adapter):
+        strategy = JWTSessionStrategy(config, adapter)
+        result = json.loads(await strategy.create(_TEST_USER))
+        await strategy.invalidate(result["access_token"])
+
+    async def test_refresh_invalid_token(self, config, adapter):
+        strategy = JWTSessionStrategy(config, adapter)
+        result = await strategy.refresh("totally-invalid-token")
+        assert result is None
+
+    async def test_refresh_with_inactive_user(self, config):
+        inactive_adapter = MemoryUserAdapter()
+        inactive_user: UserData = {
+            "id": "u2",
+            "email": "inactive@example.com",
+            "name": None,
+            "image": None,
+            "email_verified": False,
+            "is_active": False,
+        }
+        inactive_adapter._users["u2"] = inactive_user
+        inactive_adapter._email_index["inactive@example.com"] = "u2"
+        active_strategy = JWTSessionStrategy(config, inactive_adapter)
+        result = json.loads(await active_strategy.create(inactive_user))
+        new_result = await active_strategy.refresh(result["refresh_token"])
+        assert new_result is None
+
 
 class TestDatabaseSessionStrategy:
     async def test_create_returns_session_id(self, adapter):
