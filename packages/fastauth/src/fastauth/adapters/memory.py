@@ -18,6 +18,8 @@ generate_id = cuid_wrapper()
 
 
 class MemoryUserAdapter(UserAdapter):
+    """In-memory user adapter for testing."""
+
     def __init__(self) -> None:
         self._users: dict[str, UserData] = {}
         self._passwords: dict[str, str | None] = {}
@@ -92,6 +94,8 @@ class MemoryUserAdapter(UserAdapter):
 
 
 class MemoryTokenAdapter:
+    """In-memory one-time token adapter for testing."""
+
     def __init__(self) -> None:
         self._tokens: dict[str, TokenData] = {}
 
@@ -127,6 +131,8 @@ class MemoryTokenAdapter:
 
 
 class MemorySessionAdapter:
+    """In-memory session adapter for testing."""
+
     def __init__(self) -> None:
         self._sessions: dict[str, SessionData] = {}
 
@@ -168,6 +174,8 @@ class MemorySessionAdapter:
 
 
 class MemoryRoleAdapter:
+    """In-memory RBAC adapter for testing."""
+
     def __init__(self) -> None:
         self._roles: dict[str, RoleData] = {}
         self._user_roles: dict[str, set[str]] = {}
@@ -234,6 +242,8 @@ class MemoryRoleAdapter:
 
 
 class MemoryOAuthAccountAdapter:
+    """In-memory OAuth account adapter for testing."""
+
     def __init__(self) -> None:
         self._accounts: dict[tuple[str, str], OAuthAccountData] = {}
 

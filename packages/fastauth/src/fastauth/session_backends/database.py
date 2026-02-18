@@ -8,6 +8,8 @@ from fastauth.types import SessionData
 
 
 class DatabaseSessionBackend:
+    """Database-backed session backend via a SessionAdapter."""
+
     def __init__(self, session_adapter: SessionAdapter) -> None:
         self._adapter = session_adapter
 

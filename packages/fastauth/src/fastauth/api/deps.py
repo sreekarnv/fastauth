@@ -38,7 +38,28 @@ async def get_current_user(
 
 async def require_auth(
     user=Depends(get_current_user),
-):
+) -> UserData:
+    """FastAPI dependency that enforces authentication.
+
+    Reads the access token from the ``Authorization: Bearer`` header **or** the
+    configured access-token cookie (``FastAuthConfig.cookie_name_access``).
+    Returns the current user record on success.
+
+    Example:
+        ```python
+        from fastapi import Depends
+        from fastauth.api.deps import require_auth
+        from fastauth.types import UserData
+
+        @app.get("/profile")
+        async def profile(user: UserData = Depends(require_auth)):
+            return {"email": user["email"]}
+        ```
+
+    Raises:
+        HTTPException(401): If no valid access token is present or the token
+            is expired / malformed.
+    """
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
@@ -47,6 +68,30 @@ async def require_auth(
 
 
 def require_role(role_name: str) -> Any:
+    """Return a FastAPI dependency that enforces a specific RBAC role.
+
+    The requesting user must be authenticated **and** have *role_name* assigned.
+    RBAC must be configured — i.e. ``role_adapter`` must be set on the
+    :class:`~fastauth.app.FastAuth` instance.
+
+    Args:
+        role_name: The role the user must hold (e.g. ``"admin"``).
+
+    Example:
+        ```python
+        from fastauth.api.deps import require_role
+
+        @app.get("/admin")
+        async def admin_area(user: UserData = Depends(require_role("admin"))):
+            return {"message": "Welcome, admin"}
+        ```
+
+    Raises:
+        HTTPException(401): If the user is not authenticated.
+        HTTPException(403): If the user does not hold *role_name*.
+        HTTPException(500): If RBAC is not configured on the FastAuth instance.
+    """
+
     async def dependency(
         request: Request, user: UserData = Depends(require_auth)
     ) -> UserData:
@@ -68,6 +113,30 @@ def require_role(role_name: str) -> Any:
 
 
 def require_permission(permission: str) -> Any:
+    """Return a FastAPI dependency that enforces a specific RBAC permission.
+
+    Checks that the authenticated user holds at least one role that includes
+    *permission*. RBAC must be configured on the
+    :class:`~fastauth.app.FastAuth` instance.
+
+    Args:
+        permission: The permission string to check (e.g. ``"reports:read"``).
+
+    Example:
+        ```python
+        from fastauth.api.deps import require_permission
+
+        @app.get("/reports")
+        async def reports(user: UserData = Depends(require_permission("reports:read"))):
+            return {"message": "Here are your reports"}
+        ```
+
+    Raises:
+        HTTPException(401): If the user is not authenticated.
+        HTTPException(403): If the user lacks *permission*.
+        HTTPException(500): If RBAC is not configured on the FastAuth instance.
+    """
+
     async def dependency(
         request: Request, user: UserData = Depends(require_auth)
     ) -> UserData:

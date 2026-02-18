@@ -7,6 +7,8 @@ from fastauth._compat import require
 
 
 class RedisSessionBackend:
+    """Redis-backed session backend for production use."""
+
     def __init__(self, url: str, prefix: str = "fastauth:session:") -> None:
         require("redis", "redis")
         import redis.asyncio as aioredis

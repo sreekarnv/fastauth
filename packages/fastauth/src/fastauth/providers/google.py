@@ -9,6 +9,8 @@ from fastauth.types import UserData
 
 
 class GoogleProvider:
+    """Google OAuth 2.0 / OIDC provider."""
+
     id = "google"
     name = "Google"
     auth_type = "oauth"

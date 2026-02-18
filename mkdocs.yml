@@ -1,0 +1,125 @@
+site_name: FastAuth
+site_description: NextAuth-inspired pluggable authentication for FastAPI
+site_url: https://sreekarnv.github.io/fastauth
+repo_url: https://github.com/sreekarnv/fastauth
+repo_name: sreekarnv/fastauth
+copyright: Copyright &copy; 2026 Sreekar Nutulapati
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: black
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.instant
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+extra_css:
+  - css/extra.css
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - scripts/gen_api_docs.py
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [packages/fastauth/src]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Configuration: getting-started/configuration.md
+  - Concepts:
+      - How it Works: concepts/how-it-works.md
+      - Providers: concepts/providers.md
+      - Adapters: concepts/adapters.md
+      - Tokens & Sessions: concepts/tokens.md
+  - Providers:
+      - Credentials: providers/credentials.md
+      - Google OAuth: providers/google.md
+      - GitHub OAuth: providers/github.md
+  - Adapters:
+      - SQLAlchemy: adapters/sqlalchemy.md
+      - Memory: adapters/memory.md
+      - Custom Adapter: adapters/custom.md
+  - Features:
+      - Cookie Delivery: features/cookies.md
+      - Email Verification: features/email-verification.md
+      - Password Reset: features/password-reset.md
+      - OAuth Flow: features/oauth.md
+      - RBAC: features/rbac.md
+      - JWT: features/jwt.md
+      - Event Hooks: features/hooks.md
+  - Guides:
+      - Basic App: guides/basic.md
+      - Adding OAuth: guides/oauth.md
+      - Microservice JWT: guides/microservice.md
+      - Production Checklist: guides/production.md
+  - Reference:
+      - FastAuth: reference/fastauth.md
+      - Configuration: reference/config.md
+      - Exceptions: reference/exceptions.md
+      - Types: reference/types.md
+      - Protocols: reference/protocols.md
+      - Dependencies: reference/deps.md
+      - Adapters: reference/adapters.md
+      - Providers: reference/providers.md
+      - Session Backends: reference/session-backends.md
+      - Email Transports: reference/email-transports.md
+  - CLI: cli.md

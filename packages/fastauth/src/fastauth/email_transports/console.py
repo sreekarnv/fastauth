@@ -2,6 +2,8 @@ from __future__ import annotations
 
 
 class ConsoleTransport:
+    """Email transport that prints to stdout (development only)."""
+
     async def send(
         self,
         to: str,

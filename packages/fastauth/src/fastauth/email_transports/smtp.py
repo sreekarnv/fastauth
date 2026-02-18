@@ -7,6 +7,8 @@ from fastauth._compat import require
 
 
 class SMTPTransport:
+    """SMTP email transport using aiosmtplib."""
+
     def __init__(
         self,
         host: str,

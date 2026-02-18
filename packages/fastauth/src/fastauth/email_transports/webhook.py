@@ -6,6 +6,8 @@ from fastauth._compat import require
 
 
 class WebhookTransport:
+    """HTTP webhook email transport (POST JSON payload)."""
+
     def __init__(
         self,
         url: str,

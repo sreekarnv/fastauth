@@ -9,6 +9,8 @@ from fastauth.types import UserData
 
 
 class GitHubProvider:
+    """GitHub OAuth 2.0 provider."""
+
     id = "github"
     name = "GitHub"
     auth_type = "oauth"

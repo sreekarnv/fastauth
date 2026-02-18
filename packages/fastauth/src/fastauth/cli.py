@@ -8,7 +8,7 @@ try:
     import typer
     from rich.console import Console
     from rich.table import Table
-except ImportError:
+except ImportError:  # pragma: no cover
     print(
         "CLI dependencies not installed. Run: pip install sreekarnv-fastauth[cli]",
         file=sys.stderr,
@@ -113,7 +113,7 @@ def providers() -> None:
         elif _has_package("httpx"):
             status = "[green]✓  ready[/green]"
             req = f"[dim]{extra}[/dim]"
-        else:
+        else:  # pragma: no cover
             status = (
                 f"[red]✗  missing[/red]   "
                 f"[dim]pip install sreekarnv-fastauth[{extra}][/dim]"

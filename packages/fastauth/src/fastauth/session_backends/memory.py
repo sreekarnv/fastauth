@@ -5,6 +5,8 @@ from typing import Any
 
 
 class MemorySessionBackend:
+    """In-memory key-value session backend for testing."""
+
     def __init__(self) -> None:
         self._store: dict[str, tuple[dict[str, Any], float]] = {}
 

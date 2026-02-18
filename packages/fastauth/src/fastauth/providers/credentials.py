@@ -7,6 +7,8 @@ from fastauth.types import UserData
 
 
 class CredentialsProvider:
+    """Email/password provider using Argon2/bcrypt hashing."""
+
     id = "credentials"
     name = "Credentials"
     type = "credentials"

@@ -1,3 +1,5 @@
+"""TypedDict shapes for FastAuth domain objects passed between adapters and core."""
+
 from __future__ import annotations
 
 from datetime import datetime
