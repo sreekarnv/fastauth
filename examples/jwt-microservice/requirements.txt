@@ -1,0 +1,4 @@
+sreekarnv-fastauth[standard,jwt]
+# resource service deps
+httpx
+joserfc
