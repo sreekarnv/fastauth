@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
+from cuid2 import cuid_wrapper
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 
@@ -17,6 +19,8 @@ from fastauth.providers.credentials import CredentialsProvider
 if TYPE_CHECKING:
     from fastauth.types import UserData
 
+generate_token = cuid_wrapper()
+
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -31,6 +35,19 @@ class LoginRequest(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str
 
 
 class TokenResponse(BaseModel):
@@ -167,5 +184,151 @@ def create_auth_router(auth: object) -> APIRouter:
 
         tokens = create_token_pair(user, fa.config, fa.jwks_manager)
         return TokenResponse(**tokens)
+
+    @router.post("/request-verify-email", response_model=MessageResponse)
+    async def request_verify_email(
+        request: Request, user: UserData = Depends(require_auth)
+    ) -> MessageResponse:
+        from fastauth.app import FastAuth
+
+        fa: FastAuth = request.app.state.fastauth
+        if not fa.config.token_adapter:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token adapter is not configured",
+            )
+
+        token = generate_token()
+        await fa.config.token_adapter.create_token(
+            {
+                "token": token,
+                "user_id": user["id"],
+                "token_type": "verification",
+                "expires_at": datetime.now(timezone.utc)
+                + timedelta(hours=24),
+            }
+        )
+
+        if fa.email_dispatcher:
+            await fa.email_dispatcher.send_verification_email(
+                user, token, expires_in_minutes=1440
+            )
+
+        return MessageResponse(message="Verification email sent")
+
+    @router.get("/verify-email", response_model=MessageResponse)
+    async def verify_email_get(
+        request: Request, token: str
+    ) -> MessageResponse:
+        return await _verify_email(request, token)
+
+    @router.post("/verify-email", response_model=MessageResponse)
+    async def verify_email_post(
+        request: Request, body: VerifyEmailRequest
+    ) -> MessageResponse:
+        return await _verify_email(request, body.token)
+
+    async def _verify_email(
+        request: Request, token: str
+    ) -> MessageResponse:
+        from fastauth.app import FastAuth
+
+        fa: FastAuth = request.app.state.fastauth
+        if not fa.config.token_adapter:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token adapter is not configured",
+            )
+
+        stored = await fa.config.token_adapter.get_token(
+            token, "verification"
+        )
+        if not stored:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired verification token",
+            )
+
+        await fa.config.adapter.update_user(
+            stored["user_id"], email_verified=True
+        )
+        await fa.config.token_adapter.delete_token(token)
+
+        user = await fa.config.adapter.get_user_by_id(stored["user_id"])
+        if user and fa.config.hooks:
+            await fa.config.hooks.on_email_verify(user)
+
+        return MessageResponse(message="Email verified successfully")
+
+    @router.post("/forgot-password", response_model=MessageResponse)
+    async def forgot_password(
+        request: Request, body: ForgotPasswordRequest
+    ) -> MessageResponse:
+        from fastauth.app import FastAuth
+
+        fa: FastAuth = request.app.state.fastauth
+        if not fa.config.token_adapter:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token adapter is not configured",
+            )
+
+        user = await fa.config.adapter.get_user_by_email(body.email)
+        if user:
+            token = generate_token()
+            await fa.config.token_adapter.create_token(
+                {
+                    "token": token,
+                    "user_id": user["id"],
+                    "token_type": "password_reset",
+                    "expires_at": datetime.now(timezone.utc)
+                    + timedelta(minutes=30),
+                }
+            )
+            if fa.email_dispatcher:
+                await fa.email_dispatcher.send_password_reset_email(
+                    user, token, expires_in_minutes=30
+                )
+
+        return MessageResponse(
+            message="If the email exists, a reset link has been sent"
+        )
+
+    @router.post("/reset-password", response_model=MessageResponse)
+    async def reset_password(
+        request: Request, body: ResetPasswordRequest
+    ) -> MessageResponse:
+        from fastauth.app import FastAuth
+
+        fa: FastAuth = request.app.state.fastauth
+        if not fa.config.token_adapter:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token adapter is not configured",
+            )
+
+        stored = await fa.config.token_adapter.get_token(
+            body.token, "password_reset"
+        )
+        if not stored:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token",
+            )
+
+        hashed = hash_password(body.new_password)
+        await fa.config.adapter.set_hashed_password(
+            stored["user_id"], hashed
+        )
+        await fa.config.token_adapter.delete_token(body.token)
+        await fa.config.token_adapter.delete_user_tokens(
+            stored["user_id"], "password_reset"
+        )
+
+        user = await fa.config.adapter.get_user_by_id(stored["user_id"])
+        if user and fa.config.hooks:
+            await fa.config.hooks.on_password_reset(user)
+
+        return MessageResponse(message="Password reset successfully")
 
     return router

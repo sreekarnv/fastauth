@@ -11,6 +11,7 @@ if TYPE_CHECKING:
         EventHooks,
         OAuthAccountAdapter,
         SessionBackend,
+        TokenAdapter,
         UserAdapter,
     )
 
@@ -42,6 +43,8 @@ class FastAuthConfig:
     oauth_adapter: OAuthAccountAdapter | None = None
     oauth_state_store: SessionBackend | None = None
     oauth_redirect_url: str | None = None
+    token_adapter: TokenAdapter | None = None
+    base_url: str = "http://localhost:8000"
     cors_origins: list[str] | None = None
     roles: list[dict[str, Any]] | None = None
     default_role: str | None = None

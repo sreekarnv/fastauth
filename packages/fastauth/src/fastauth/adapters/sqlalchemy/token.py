@@ -50,9 +50,7 @@ class SQLAlchemyTokenAdapter:
 
     async def delete_token(self, token: str) -> None:
         async with self._session_factory() as session:
-            await session.execute(
-                delete(TokenModel).where(TokenModel.token == token)
-            )
+            await session.execute(delete(TokenModel).where(TokenModel.token == token))
             await session.commit()
 
     async def delete_user_tokens(

@@ -6,6 +6,7 @@ from fastauth._compat import require
 from fastauth.config import FastAuthConfig
 
 if TYPE_CHECKING:
+    from fastauth.core.emails import EmailDispatcher
     from fastauth.core.jwks import JWKSManager
     from fastauth.core.protocols import RoleAdapter, SessionAdapter
 
@@ -16,6 +17,15 @@ class FastAuth:
         self.session_adapter: SessionAdapter | None = None
         self.role_adapter: RoleAdapter | None = None
         self.jwks_manager: JWKSManager | None = None
+        self.email_dispatcher: EmailDispatcher | None = None
+
+        if config.email_transport:
+            from fastauth.core.emails import EmailDispatcher
+
+            self.email_dispatcher = EmailDispatcher(
+                transport=config.email_transport,
+                base_url=config.base_url,
+            )
 
     def mount(self, app: object) -> None:
         require("fastapi", "fastapi")
