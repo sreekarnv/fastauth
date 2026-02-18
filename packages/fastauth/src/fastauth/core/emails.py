@@ -42,7 +42,7 @@ class EmailDispatcher:
         token: str,
         expires_in_minutes: int = 1440,
     ) -> None:
-        if not self.transport:
+        if not self.transport or self._env is None:
             return
         url = f"{self.base_url}/auth/verify-email?token={token}"
         template = self._env.get_template("verification.jinja2")
@@ -63,7 +63,7 @@ class EmailDispatcher:
         token: str,
         expires_in_minutes: int = 30,
     ) -> None:
-        if not self.transport:
+        if not self.transport or self._env is None:
             return
         url = f"{self.base_url}/auth/reset-password?token={token}"
         template = self._env.get_template("password_reset.jinja2")
@@ -79,7 +79,7 @@ class EmailDispatcher:
         )
 
     async def send_welcome_email(self, user: UserData) -> None:
-        if not self.transport:
+        if not self.transport or self._env is None:
             return
         template = self._env.get_template("welcome.jinja2")
         html = template.render(
@@ -98,7 +98,7 @@ class EmailDispatcher:
         token: str,
         expires_in_minutes: int = 30,
     ) -> None:
-        if not self.transport:
+        if not self.transport or self._env is None:
             return
         url = f"{self.base_url}/auth/account/confirm-email-change?token={token}"
         template = self._env.get_template("email_change.jinja2")
