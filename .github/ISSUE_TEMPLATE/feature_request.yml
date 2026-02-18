@@ -1,0 +1,82 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the sections below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature solve?
+      placeholder: I'm frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this to work?
+      placeholder: Describe your ideal solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other solutions have you considered?
+      placeholder: Describe alternative approaches
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Usage
+      description: Show how the feature would be used
+      render: python
+      placeholder: |
+        from fastauth import FastAuth, FastAuthConfig
+        # Example code
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      description: What parts of FastAuth does this affect?
+      options:
+        - label: Core (business logic)
+        - label: Adapters (database)
+        - label: API (routes)
+        - label: Security
+        - label: Email
+        - label: CLI
+        - label: Documentation
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Nice to have
+        - Would improve my workflow
+        - Critical for my use case
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to implement this feature
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other relevant information

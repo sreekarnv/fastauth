@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run Ruff (format check)
+        run: uv run ruff format --check .
+
+      - name: Run Ruff (lint)
+        run: uv run ruff check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for code changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            code:
+              - 'packages/fastauth/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
+
+      - name: Install uv
+        if: steps.changes.outputs.code == 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        if: steps.changes.outputs.code == 'true'
+        run: uv sync --all-extras
+
+      - name: Run tests
+        if: steps.changes.outputs.code == 'true'
+        run: uv run pytest tests/ -v --tb=short
+
+      - name: Skip tests
+        if: steps.changes.outputs.code != 'true'
+        run: echo "No code changes detected, skipping tests"
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for code changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            code:
+              - 'packages/fastauth/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
+
+      - name: Install uv
+        if: steps.changes.outputs.code == 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        if: steps.changes.outputs.code == 'true'
+        run: uv sync --all-extras
+
+      - name: Run tests with coverage
+        if: steps.changes.outputs.code == 'true'
+        run: uv run pytest tests/ --cov=fastauth --cov-report=xml --cov-report=term --cov-fail-under=95
+
+      - name: Upload coverage to Codecov
+        if: steps.changes.outputs.code == 'true'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
+
+      - name: Skip coverage
+        if: steps.changes.outputs.code != 'true'
+        run: echo "No code changes detected, skipping coverage"
