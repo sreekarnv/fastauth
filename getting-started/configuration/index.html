@@ -10,29 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://sreekarnv.github.io/fastauth/">
+        <link rel="canonical" href="https://sreekarnv.github.io/fastauth/getting-started/configuration/">
       
       
+        <link rel="prev" href="../quick-start/">
       
-        <link rel="next" href="getting-started/installation/">
+      
+        <link rel="next" href="../../concepts/how-it-works/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>FastAuth</title>
+        <title>Configuration - FastAuth</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,11 +53,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#fastauth" class="md-skip">
+        <a href="#configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +96,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="FastAuth" class="md-header__button md-logo" aria-label="FastAuth" data-md-component="logo">
+    <a href="../.." title="FastAuth" class="md-header__button md-logo" aria-label="FastAuth" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Configuration
             
           </span>
         </div>
@@ -196,11 +198,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -217,11 +217,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="getting-started/installation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
           
   
   
@@ -241,7 +243,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="concepts/how-it-works/" class="md-tabs__link">
+        <a href="../../concepts/how-it-works/" class="md-tabs__link">
           
   
   
@@ -261,7 +263,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="providers/credentials/" class="md-tabs__link">
+        <a href="../../providers/credentials/" class="md-tabs__link">
           
   
   
@@ -281,7 +283,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="adapters/sqlalchemy/" class="md-tabs__link">
+        <a href="../../adapters/sqlalchemy/" class="md-tabs__link">
           
   
   
@@ -301,7 +303,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="features/cookies/" class="md-tabs__link">
+        <a href="../../features/cookies/" class="md-tabs__link">
           
   
   
@@ -321,7 +323,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="guides/basic/" class="md-tabs__link">
+        <a href="../../guides/basic/" class="md-tabs__link">
           
   
   
@@ -341,7 +343,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="reference/fastauth/" class="md-tabs__link">
+        <a href="../../reference/fastauth/" class="md-tabs__link">
           
   
   
@@ -359,7 +361,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="cli/" class="md-tabs__link">
+      <a href="../../cli/" class="md-tabs__link">
         
   
   
@@ -400,7 +402,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="FastAuth" class="md-nav__button md-logo" aria-label="FastAuth" data-md-component="logo">
+    <a href="../.." title="FastAuth" class="md-nav__button md-logo" aria-label="FastAuth" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -427,37 +429,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -473,59 +448,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Install
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#taste-of-the-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Taste of the API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next steps
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -534,28 +456,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -573,7 +498,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -591,7 +516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -619,7 +544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/quick-start/" class="md-nav__link">
+      <a href="../quick-start/" class="md-nav__link">
         
   
   
@@ -644,10 +569,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="getting-started/configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -663,6 +615,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fastauthconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastAuthConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FastAuthConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-delivery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token delivery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email &amp; tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jwtconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JWTConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -736,7 +813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/how-it-works/" class="md-nav__link">
+      <a href="../../concepts/how-it-works/" class="md-nav__link">
         
   
   
@@ -764,7 +841,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/providers/" class="md-nav__link">
+      <a href="../../concepts/providers/" class="md-nav__link">
         
   
   
@@ -792,7 +869,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/adapters/" class="md-nav__link">
+      <a href="../../concepts/adapters/" class="md-nav__link">
         
   
   
@@ -820,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/tokens/" class="md-nav__link">
+      <a href="../../concepts/tokens/" class="md-nav__link">
         
   
   
@@ -909,7 +986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="providers/credentials/" class="md-nav__link">
+      <a href="../../providers/credentials/" class="md-nav__link">
         
   
   
@@ -937,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="providers/google/" class="md-nav__link">
+      <a href="../../providers/google/" class="md-nav__link">
         
   
   
@@ -965,7 +1042,7 @@
   
   
     <li class="md-nav__item">
-      <a href="providers/github/" class="md-nav__link">
+      <a href="../../providers/github/" class="md-nav__link">
         
   
   
@@ -1054,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adapters/sqlalchemy/" class="md-nav__link">
+      <a href="../../adapters/sqlalchemy/" class="md-nav__link">
         
   
   
@@ -1082,7 +1159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adapters/memory/" class="md-nav__link">
+      <a href="../../adapters/memory/" class="md-nav__link">
         
   
   
@@ -1110,7 +1187,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adapters/custom/" class="md-nav__link">
+      <a href="../../adapters/custom/" class="md-nav__link">
         
   
   
@@ -1199,7 +1276,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/cookies/" class="md-nav__link">
+      <a href="../../features/cookies/" class="md-nav__link">
         
   
   
@@ -1227,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/email-verification/" class="md-nav__link">
+      <a href="../../features/email-verification/" class="md-nav__link">
         
   
   
@@ -1255,7 +1332,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/password-reset/" class="md-nav__link">
+      <a href="../../features/password-reset/" class="md-nav__link">
         
   
   
@@ -1283,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/oauth/" class="md-nav__link">
+      <a href="../../features/oauth/" class="md-nav__link">
         
   
   
@@ -1311,7 +1388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/rbac/" class="md-nav__link">
+      <a href="../../features/rbac/" class="md-nav__link">
         
   
   
@@ -1339,7 +1416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/jwt/" class="md-nav__link">
+      <a href="../../features/jwt/" class="md-nav__link">
         
   
   
@@ -1367,7 +1444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="features/hooks/" class="md-nav__link">
+      <a href="../../features/hooks/" class="md-nav__link">
         
   
   
@@ -1456,7 +1533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="guides/basic/" class="md-nav__link">
+      <a href="../../guides/basic/" class="md-nav__link">
         
   
   
@@ -1484,7 +1561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="guides/oauth/" class="md-nav__link">
+      <a href="../../guides/oauth/" class="md-nav__link">
         
   
   
@@ -1512,7 +1589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="guides/microservice/" class="md-nav__link">
+      <a href="../../guides/microservice/" class="md-nav__link">
         
   
   
@@ -1540,7 +1617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="guides/production/" class="md-nav__link">
+      <a href="../../guides/production/" class="md-nav__link">
         
   
   
@@ -1629,7 +1706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/fastauth/" class="md-nav__link">
+      <a href="../../reference/fastauth/" class="md-nav__link">
         
   
   
@@ -1657,7 +1734,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/config/" class="md-nav__link">
+      <a href="../../reference/config/" class="md-nav__link">
         
   
   
@@ -1685,7 +1762,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/exceptions/" class="md-nav__link">
+      <a href="../../reference/exceptions/" class="md-nav__link">
         
   
   
@@ -1713,7 +1790,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/types/" class="md-nav__link">
+      <a href="../../reference/types/" class="md-nav__link">
         
   
   
@@ -1741,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/protocols/" class="md-nav__link">
+      <a href="../../reference/protocols/" class="md-nav__link">
         
   
   
@@ -1769,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/deps/" class="md-nav__link">
+      <a href="../../reference/deps/" class="md-nav__link">
         
   
   
@@ -1797,7 +1874,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/adapters/" class="md-nav__link">
+      <a href="../../reference/adapters/" class="md-nav__link">
         
   
   
@@ -1825,7 +1902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/providers/" class="md-nav__link">
+      <a href="../../reference/providers/" class="md-nav__link">
         
   
   
@@ -1853,7 +1930,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/session-backends/" class="md-nav__link">
+      <a href="../../reference/session-backends/" class="md-nav__link">
         
   
   
@@ -1881,7 +1958,7 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/email-transports/" class="md-nav__link">
+      <a href="../../reference/email-transports/" class="md-nav__link">
         
   
   
@@ -1916,7 +1993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cli/" class="md-nav__link">
+      <a href="../../cli/" class="md-nav__link">
         
   
   
@@ -1963,32 +2040,104 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
+  <a href="#fastauthconfig" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install
+        FastAuthConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FastAuthConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required fields
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#taste-of-the-api" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#token-delivery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Taste of the API
+        Token delivery
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#session-strategy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next steps
+        Session strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OAuth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email &amp; tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jwtconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JWTConfig
       
     </span>
   </a>
@@ -2013,6 +2162,46 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../installation/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -2023,113 +2212,342 @@
   
 
 
-<div class="hero">
-<h1 id="fastauth">FastAuth<a class="headerlink" href="#fastauth" title="Permanent link">&para;</a></h1>
-<p class="hero__tagline">
-NextAuth-inspired pluggable authentication for FastAPI.
-</p>
-<p class="hero__desc">
-Complete auth system - credentials, OAuth, email verification, password reset, RBAC, and JWT in minutes, without locking you into any database or ORM.
-</p>
-<p><a class="md-button md-button--primary" href="getting-started/installation/">Get Started</a>
-<a class="md-button" href="https://github.com/sreekarnv/fastauth">GitHub</a></p>
-</div>
-<div class="feature-grid">
-<div class="feature-card">
-<p><strong>Multiple Providers</strong>
-Email/password, Google OAuth, and GitHub OAuth out of the box.</p>
-</div>
-<div class="feature-card">
-<p><strong>Pluggable Adapters</strong>
-SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own adapter.</p>
-</div>
-<div class="feature-card">
-<p><strong>JWT &amp; Sessions</strong></p>
-<p>Stateless tokens or server-side database sessions -&gt; your choice.</p>
-</div>
-<div class="feature-card">
-<p><strong>Cookie Delivery</strong></p>
-<p>HttpOnly, Secure, SameSite-strict cookies with zero extra config.</p>
-</div>
-<div class="feature-card">
-<p><strong>Email Flows</strong></p>
-<p>Verification and password reset with pluggable transports (SMTP, webhook, console).</p>
-</div>
-<div class="feature-card">
-<p><strong>RBAC</strong></p>
-<p>Roles and fine-grained permissions enforced on any route via <code>Depends</code>.</p>
-</div>
-<div class="feature-card">
-<p><strong>Event Hooks</strong></p>
-<p>Intercept sign-in, sign-up, and mutate JWT payloads via a single interface.</p>
-</div>
-<div class="feature-card">
-<p><strong>RS256 / JWKS</strong></p>
-<p>Rotate signing keys and expose a JWKS endpoint for microservice architectures.</p>
-</div>
-</div>
+<h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<p>All FastAuth behaviour is controlled by two dataclasses: <code>FastAuthConfig</code> (main settings) and <code>JWTConfig</code> (token settings).</p>
+<h2 id="fastauthconfig">FastAuthConfig<a class="headerlink" href="#fastauthconfig" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAuthConfig</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTConfig</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="required-fields">Required fields<a class="headerlink" href="#required-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>secret</code></td>
+<td><code>str</code></td>
+<td>HMAC secret for HS256 signing. Generate with <code>fastauth generate-secret</code>.</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td><code>list</code></td>
+<td>One or more provider instances (e.g. <code>CredentialsProvider()</code>).</td>
+</tr>
+<tr>
+<td><code>adapter</code></td>
+<td><code>UserAdapter</code></td>
+<td>Storage adapter for user records.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="token-delivery">Token delivery<a class="headerlink" href="#token-delivery" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>token_delivery</code></td>
+<td><code>"json"</code> | <code>"cookie"</code></td>
+<td><code>"json"</code></td>
+<td>How tokens are returned to the client.</td>
+</tr>
+<tr>
+<td><code>cookie_name_access</code></td>
+<td><code>str</code></td>
+<td><code>"access_token"</code></td>
+<td>Access-token cookie name.</td>
+</tr>
+<tr>
+<td><code>cookie_name_refresh</code></td>
+<td><code>str</code></td>
+<td><code>"refresh_token"</code></td>
+<td>Refresh-token cookie name.</td>
+</tr>
+<tr>
+<td><code>cookie_secure</code></td>
+<td><code>bool \| None</code></td>
+<td><code>None</code></td>
+<td><code>Secure</code> flag override; defaults to <code>not debug</code>.</td>
+</tr>
+<tr>
+<td><code>cookie_httponly</code></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>Set the <code>HttpOnly</code> flag.</td>
+</tr>
+<tr>
+<td><code>cookie_samesite</code></td>
+<td><code>"lax"</code> | <code>"strict"</code> | <code>"none"</code></td>
+<td><code>"lax"</code></td>
+<td><code>SameSite</code> policy.</td>
+</tr>
+<tr>
+<td><code>cookie_domain</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>Optional domain scope.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="session-strategy">Session strategy<a class="headerlink" href="#session-strategy" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>session_strategy</code></td>
+<td><code>"jwt"</code> | <code>"database"</code></td>
+<td><code>"jwt"</code></td>
+<td>Stateless JWTs or server-side sessions.</td>
+</tr>
+<tr>
+<td><code>session_backend</code></td>
+<td><code>SessionBackend \| None</code></td>
+<td><code>None</code></td>
+<td>Required when <code>session_strategy="database"</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="oauth">OAuth<a class="headerlink" href="#oauth" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>oauth_adapter</code></td>
+<td><code>OAuthAccountAdapter \| None</code></td>
+<td><code>None</code></td>
+<td>Persists linked OAuth accounts.</td>
+</tr>
+<tr>
+<td><code>oauth_state_store</code></td>
+<td><code>SessionBackend \| None</code></td>
+<td><code>None</code></td>
+<td>Stores OAuth CSRF state.</td>
+</tr>
+<tr>
+<td><code>oauth_redirect_url</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>Callback URL registered with providers.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="email-tokens">Email &amp; tokens<a class="headerlink" href="#email-tokens" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>email_transport</code></td>
+<td><code>EmailTransport \| None</code></td>
+<td><code>None</code></td>
+<td>Transport for verification/reset emails.</td>
+</tr>
+<tr>
+<td><code>token_adapter</code></td>
+<td><code>TokenAdapter \| None</code></td>
+<td><code>None</code></td>
+<td>Persists one-time verification tokens.</td>
+</tr>
+<tr>
+<td><code>base_url</code></td>
+<td><code>str</code></td>
+<td><code>"http://localhost:8000"</code></td>
+<td>Public app URL used in email links.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rbac">RBAC<a class="headerlink" href="#rbac" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>roles</code></td>
+<td><code>list[dict] \| None</code></td>
+<td><code>None</code></td>
+<td>Seed role definitions.</td>
+</tr>
+<tr>
+<td><code>default_role</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>Automatically assigned to new users.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>route_prefix</code></td>
+<td><code>str</code></td>
+<td><code>"/auth"</code></td>
+<td>URL prefix for all FastAuth routes.</td>
+</tr>
+<tr>
+<td><code>hooks</code></td>
+<td><code>EventHooks \| None</code></td>
+<td><code>None</code></td>
+<td>Lifecycle hook callbacks.</td>
+</tr>
+<tr>
+<td><code>cors_origins</code></td>
+<td><code>list[str] \| None</code></td>
+<td><code>None</code></td>
+<td>Allowed CORS origins.</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Relaxes cookie security. Never enable in production.</td>
+</tr>
+</tbody>
+</table>
 <hr />
-<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">pip</label><label for="__tabbed_1_2">uv</label><label for="__tabbed_1_3">poetry</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;sreekarnv-fastauth[standard]&quot;</span>
+<h2 id="jwtconfig">JWTConfig<a class="headerlink" href="#jwtconfig" title="Permanent link">&para;</a></h2>
+<p>Pass a <code>JWTConfig</code> instance as <code>FastAuthConfig.jwt</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTConfig</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="o">...</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">jwt</span><span class="o">=</span><span class="n">JWTConfig</span><span class="p">(</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;HS256&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">access_token_ttl</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span>    <span class="c1"># 15 minutes</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">refresh_token_ttl</span><span class="o">=</span><span class="mi">86400</span><span class="p">,</span> <span class="c1"># 1 day</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="p">),</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;sreekarnv-fastauth[standard]&quot;</span>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>algorithm</code></td>
+<td><code>str</code></td>
+<td><code>"HS256"</code></td>
+<td>Signing algorithm: <code>"HS256"</code>, <code>"RS256"</code>, <code>"RS512"</code>.</td>
+</tr>
+<tr>
+<td><code>access_token_ttl</code></td>
+<td><code>int</code></td>
+<td><code>900</code></td>
+<td>Access token lifetime in seconds.</td>
+</tr>
+<tr>
+<td><code>refresh_token_ttl</code></td>
+<td><code>int</code></td>
+<td><code>2_592_000</code></td>
+<td>Refresh token lifetime in seconds (30 days).</td>
+</tr>
+<tr>
+<td><code>issuer</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td><code>iss</code> claim added to every token.</td>
+</tr>
+<tr>
+<td><code>audience</code></td>
+<td><code>list[str] \| None</code></td>
+<td><code>None</code></td>
+<td><code>aud</code> claim; validated on decode.</td>
+</tr>
+<tr>
+<td><code>jwks_enabled</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Expose <code>/.well-known/jwks.json</code> and rotate keys.</td>
+</tr>
+<tr>
+<td><code>key_rotation_interval</code></td>
+<td><code>int \| None</code></td>
+<td><code>None</code></td>
+<td>Seconds between RSA key rotations.</td>
+</tr>
+<tr>
+<td><code>private_key</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>PEM RSA private key (RS256/RS512).</td>
+</tr>
+<tr>
+<td><code>public_key</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>PEM RSA public key (RS256/RS512).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">RS256 keys</p>
+<p>Generate an RSA key pair with:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>private.pem<span class="w"> </span><span class="m">2048</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>private.pem<span class="w"> </span>-pubout<span class="w"> </span>-out<span class="w"> </span>public.pem
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>poetry<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;sreekarnv-fastauth[standard]&quot;</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<p>The <code>standard</code> extra includes FastAPI, JWT (joserfc + cryptography), SQLAlchemy, and Argon2. See <a href="getting-started/installation/">Installation</a> for the full extras table.</p>
-<hr />
-<h2 id="taste-of-the-api">Taste of the API<a class="headerlink" href="#taste-of-the-api" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAuth</span><span class="p">,</span> <span class="n">FastAuthConfig</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.adapters.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAdapter</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.api.deps</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_auth</span><span class="p">,</span> <span class="n">require_role</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.providers.credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">CredentialsProvider</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">FastAuthConfig</span><span class="p">(</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;change-me-in-production&quot;</span><span class="p">,</span>   <span class="c1"># fastauth generate-secret</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="n">CredentialsProvider</span><span class="p">()],</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="n">token_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="p">))</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="nd">@asynccontextmanager</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="k">await</span> <span class="n">adapter</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="k">yield</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="n">auth</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>  <span class="c1"># registers /auth/signup, /auth/signin, /auth/signout, …</span>
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
-<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/dashboard&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">dashboard</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">require_auth</span><span class="p">)):</span>
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]}</span>
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/admin&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">admin</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">require_role</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">))):</span>
-<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;welcome, admin&quot;</span><span class="p">}</span>
-</code></pre></div>
-<p><code>auth.mount(app)</code> registers all auth endpoints automatically. Your routes just use <code>Depends(require_auth)</code>.</p>
-<div class="next-steps">
-<h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="getting-started/installation/">Installation</a> — extras, drivers, optional deps</li>
-<li><a href="getting-started/quick-start/">Quick Start</a> — a minimal working app in 15 lines</li>
-<li><a href="getting-started/configuration/">Configuration</a> — every config field explained</li>
-<li><a href="concepts/how-it-works/">How it Works</a> — architecture overview with diagrams</li>
-</ul>
+Then load them into <code>JWTConfig</code>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">JWTConfig</span><span class="p">(</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">private_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;private.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">public_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;public.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">)</span>
+</code></pre></div></p>
 </div>
 
 
@@ -2192,10 +2610,10 @@ SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own adapter.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.instant", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.instant", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
