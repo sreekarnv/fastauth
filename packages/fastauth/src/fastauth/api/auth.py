@@ -274,6 +274,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 "user_id": user["id"],
                 "token_type": "verification",
                 "expires_at": datetime.now(timezone.utc) + timedelta(hours=24),
+                "raw_data": None,
             }
         )
 
@@ -340,6 +341,7 @@ def create_auth_router(auth: object) -> APIRouter:
                     "user_id": user["id"],
                     "token_type": "password_reset",
                     "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
+                    "raw_data": None,
                 }
             )
             if fa.email_dispatcher:

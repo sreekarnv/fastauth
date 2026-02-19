@@ -15,6 +15,7 @@ def _to_token_data(token: TokenModel) -> TokenData:
         "user_id": token.user_id,
         "token_type": token.token_type,
         "expires_at": token.expires_at,
+        "raw_data": token.raw_data,
     }
 
 
@@ -24,12 +25,14 @@ class SQLAlchemyTokenAdapter:
 
     async def create_token(self, token: TokenData) -> TokenData:
         async with self._session_factory() as session:
+            raw_data = token["raw_data"] if "raw_data" in token else None
             model = TokenModel(
                 token=token["token"],
                 user_id=token["user_id"],
                 token_type=token["token_type"],
                 expires_at=token["expires_at"],
                 created_at=datetime.now(timezone.utc),
+                raw_data=raw_data,
             )
             session.add(model)
             await session.commit()
