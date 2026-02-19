@@ -152,17 +152,15 @@ async def test_confirm_email_change(client, memory_token_adapter):
     stored_tokens = list(memory_token_adapter._tokens.values())
     change_token = [t for t in stored_tokens if t["token_type"] == "email_change"][0]
 
-    resp = await client.post(
-        "/auth/account/confirm-email-change",
-        json={"token": change_token["token"]},
+    resp = await client.get(
+        f"/auth/account/confirm-email-change?token={change_token['token']}",
     )
     assert resp.status_code == 200
 
 
 async def test_confirm_email_change_invalid_token(client):
-    resp = await client.post(
-        "/auth/account/confirm-email-change",
-        json={"token": "invalid-token"},
+    resp = await client.get(
+        "/auth/account/confirm-email-change?token=invalid_token",
     )
     assert resp.status_code == 400
 
