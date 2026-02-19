@@ -97,4 +97,4 @@ Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.
 
 ## License
 
-MIT
+MIT License - see [LICENSE](./LICENSE) for details.
