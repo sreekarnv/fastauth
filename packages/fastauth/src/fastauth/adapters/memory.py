@@ -154,20 +154,14 @@ class MemorySessionAdapter:
 
     async def delete_user_sessions(self, user_id: str) -> None:
         to_delete = [
-            sid
-            for sid, s in self._sessions.items()
-            if s["user_id"] == user_id
+            sid for sid, s in self._sessions.items() if s["user_id"] == user_id
         ]
         for sid in to_delete:
             del self._sessions[sid]
 
     async def cleanup_expired(self) -> int:
         now = datetime.now(timezone.utc)
-        expired = [
-            sid
-            for sid, s in self._sessions.items()
-            if s["expires_at"] < now
-        ]
+        expired = [sid for sid, s in self._sessions.items() if s["expires_at"] < now]
         for sid in expired:
             del self._sessions[sid]
         return len(expired)
@@ -201,18 +195,14 @@ class MemoryRoleAdapter:
         for user_roles in self._user_roles.values():
             user_roles.discard(name)
 
-    async def add_permissions(
-        self, role_name: str, permissions: list[str]
-    ) -> None:
+    async def add_permissions(self, role_name: str, permissions: list[str]) -> None:
         role = self._roles.get(role_name)
         if role:
             existing = set(role["permissions"])
             existing.update(permissions)
             role["permissions"] = list(existing)
 
-    async def remove_permissions(
-        self, role_name: str, permissions: list[str]
-    ) -> None:
+    async def remove_permissions(self, role_name: str, permissions: list[str]) -> None:
         role = self._roles.get(role_name)
         if role:
             existing = set(role["permissions"])
@@ -247,9 +237,7 @@ class MemoryOAuthAccountAdapter:
     def __init__(self) -> None:
         self._accounts: dict[tuple[str, str], OAuthAccountData] = {}
 
-    async def create_oauth_account(
-        self, account: OAuthAccountData
-    ) -> OAuthAccountData:
+    async def create_oauth_account(self, account: OAuthAccountData) -> OAuthAccountData:
         key = (account["provider"], account["provider_account_id"])
         self._accounts[key] = account
         return account
@@ -259,14 +247,8 @@ class MemoryOAuthAccountAdapter:
     ) -> OAuthAccountData | None:
         return self._accounts.get((provider, provider_account_id))
 
-    async def get_user_oauth_accounts(
-        self, user_id: str
-    ) -> list[OAuthAccountData]:
-        return [
-            a
-            for a in self._accounts.values()
-            if a["user_id"] == user_id
-        ]
+    async def get_user_oauth_accounts(self, user_id: str) -> list[OAuthAccountData]:
+        return [a for a in self._accounts.values() if a["user_id"] == user_id]
 
     async def delete_oauth_account(
         self, provider: str, provider_account_id: str

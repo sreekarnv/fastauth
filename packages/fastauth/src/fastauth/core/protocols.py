@@ -32,7 +32,9 @@ class UserAdapter(Protocol):
 
 
 class SessionAdapter(Protocol):
-    """Protocol for persisting server-side sessions (``session_strategy="database"``)."""
+    """
+    Protocol for persisting server-side sessions (``session_strategy="database"``).
+    """
 
     async def create_session(self, session: SessionData) -> SessionData: ...
 

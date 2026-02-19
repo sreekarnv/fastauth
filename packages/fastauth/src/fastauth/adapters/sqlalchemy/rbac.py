@@ -27,9 +27,7 @@ class SQLAlchemyRoleAdapter:
             perms = permissions or []
             for perm in perms:
                 await session.execute(
-                    insert(role_permissions).values(
-                        role_name=name, permission=perm
-                    )
+                    insert(role_permissions).values(role_name=name, permission=perm)
                 )
             await session.commit()
             return {"name": name, "permissions": perms}
@@ -70,21 +68,15 @@ class SQLAlchemyRoleAdapter:
     async def delete_role(self, name: str) -> None:
         async with self._session_factory() as session:
             await session.execute(
-                delete(role_permissions).where(
-                    role_permissions.c.role_name == name
-                )
+                delete(role_permissions).where(role_permissions.c.role_name == name)
             )
             await session.execute(
                 delete(user_roles).where(user_roles.c.role_name == name)
             )
-            await session.execute(
-                delete(RoleModel).where(RoleModel.name == name)
-            )
+            await session.execute(delete(RoleModel).where(RoleModel.name == name))
             await session.commit()
 
-    async def add_permissions(
-        self, role_name: str, permissions: list[str]
-    ) -> None:
+    async def add_permissions(self, role_name: str, permissions: list[str]) -> None:
         async with self._session_factory() as session:
             for perm in permissions:
                 await session.execute(
@@ -94,9 +86,7 @@ class SQLAlchemyRoleAdapter:
                 )
             await session.commit()
 
-    async def remove_permissions(
-        self, role_name: str, permissions: list[str]
-    ) -> None:
+    async def remove_permissions(self, role_name: str, permissions: list[str]) -> None:
         async with self._session_factory() as session:
             for perm in permissions:
                 await session.execute(
@@ -110,9 +100,7 @@ class SQLAlchemyRoleAdapter:
     async def assign_role(self, user_id: str, role_name: str) -> None:
         async with self._session_factory() as session:
             await session.execute(
-                insert(user_roles).values(
-                    user_id=user_id, role_name=role_name
-                )
+                insert(user_roles).values(user_id=user_id, role_name=role_name)
             )
             await session.commit()
 
@@ -129,9 +117,7 @@ class SQLAlchemyRoleAdapter:
     async def get_user_roles(self, user_id: str) -> list[str]:
         async with self._session_factory() as session:
             result = await session.execute(
-                select(user_roles.c.role_name).where(
-                    user_roles.c.user_id == user_id
-                )
+                select(user_roles.c.role_name).where(user_roles.c.user_id == user_id)
             )
             return [row[0] for row in result.fetchall()]
 
@@ -139,10 +125,12 @@ class SQLAlchemyRoleAdapter:
         async with self._session_factory() as session:
             result = await session.execute(
                 select(role_permissions.c.permission)
-                .select_from(user_roles.join(
-                    role_permissions,
-                    user_roles.c.role_name == role_permissions.c.role_name,
-                ))
+                .select_from(
+                    user_roles.join(
+                        role_permissions,
+                        user_roles.c.role_name == role_permissions.c.role_name,
+                    )
+                )
                 .where(user_roles.c.user_id == user_id)
             )
             return {row[0] for row in result.fetchall()}

@@ -4,9 +4,7 @@ from fastauth.adapters.memory import MemorySessionAdapter
 from fastauth.types import SessionData
 
 
-def _make_session(
-    sid: str = "s1", user_id: str = "u1", hours: int = 1
-) -> SessionData:
+def _make_session(sid: str = "s1", user_id: str = "u1", hours: int = 1) -> SessionData:
     return SessionData(
         id=sid,
         user_id=user_id,

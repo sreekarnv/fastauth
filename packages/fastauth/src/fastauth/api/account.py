@@ -51,12 +51,8 @@ def create_account_router(auth: object) -> APIRouter:
 
         fa: FastAuth = request.app.state.fastauth
 
-        stored_hash = await fa.config.adapter.get_hashed_password(
-            user["id"]
-        )
-        if not stored_hash or not verify_password(
-            body.current_password, stored_hash
-        ):
+        stored_hash = await fa.config.adapter.get_hashed_password(user["id"])
+        if not stored_hash or not verify_password(body.current_password, stored_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Current password is incorrect",
@@ -66,9 +62,7 @@ def create_account_router(auth: object) -> APIRouter:
         await fa.config.adapter.set_hashed_password(user["id"], hashed)
 
         if fa.config.token_adapter:
-            await fa.config.token_adapter.delete_user_tokens(
-                user["id"], "refresh"
-            )
+            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh")
 
         return MessageResponse(message="Password changed successfully")
 
@@ -82,12 +76,8 @@ def create_account_router(auth: object) -> APIRouter:
 
         fa: FastAuth = request.app.state.fastauth
 
-        stored_hash = await fa.config.adapter.get_hashed_password(
-            user["id"]
-        )
-        if not stored_hash or not verify_password(
-            body.password, stored_hash
-        ):
+        stored_hash = await fa.config.adapter.get_hashed_password(user["id"])
+        if not stored_hash or not verify_password(body.password, stored_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Password is incorrect",
@@ -112,8 +102,7 @@ def create_account_router(auth: object) -> APIRouter:
                 "token": token,
                 "user_id": user["id"],
                 "token_type": "email_change",
-                "expires_at": datetime.now(timezone.utc)
-                + timedelta(minutes=30),
+                "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
             }
         )
 
@@ -122,13 +111,9 @@ def create_account_router(auth: object) -> APIRouter:
                 user, body.new_email, token, expires_in_minutes=30
             )
 
-        return MessageResponse(
-            message="Confirmation email sent to new address"
-        )
+        return MessageResponse(message="Confirmation email sent to new address")
 
-    @router.post(
-        "/confirm-email-change", response_model=MessageResponse
-    )
+    @router.post("/confirm-email-change", response_model=MessageResponse)
     async def confirm_email_change(
         request: Request, body: ConfirmEmailChangeRequest
     ) -> MessageResponse:
@@ -142,9 +127,7 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(
-            body.token, "email_change"
-        )
+        stored = await fa.config.token_adapter.get_token(body.token, "email_change")
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -165,12 +148,8 @@ def create_account_router(auth: object) -> APIRouter:
 
         fa: FastAuth = request.app.state.fastauth
 
-        stored_hash = await fa.config.adapter.get_hashed_password(
-            user["id"]
-        )
-        if not stored_hash or not verify_password(
-            body.password, stored_hash
-        ):
+        stored_hash = await fa.config.adapter.get_hashed_password(user["id"])
+        if not stored_hash or not verify_password(body.password, stored_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Password is incorrect",

@@ -51,9 +51,7 @@ class SQLAlchemySessionAdapter:
 
     async def delete_session(self, session_id: str) -> None:
         async with self._session_factory() as db:
-            await db.execute(
-                delete(SessionModel).where(SessionModel.id == session_id)
-            )
+            await db.execute(delete(SessionModel).where(SessionModel.id == session_id))
             await db.commit()
 
     async def delete_user_sessions(self, user_id: str) -> None:
@@ -72,8 +70,6 @@ class SQLAlchemySessionAdapter:
                 .where(SessionModel.expires_at <= now)
             )
             count = count_result.scalar() or 0
-            await db.execute(
-                delete(SessionModel).where(SessionModel.expires_at <= now)
-            )
+            await db.execute(delete(SessionModel).where(SessionModel.expires_at <= now))
             await db.commit()
             return count

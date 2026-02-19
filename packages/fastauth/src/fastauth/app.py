@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 
 class FastAuth:
-    """Central FastAuth instance — wires configuration, providers, and adapters together.
+    """
+    Central FastAuth instance wires configuration, providers, and adapters together.
 
     Pass a :class:`~fastauth.config.FastAuthConfig` to the constructor, then call
     :meth:`mount` to attach all authentication routes to a FastAPI application.

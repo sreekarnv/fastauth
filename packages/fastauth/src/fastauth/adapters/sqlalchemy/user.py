@@ -83,9 +83,7 @@ class SQLAlchemyUserAdapter:
                 raise UserNotFoundError(f"User '{user_id}' not found")
 
             allowed_fields = {"email", "name", "image", "email_verified", "is_active"}
-            update_data = {
-                k: v for k, v in kwargs.items() if k in allowed_fields
-            }
+            update_data = {k: v for k, v in kwargs.items() if k in allowed_fields}
             update_data["updated_at"] = datetime.now(timezone.utc)
 
             if update_data:

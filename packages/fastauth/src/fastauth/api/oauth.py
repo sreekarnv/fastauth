@@ -41,9 +41,10 @@ def _get_oauth_provider(fa: object, provider_id: str):
 
     assert isinstance(fa, FastAuth)
     for p in fa.config.providers:
-        if getattr(p, "id", None) == provider_id and getattr(
-            p, "auth_type", None
-        ) == "oauth":
+        if (
+            getattr(p, "id", None) == provider_id
+            and getattr(p, "auth_type", None) == "oauth"
+        ):
             return p
     return None
 
@@ -51,9 +52,7 @@ def _get_oauth_provider(fa: object, provider_id: str):
 def create_oauth_router(auth: object) -> APIRouter:
     router = APIRouter(prefix="/oauth")
 
-    @router.get(
-        "/{provider}/authorize", response_model=AuthorizeResponse
-    )
+    @router.get("/{provider}/authorize", response_model=AuthorizeResponse)
     async def authorize(
         request: Request, provider: str, redirect_uri: str
     ) -> AuthorizeResponse:
@@ -106,9 +105,7 @@ def create_oauth_router(auth: object) -> APIRouter:
                 detail="oauth_adapter is not configured",
             )
 
-        callback_uri = str(
-            request.url_for("callback", provider=provider)
-        )
+        callback_uri = str(request.url_for("callback", provider=provider))
 
         try:
             user, is_new = await complete_oauth_flow(
@@ -129,9 +126,7 @@ def create_oauth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             if is_new:
                 await fa.config.hooks.on_signup(user)
-            allowed = await fa.config.hooks.allow_signin(
-                user, provider
-            )
+            allowed = await fa.config.hooks.allow_signin(user, provider)
             if not allowed:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -140,9 +135,7 @@ def create_oauth_router(auth: object) -> APIRouter:
             await fa.config.hooks.on_signin(user, provider)
             await fa.config.hooks.on_oauth_link(user, provider)
 
-        tokens = create_token_pair(
-            user, fa.config, fa.jwks_manager
-        )
+        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
 
         if fa.config.oauth_redirect_url:
             params = urlencode(
@@ -160,9 +153,7 @@ def create_oauth_router(auth: object) -> APIRouter:
 
         return TokenResponse(**tokens)
 
-    @router.get(
-        "/accounts", response_model=list[OAuthAccountResponse]
-    )
+    @router.get("/accounts", response_model=list[OAuthAccountResponse])
     async def list_accounts(
         request: Request,
         user: UserData = Depends(require_auth),
@@ -175,9 +166,7 @@ def create_oauth_router(auth: object) -> APIRouter:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="oauth_adapter is not configured",
             )
-        accounts = await fa.config.oauth_adapter.get_user_oauth_accounts(
-            user["id"]
-        )
+        accounts = await fa.config.oauth_adapter.get_user_oauth_accounts(user["id"])
         return [
             OAuthAccountResponse(
                 provider=a["provider"],
@@ -186,9 +175,7 @@ def create_oauth_router(auth: object) -> APIRouter:
             for a in accounts
         ]
 
-    @router.delete(
-        "/accounts/{provider}", response_model=MessageResponse
-    )
+    @router.delete("/accounts/{provider}", response_model=MessageResponse)
     async def unlink_account(
         request: Request,
         provider: str,
@@ -202,12 +189,8 @@ def create_oauth_router(auth: object) -> APIRouter:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="oauth_adapter is not configured",
             )
-        accounts = await fa.config.oauth_adapter.get_user_oauth_accounts(
-            user["id"]
-        )
-        target = next(
-            (a for a in accounts if a["provider"] == provider), None
-        )
+        accounts = await fa.config.oauth_adapter.get_user_oauth_accounts(user["id"])
+        target = next((a for a in accounts if a["provider"] == provider), None)
         if not target:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

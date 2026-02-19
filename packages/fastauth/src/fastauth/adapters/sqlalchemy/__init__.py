@@ -101,35 +101,47 @@ class SQLAlchemyAdapter:
 
     @property
     def user(self) -> SQLAlchemyUserAdapter:
-        """Return a :class:`~fastauth.adapters.sqlalchemy.user.SQLAlchemyUserAdapter`."""
+        """
+        Return a :class:`~fastauth.adapters.sqlalchemy.user.SQLAlchemyUserAdapter`.
+        """
         from fastauth.adapters.sqlalchemy.user import SQLAlchemyUserAdapter
 
         return SQLAlchemyUserAdapter(self._session_factory)
 
     @property
     def token(self) -> SQLAlchemyTokenAdapter:
-        """Return a :class:`~fastauth.adapters.sqlalchemy.token.SQLAlchemyTokenAdapter`."""
+        """
+        Return a :class:`~fastauth.adapters.sqlalchemy.token.SQLAlchemyTokenAdapter`.
+        """
         from fastauth.adapters.sqlalchemy.token import SQLAlchemyTokenAdapter
 
         return SQLAlchemyTokenAdapter(self._session_factory)
 
     @property
     def session(self) -> SQLAlchemySessionAdapter:
-        """Return a :class:`~fastauth.adapters.sqlalchemy.session.SQLAlchemySessionAdapter`."""
+        """
+        Return a :class:\
+        `~fastauth.adapters.sqlalchemy.session.SQLAlchemySessionAdapter`.
+        """
         from fastauth.adapters.sqlalchemy.session import SQLAlchemySessionAdapter
 
         return SQLAlchemySessionAdapter(self._session_factory)
 
     @property
     def role(self) -> SQLAlchemyRoleAdapter:
-        """Return a :class:`~fastauth.adapters.sqlalchemy.rbac.SQLAlchemyRoleAdapter`."""
+        """
+        Return a :class:`~fastauth.adapters.sqlalchemy.rbac.SQLAlchemyRoleAdapter`.
+        """
         from fastauth.adapters.sqlalchemy.rbac import SQLAlchemyRoleAdapter
 
         return SQLAlchemyRoleAdapter(self._session_factory)
 
     @property
     def oauth(self) -> SQLAlchemyOAuthAccountAdapter:
-        """Return a :class:`~fastauth.adapters.sqlalchemy.oauth.SQLAlchemyOAuthAccountAdapter`."""
+        """
+        Returns a :class: \
+        `~fastauth.adapters.sqlalchemy.oauth.SQLAlchemyOAuthAccountAdapter`.
+        """
         from fastauth.adapters.sqlalchemy.oauth import SQLAlchemyOAuthAccountAdapter
 
         return SQLAlchemyOAuthAccountAdapter(self._session_factory)

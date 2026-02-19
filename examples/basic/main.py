@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
-
 from fastauth import FastAuth, FastAuthConfig
 from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
 from fastauth.api.deps import require_auth, require_permission, require_role
