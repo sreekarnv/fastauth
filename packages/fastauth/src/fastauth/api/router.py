@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from fastapi import APIRouter
 
 from fastauth.api.account import create_account_router

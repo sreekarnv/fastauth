@@ -64,6 +64,13 @@ async def require_auth(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
         )
+
+    if not user["is_active"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account is deactivated",
+        )
+
     return user
 
 

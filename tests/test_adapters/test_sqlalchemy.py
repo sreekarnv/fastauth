@@ -120,6 +120,7 @@ def _token_data(user_id: str, token_type: str = "verification", token: str = "to
         "user_id": user_id,
         "token_type": token_type,
         "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+        "raw_data": {},
     }
 
 

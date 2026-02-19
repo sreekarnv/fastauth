@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Text
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, String, Table, Text
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 from sqlalchemy.orm.base import Mapped
 
@@ -86,6 +86,7 @@ class TokenModel(Base):
         String, ForeignKey("fastauth_users.id"), index=True
     )
     token_type: Mapped[str] = mapped_column(String)
+    raw_data: Mapped[dict] = mapped_column(JSON, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 

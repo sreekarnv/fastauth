@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.deps import require_auth
+from fastauth.app import FastAuth
 from fastauth.core.credentials import hash_password, verify_password
 
 if TYPE_CHECKING:
@@ -24,10 +25,6 @@ class ChangePasswordRequest(BaseModel):
 class ChangeEmailRequest(BaseModel):
     new_email: EmailStr
     password: str
-
-
-class ConfirmEmailChangeRequest(BaseModel):
-    token: str
 
 
 class DeleteAccountRequest(BaseModel):
@@ -47,7 +44,6 @@ def create_account_router(auth: object) -> APIRouter:
         body: ChangePasswordRequest,
         user: UserData = Depends(require_auth),
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
 
         fa: FastAuth = request.app.state.fastauth
 
@@ -72,8 +68,6 @@ def create_account_router(auth: object) -> APIRouter:
         body: ChangeEmailRequest,
         user: UserData = Depends(require_auth),
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
-
         fa: FastAuth = request.app.state.fastauth
 
         stored_hash = await fa.config.adapter.get_hashed_password(user["id"])
@@ -103,6 +97,7 @@ def create_account_router(auth: object) -> APIRouter:
                 "user_id": user["id"],
                 "token_type": "email_change",
                 "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
+                "raw_data": {"email": body.new_email},
             }
         )
 
@@ -113,12 +108,8 @@ def create_account_router(auth: object) -> APIRouter:
 
         return MessageResponse(message="Confirmation email sent to new address")
 
-    @router.post("/confirm-email-change", response_model=MessageResponse)
-    async def confirm_email_change(
-        request: Request, body: ConfirmEmailChangeRequest
-    ) -> MessageResponse:
-        from fastauth.app import FastAuth
-
+    @router.get("/confirm-email-change", response_model=MessageResponse)
+    async def confirm_email_change(request: Request, token: str) -> MessageResponse:
         fa: FastAuth = request.app.state.fastauth
 
         if not fa.config.token_adapter:
@@ -127,14 +118,22 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(body.token, "email_change")
-        if not stored:
+        stored = await fa.config.token_adapter.get_token(token, "email_change")
+        if (
+            not stored
+            or stored["raw_data"] is None
+            or "email" not in stored["raw_data"]
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired token",
             )
 
-        await fa.config.token_adapter.delete_token(body.token)
+        await fa.config.adapter.update_user(
+            stored["user_id"], email=stored["raw_data"]["email"]
+        )
+
+        await fa.config.token_adapter.delete_token(token)
 
         return MessageResponse(message="Email changed successfully")
 
@@ -144,8 +143,6 @@ def create_account_router(auth: object) -> APIRouter:
         body: DeleteAccountRequest,
         user: UserData = Depends(require_auth),
     ) -> MessageResponse:
-        from fastauth.app import FastAuth
-
         fa: FastAuth = request.app.state.fastauth
 
         stored_hash = await fa.config.adapter.get_hashed_password(user["id"])
