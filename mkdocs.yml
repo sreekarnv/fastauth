@@ -1,172 +1,58 @@
-site_name: FastAuth Documentation
-site_description: Production-ready authentication for FastAPI applications
-site_author: Sreekar Nutulapati
-site_url: https://sreekarnv.github.io/fastauth/
+site_name: FastAuth
+site_description: NextAuth-inspired pluggable authentication for FastAPI
+site_url: https://sreekarnv.github.io/fastauth
 repo_url: https://github.com/sreekarnv/fastauth
 repo_name: sreekarnv/fastauth
-edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 Sreekar Nutulapati
 
-# Copyright
-copyright: Copyright &copy; 2024-2025 Sreekar Nutulapati
-
-# Theme Configuration
 theme:
   name: material
   palette:
-    # Light mode
-    - scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    # Dark mode
-    - scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-
+    scheme: slate
+    primary: black
+    accent: cyan
   font:
-    text: Roboto
-    code: Roboto Mono
-
+    text: Inter
+    code: JetBrains Mono
   features:
-    - navigation.instant
-    - navigation.tracking
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
     - navigation.path
     - navigation.top
-    - navigation.footer
-    - navigation.indexes
-    - toc.follow
-    - toc.integrate
-    - search.suggest
+    - navigation.instant
     - search.highlight
     - search.share
     - content.code.copy
     - content.code.annotate
     - content.tabs.link
 
-  icon:
-    repo: fontawesome/brands/github
-    edit: material/pencil
-    view: material/eye
+extra_css:
+  - css/extra.css
 
-  # logo: assets/logo.png
-  # favicon: assets/favicon.png
-
-# Plugins
 plugins:
-  - search:
-      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
-  - autorefs
-  - mkdocstrings:
-      enabled: true
-      default_handler: python
-      handlers:
-        python:
-          options:
-            # Docstring style
-            docstring_style: google
-            docstring_section_style: table
-
-            # Signatures
-            show_signature: true
-            show_signature_annotations: true
-            signature_crossrefs: true
-            separate_signature: true
-
-            # Members
-            show_root_heading: true
-            show_root_full_path: false
-            show_root_members_full_path: false
-            show_category_heading: true
-            show_symbol_type_heading: true
-            show_symbol_type_toc: true
-
-            # Docstrings
-            show_if_no_docstring: false
-            show_docstring_attributes: true
-            show_docstring_functions: true
-            show_docstring_classes: true
-            show_docstring_modules: true
-            show_docstring_description: true
-            show_docstring_examples: true
-            show_docstring_other_parameters: true
-            show_docstring_parameters: true
-            show_docstring_raises: true
-            show_docstring_receives: true
-            show_docstring_returns: true
-            show_docstring_warns: true
-            show_docstring_yields: true
-
-            # Source code
-            show_source: true
-
-            # Headings
-            heading_level: 2
-
-            # Members
-            members_order: source
-            group_by_category: true
-            show_submodules: true
-
-            # Filters
-            filters:
-              - "!^_"  # Exclude private members
-              - "!^__init__$"  # Exclude __init__ from docs
-
-            # Merge init into class
-            merge_init_into_class: true
-
-            # Other
-            annotations_path: brief
-            line_length: 80
-
+  - search
   - gen-files:
       scripts:
-        - docs/gen_ref_pages.py
-  - literate-nav
-  - section-index
+        - scripts/gen_api_docs.py
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [packages/fastauth/src]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
 
-# Extensions
 markdown_extensions:
-  # Python Markdown
-  - abbr
   - admonition
-  - attr_list
-  - def_list
-  - footnotes
-  - md_in_html
-  - tables
-  - toc:
-      permalink: true
-      toc_depth: 3
-
-  # Python Markdown Extensions
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.betterem:
-      smart_enable: all
-  - pymdownx.caret
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.smartsymbols
-  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -174,120 +60,57 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
 
-# Navigation
 nav:
   - Home: index.md
   - Getting Started:
-    - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quickstart.md
-    - Core Concepts: getting-started/core-concepts.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+      - Configuration: getting-started/configuration.md
+  - Concepts:
+      - How it Works: concepts/how-it-works.md
+      - Providers: concepts/providers.md
+      - Adapters: concepts/adapters.md
+      - Tokens & Sessions: concepts/tokens.md
+  - Providers:
+      - Credentials: providers/credentials.md
+      - Google OAuth: providers/google.md
+      - GitHub OAuth: providers/github.md
+  - Adapters:
+      - SQLAlchemy: adapters/sqlalchemy.md
+      - Memory: adapters/memory.md
+      - Custom Adapter: adapters/custom.md
+  - Features:
+      - Cookie Delivery: features/cookies.md
+      - Email Verification: features/email-verification.md
+      - Password Reset: features/password-reset.md
+      - OAuth Flow: features/oauth.md
+      - RBAC: features/rbac.md
+      - JWT: features/jwt.md
+      - Event Hooks: features/hooks.md
   - Guides:
-    - Authentication: guides/authentication.md
-    - Protecting Routes: guides/protecting-routes.md
-    - RBAC: guides/rbac.md
-    - OAuth: guides/oauth.md
-    - Sessions: guides/sessions.md
-    - Email: guides/email.md
-    - CLI: guides/cli.md
+      - Basic App: guides/basic.md
+      - Adding OAuth: guides/oauth.md
+      - Microservice JWT: guides/microservice.md
+      - Production Checklist: guides/production.md
   - Reference:
-    - Configuration: configuration.md
-    - Architecture: architecture.md
-    - Testing: testing.md
-    - Deployment: deployment.md
-  - API Reference:
-    - reference/index.md
-    - Core:
-      - Users: reference/core/users.md
-      - OAuth: reference/core/oauth.md
-      - Sessions: reference/core/sessions.md
-      - Roles: reference/core/roles.md
-      - Account: reference/core/account.md
-      - Email Verification: reference/core/email_verification.md
-      - Password Reset: reference/core/password_reset.md
-      - Refresh Tokens: reference/core/refresh_tokens.md
-      - Hashing: reference/core/hashing.md
-    - Adapters:
-      - Base:
-        - User Adapter: reference/adapters/base/users.md
-        - OAuth Account Adapter: reference/adapters/base/oauth_accounts.md
-        - OAuth State Adapter: reference/adapters/base/oauth_states.md
-        - Session Adapter: reference/adapters/base/sessions.md
-        - Role Adapter: reference/adapters/base/roles.md
-        - Email Change Adapter: reference/adapters/base/email_change.md
-        - Email Verification Adapter: reference/adapters/base/email_verification.md
-        - Password Reset Adapter: reference/adapters/base/password_reset.md
-        - Refresh Token Adapter: reference/adapters/base/refresh_tokens.md
-      - SQLAlchemy:
-        - Models: reference/adapters/sqlalchemy/models.md
-        - User Adapter: reference/adapters/sqlalchemy/users.md
-        - OAuth Account Adapter: reference/adapters/sqlalchemy/oauth_accounts.md
-        - OAuth State Adapter: reference/adapters/sqlalchemy/oauth_states.md
-        - Session Adapter: reference/adapters/sqlalchemy/sessions.md
-        - Role Adapter: reference/adapters/sqlalchemy/roles.md
-        - Email Change Adapter: reference/adapters/sqlalchemy/email_change.md
-        - Email Verification Adapter: reference/adapters/sqlalchemy/email_verification.md
-        - Password Reset Adapter: reference/adapters/sqlalchemy/password_reset.md
-        - Refresh Token Adapter: reference/adapters/sqlalchemy/refresh_tokens.md
-    - API:
-      - Auth Routes: reference/api/auth.md
-      - OAuth Routes: reference/api/oauth.md
-      - Account Routes: reference/api/account.md
-      - Session Routes: reference/api/sessions.md
-      - Dependencies: reference/api/dependencies.md
-      - Schemas: reference/api/schemas.md
-    - Security:
-      - JWT: reference/security/jwt.md
-      - OAuth Security: reference/security/oauth.md
-      - Rate Limiting: reference/security/rate_limit.md
-      - Email Verification Security: reference/security/email_verification.md
-      - Password Reset Security: reference/security/password_reset.md
-      - Refresh Token Security: reference/security/refresh.md
-      - Limits: reference/security/limits.md
-    - Email:
-      - Base Email: reference/email/base.md
-      - Console Provider: reference/email/console.md
-      - SMTP Provider: reference/email/smtp.md
-      - Email Factory: reference/email/factory.md
-    - Providers:
-      - Base Provider: reference/providers/base.md
-      - Google: reference/providers/google.md
-    - Settings: reference/settings.md
-  - Contributing: contributing.md
-
-# Extra
-extra:
-  version:
-    provider: mike
-    default: latest
-
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/sreekarnv/fastauth
-    - icon: fontawesome/brands/python
-      link: https://pypi.org/project/sreekarnv-fastauth/
-
-  analytics:
-    provider: google
-    property: !ENV GOOGLE_ANALYTICS_KEY
-
-  generator: false
-
-# Additional CSS
-# extra_css:
-#   - stylesheets/extra.css
-
-# Additional JavaScript
-# extra_javascript:
-#   - javascripts/extra.js
-#   - javascripts/mathjax.js
-#   - https://polyfill.io/v3/polyfill.min.js?features=es6
-#   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-
-# Watch for changes
-watch:
-  - fastauth/
-  - docs/
+      - FastAuth: reference/fastauth.md
+      - Configuration: reference/config.md
+      - Exceptions: reference/exceptions.md
+      - Types: reference/types.md
+      - Protocols: reference/protocols.md
+      - Dependencies: reference/deps.md
+      - Adapters: reference/adapters.md
+      - Providers: reference/providers.md
+      - Session Backends: reference/session-backends.md
+      - Email Transports: reference/email-transports.md
+  - CLI: cli.md

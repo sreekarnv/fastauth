@@ -1,135 +1,140 @@
+<div class="hero" markdown>
 # FastAuth
+  
+<p class="hero__tagline">
+NextAuth-inspired pluggable authentication for FastAPI.
+</p>
 
-> Production-ready authentication for FastAPI applications
+<p class="hero__desc">
+Complete auth system - credentials, OAuth, email verification, password reset, RBAC, and JWT in minutes, without locking you into any database or ORM.
+</p>
 
-FastAuth is a flexible, database-agnostic authentication library for FastAPI that provides secure user authentication, session management, and authorization out of the box.
+[Get Started](getting-started/installation.md){ .md-button .md-button--primary }
+[GitHub](https://github.com/sreekarnv/fastauth){ .md-button }
+</div>
 
-[![CI](https://github.com/sreekarnv/fastauth/actions/workflows/ci.yml/badge.svg)](https://github.com/sreekarnv/fastauth/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/sreekarnv/fastauth/branch/main/graph/badge.svg)](https://codecov.io/gh/sreekarnv/fastauth)
-[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div class="feature-grid" markdown>
 
-## ✨ Features
+<div class="feature-card" markdown>
+**Multiple Providers**
+Email/password, Google OAuth, and GitHub OAuth out of the box.
+</div>
 
-- **Complete Authentication** - Registration, login, logout, token refresh
-- **Role-Based Access Control** - Fine-grained permissions and roles
-- **Session Management** - Multi-device session tracking
-- **OAuth Support** - Social login (Google, GitHub, etc.)
-- **Email Verification** - Secure email verification with tokens
-- **Password Reset** - Self-service password reset
-- **Database Agnostic** - Works with any database via adapters
-- **Type Safe** - Full type hints and validation
+<div class="feature-card" markdown>
+**Pluggable Adapters**
+SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own adapter.
+</div>
 
-## Quick Start
+<div class="feature-card" markdown>
+**JWT & Sessions**
 
-### Install
+Stateless tokens or server-side database sessions -> your choice.
+</div>
 
-```bash
-pip install sreekarnv-fastauth
-```
+<div class="feature-card" markdown>
+**Cookie Delivery**
 
-### Create Your App
+HttpOnly, Secure, SameSite-strict cookies with zero extra config.
+</div>
 
-```python
-from fastapi import Depends, FastAPI
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+<div class="feature-card" markdown>
+**Email Flows**
 
-from fastauth.api.auth import router as auth_router
-from fastauth.security.jwt import decode_access_token
+Verification and password reset with pluggable transports (SMTP, webhook, console).
+</div>
 
-app = FastAPI()
-app.include_router(auth_router)
+<div class="feature-card" markdown>
+**RBAC**
 
-security = HTTPBearer()
+Roles and fine-grained permissions enforced on any route via `Depends`.
+</div>
 
-@app.get("/protected")
-def protected(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    payload = decode_access_token(credentials.credentials)
-    return {"user_id": payload["sub"]}
-```
+<div class="feature-card" markdown>
+**Event Hooks**
 
-### Run
+Intercept sign-in, sign-up, and mutate JWT payloads via a single interface.
+</div>
 
-```bash
-uvicorn main:app --reload
-```
+<div class="feature-card" markdown>
+**RS256 / JWKS**
 
-Visit `http://localhost:8000/docs` to see the auto-generated API documentation.
+Rotate signing keys and expose a JWKS endpoint for microservice architectures.
+</div>
 
-## Documentation
-
-- **[Getting Started](getting-started/installation.md)** - Install and setup in 5 minutes
-- **[Guides](guides/authentication.md)** - Authentication, RBAC, sessions, OAuth
-- **[API Reference](reference/index.md)** - Complete API documentation
-- **[Examples](https://github.com/sreekarnv/fastauth/tree/main/examples)** - Working example applications
-
-## Examples
-
-Check out complete working examples:
-
-- **[OAuth with Google](https://github.com/sreekarnv/fastauth/tree/main/examples/oauth-google)** - Social login with PKCE
-- **[RBAC Blog](https://github.com/sreekarnv/fastauth/tree/main/examples/rbac-blog)** - Role-based access control
-- **[Session Management](https://github.com/sreekarnv/fastauth/tree/main/examples/session-devices)** - Multi-device tracking
-- **[Basic App](https://github.com/sreekarnv/fastauth/tree/main/examples/basic)** - Simple authentication
-
-## Security
-
-FastAuth follows security best practices:
-
-- Argon2 password hashing (OWASP recommended)
-- JWT tokens with configurable expiration
-- Rate limiting for authentication endpoints
-- Refresh token rotation
-- Session tracking and revocation
-
-## Architecture
-
-```
-┌─────────────────────────────────────┐
-│         Your FastAPI App            │
-├─────────────────────────────────────┤
-│         FastAuth API Layer          │
-├─────────────────────────────────────┤
-│      Core Business Logic            │  ← Database-agnostic
-├─────────────────────────────────────┤
-│      Adapter Interface              │
-├─────────────────────────────────────┤
-│   Database Implementation           │  ← SQLAlchemy, MongoDB, etc.
-└─────────────────────────────────────┘
-```
-
-**Key Principles:**
-- Database-agnostic core
-- Adapter pattern for flexibility
-- Dependency injection
-- Full type safety
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](https://github.com/sreekarnv/fastauth/blob/main/CONTRIBUTING.md) for guidelines.
-
-```bash
-# Setup development environment
-git clone https://github.com/sreekarnv/fastauth.git
-cd fastauth
-poetry install
-poetry run pytest
-```
-
-## License
-
-MIT License - see [LICENSE](https://github.com/sreekarnv/fastauth/blob/main/LICENSE) for details.
-
-## Links
-
-- **[Changelog](https://github.com/sreekarnv/fastauth/blob/main/CHANGELOG.md)** - Version history and release notes
-- **[Code of Conduct](https://github.com/sreekarnv/fastauth/blob/main/CODE_OF_CONDUCT.md)** - Community guidelines
-- **[Contributing](contributing.md)** - How to contribute
-
-## Acknowledgments
-
-Built with [FastAPI](https://fastapi.tiangolo.com/), [SQLModel](https://sqlmodel.tiangolo.com/), [Argon2](https://github.com/hynek/argon2-cffi), and [python-jose](https://github.com/mpdavis/python-jose).
+</div>
 
 ---
 
-Made with by [Sreekar Nutulapati](https://github.com/sreekarnv)
+## Install
+
+=== "pip"
+
+    ```bash
+    pip install "sreekarnv-fastauth[standard]"
+    ```
+
+=== "uv"
+
+    ```bash
+    uv add "sreekarnv-fastauth[standard]"
+    ```
+
+=== "poetry"
+
+    ```bash
+    poetry add "sreekarnv-fastauth[standard]"
+    ```
+
+The `standard` extra includes FastAPI, JWT (joserfc + cryptography), SQLAlchemy, and Argon2. See [Installation](getting-started/installation.md) for the full extras table.
+
+---
+
+## Taste of the API
+
+```python
+from contextlib import asynccontextmanager
+from fastapi import Depends, FastAPI
+from fastauth import FastAuth, FastAuthConfig
+from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
+from fastauth.api.deps import require_auth, require_role
+from fastauth.providers.credentials import CredentialsProvider
+
+adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
+
+auth = FastAuth(FastAuthConfig(
+    secret="change-me-in-production",   # fastauth generate-secret
+    providers=[CredentialsProvider()],
+    adapter=adapter.user,
+    token_adapter=adapter.token,
+))
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await adapter.create_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
+auth.mount(app)  # registers /auth/signup, /auth/signin, /auth/signout, …
+
+@app.get("/dashboard")
+async def dashboard(user=Depends(require_auth)):
+    return {"hello": user["email"]}
+
+@app.get("/admin")
+async def admin(user=Depends(require_role("admin"))):
+    return {"message": "welcome, admin"}
+```
+
+`auth.mount(app)` registers all auth endpoints automatically. Your routes just use `Depends(require_auth)`.
+
+
+<div class="next-steps" markdown>
+
+## Next steps
+
+- [Installation](getting-started/installation.md) — extras, drivers, optional deps
+- [Quick Start](getting-started/quick-start.md) — a minimal working app in 15 lines
+- [Configuration](getting-started/configuration.md) — every config field explained
+- [How it Works](concepts/how-it-works.md) — architecture overview with diagrams
+
+</div>

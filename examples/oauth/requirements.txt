@@ -1,0 +1,2 @@
+sreekarnv-fastauth[standard,oauth,email]
+python-dotenv

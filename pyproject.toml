@@ -1,139 +1,44 @@
 [project]
-name = "sreekarnv-fastauth"
-version = "0.2.6"
-description = "Production-ready authentication for FastAPI applications"
-authors = [
-    {name = "Sreekar Nutulapati", email = "sreekarnv1@gmail.com"}
-]
+name = "sreekarnv-fastauth-workspace"
+version = "0.3.0"
+description = "FastAuth monorepo workspace root"
 readme = "README.md"
-license = {text = "MIT"}
 requires-python = ">=3.11"
-keywords = ["fastapi", "authentication", "auth", "jwt", "oauth", "rbac", "session"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Framework :: FastAPI",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Security",
-]
 dependencies = [
-    "argon2-cffi>=23.1.0",
-    "python-jose[cryptography]>=3.3.0",
-    "pydantic-settings>=2.0.0",
-    "email-validator>=2.0.0",
-    "itsdangerous>=2.0.0",
-    "sqlmodel>=0.0.16",
+    "sreekarnv-fastauth[standard,email,cli]",
 ]
 
-# Note: FastAPI is a peer dependency - users must install it separately.
-# This avoids version conflicts with existing FastAPI installations.
+[tool.uv.sources]
+sreekarnv-fastauth = { workspace = true }
 
-[project.optional-dependencies]
-oauth = ["httpx>=0.27.0"]
-cli = ["typer>=0.9.0", "rich>=13.0.0"]
-all = ["httpx>=0.27.0", "typer>=0.9.0", "rich>=13.0.0"]
-
-[project.urls]
-Homepage = "https://github.com/sreekarnv/fastauth"
-Repository = "https://github.com/sreekarnv/fastauth"
-Documentation = "https://sreekarnv.github.io/fastauth/"
-"Bug Tracker" = "https://github.com/sreekarnv/fastauth/issues"
-Changelog = "https://github.com/sreekarnv/fastauth/blob/main/CHANGELOG.md"
-
-[project.scripts]
-fastauth = "fastauth.cli:app"
-test = "pytest:main"
-test-cov = "scripts.test_with_coverage:run_tests_with_coverage"
-
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-# Poetry-specific configuration
-packages = [{include = "fastauth"}]
-exclude = [
-    "tests",
-    "examples",
-    ".github",
-    ".claude",
-    "*.pyc",
-    "__pycache__",
-    "docs",
-    "site",
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.1",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.25.0",
+    "mkdocs-gen-files>=0.5.0",
+    "pre-commit>=4.5.1",
+    "redis>=7.1.1",
+    "aiosqlite>=0.22.1",
+    "asyncpg>=0.31.0",
 ]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^9.0.2"
-pytest-cov = "^6.0.0"
-ruff = "^0.14.10"
-black = "^25.12.0"
-pre-commit = "^4.0.0"
-pytest-html = "^4.1.1"
-mkdocs = "^1.6.0"
-mkdocs-material = "^9.5.0"
-mkdocstrings = {extras = ["python"], version = "^0.26.0"}
-mkdocs-gen-files = "^0.5.0"
-mkdocs-literate-nav = "^0.6.1"
-mkdocs-section-index = "^0.3.8"
-griffe = ">=0.36,<0.45"
-# Peer/optional dependencies needed for testing
-fastapi = ">=0.100.0"
-httpx = ">=0.27.0"
-typer = ">=0.9.0"
-rich = ">=13.0.0"
-pytest-asyncio = ">=0.23.0"
-
-[tool.black]
-line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+[tool.uv.workspace]
+members = ["packages/*"]
 
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+exclude = []
 
 [tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-]
-ignore = [
-    "B008",  # FastAPI uses Depends() in function defaults
-    "B904",  # Allow raising HTTPException without from
-]
+select = ["E", "W", "F", "I", "B", "C4"]
+ignore = ["B008"]
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
-addopts = [
-    "-v",
-    "--tb=short",
-    "--strict-markers",
-]

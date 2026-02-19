@@ -8,6 +8,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+__out__/
+out/
 build/
 develop-eggs/
 dist/
@@ -219,6 +221,3 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 *.db
-
-# Claude Code
-.claude/

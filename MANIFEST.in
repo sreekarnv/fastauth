@@ -1,7 +1,7 @@
 include README.md
 include LICENSE
 include pyproject.toml
-recursive-include fastauth *.py
+recursive-include packages/fastauth *.py
 recursive-exclude tests *
 recursive-exclude examples *
 recursive-exclude .github *

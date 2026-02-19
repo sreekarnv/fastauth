@@ -1,0 +1,2 @@
+sreekarnv-fastauth[all]
+python-dotenv

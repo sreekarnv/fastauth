@@ -39,7 +39,7 @@ body:
       description: Show how the feature would be used
       render: python
       placeholder: |
-        from fastauth import new_feature
+        from fastauth import FastAuth, FastAuthConfig
         # Example code
 
   - type: checkboxes
@@ -53,6 +53,7 @@ body:
         - label: API (routes)
         - label: Security
         - label: Email
+        - label: CLI
         - label: Documentation
 
   - type: dropdown

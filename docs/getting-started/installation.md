@@ -1,108 +1,71 @@
 # Installation
 
-FastAuth can be installed via pip or Poetry.
+FastAuth uses optional **extras** so you only install what you need.
 
 ## Requirements
 
-- Python 3.11 or higher
-- FastAPI (peer dependency - must be installed in your project)
+- Python 3.11+
+- An async-capable ASGI framework (FastAPI is included in `standard`)
 
-## Installation
+## Extras
 
-### Standard Installation (Recommended)
+| Extra | What it adds | Install |
+|-------|-------------|---------|
+| `fastapi` | FastAPI + Uvicorn | `pip install "sreekarnv-fastauth[fastapi]"` |
+| `jwt` | joserfc + cryptography (HS256/RS256 signing) | `pip install "sreekarnv-fastauth[jwt]"` |
+| `oauth` | httpx (Google, GitHub OAuth clients) | `pip install "sreekarnv-fastauth[oauth]"` |
+| `sqlalchemy` | SQLAlchemy + aiosqlite | `pip install "sreekarnv-fastauth[sqlalchemy]"` |
+| `postgresql` | asyncpg driver | `pip install "sreekarnv-fastauth[postgresql]"` |
+| `redis` | redis-py async client | `pip install "sreekarnv-fastauth[redis]"` |
+| `argon2` | argon2-cffi (password hashing) | `pip install "sreekarnv-fastauth[argon2]"` |
+| `email` | aiosmtplib + Jinja2 (SMTP transport) | `pip install "sreekarnv-fastauth[email]"` |
+| `cli` | typer + rich (CLI tool) | `pip install "sreekarnv-fastauth[cli]"` |
+| **`standard`** | fastapi + jwt + sqlalchemy + argon2 | `pip install "sreekarnv-fastauth[standard]"` |
+| **`all`** | everything above | `pip install "sreekarnv-fastauth[all]"` |
+
+## Common install combinations
+
+=== "Basic (credentials only)"
+
+    ```bash
+    pip install "sreekarnv-fastauth[standard]"
+    ```
+
+=== "With OAuth"
+
+    ```bash
+    pip install "sreekarnv-fastauth[standard,oauth]"
+    ```
+
+=== "With PostgreSQL + Redis"
+
+    ```bash
+    pip install "sreekarnv-fastauth[standard,oauth,postgresql,redis,email]"
+    ```
+
+=== "Everything"
+
+    ```bash
+    pip install "sreekarnv-fastauth[all]"
+    ```
+
+## Verify your installation
+
+The CLI `check` command prints the status of every optional dependency:
 
 ```bash
-pip install sreekarnv-fastauth
+fastauth check
 ```
 
-This installs FastAuth with SQLAlchemy adapters - everything you need for most applications.
+Example output:
 
-### With OAuth Providers
-
-If you need OAuth support (Google, GitHub, etc.):
-
-```bash
-pip install sreekarnv-fastauth[oauth]
 ```
-
-### All Features
-
-```bash
-pip install sreekarnv-fastauth[all]
+FastAuth v0.3.0 — Dependency Status
+┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Extra      ┃ Package        ┃ Status                                ┃
+┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ fastapi    │ fastapi        │ ✓  installed                          │
+│ jwt        │ joserfc        │ ✓  installed                          │
+│ oauth      │ httpx          │ ✗  missing   pip install ...[oauth]   │
+...
 ```
-
-## Peer Dependency: FastAPI
-
-FastAuth is designed for FastAPI applications. FastAPI is a **peer dependency**, meaning:
-
-- FastAuth does **not** install FastAPI automatically
-- Your project must have FastAPI installed
-- FastAuth works with whatever FastAPI version you have
-
-This approach avoids version conflicts when FastAuth is added to existing FastAPI projects.
-
-```bash
-# Your project should already have FastAPI
-pip install fastapi
-
-# Then add FastAuth
-pip install sreekarnv-fastauth
-```
-
-## Install with Poetry
-
-```bash
-# Standard installation
-poetry add sreekarnv-fastauth
-
-# With OAuth providers
-poetry add sreekarnv-fastauth[oauth]
-```
-
-## What's Included
-
-| Package | Dependencies | Features |
-|---------|--------------|----------|
-| Default | argon2-cffi, python-jose, pydantic-settings, sqlmodel | Password hashing, JWT, settings, SQLAlchemy adapters |
-| `[oauth]` | + httpx | OAuth providers (Google, GitHub, etc.) |
-| `[all]` | All of the above | All features |
-
-**Peer dependency:** FastAPI (not installed automatically)
-
-## Verify Installation
-
-```python
-import fastauth
-print(fastauth.__version__)
-
-# Check available features
-from fastauth._compat import HAS_FASTAPI, HAS_HTTPX
-print(f"FastAPI: {HAS_FASTAPI}")
-print(f"OAuth: {HAS_HTTPX}")
-```
-
-## Troubleshooting
-
-### FastAPI Not Found
-
-If you see:
-```
-'fastapi' is required for this feature. FastAPI is a peer dependency. Install it with: pip install fastapi
-```
-
-Install FastAPI in your project:
-```bash
-pip install fastapi
-```
-
-### OAuth Providers Not Available
-
-If you need OAuth providers but they're not available:
-```bash
-pip install sreekarnv-fastauth[oauth]
-```
-
-## Next Steps
-
-- [Quick Start](quickstart.md) - Build your first app with FastAuth
-- [Core Concepts](core-concepts.md) - Understand how FastAuth works

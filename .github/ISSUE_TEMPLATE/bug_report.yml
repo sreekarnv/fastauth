@@ -53,7 +53,7 @@ body:
       description: Minimal code to reproduce the issue
       render: python
       placeholder: |
-        from fastauth import auth_router
+        from fastauth import FastAuth, FastAuthConfig
         # Your code here
 
   - type: textarea
@@ -68,7 +68,7 @@ body:
     attributes:
       label: FastAuth Version
       description: What version of FastAuth are you using?
-      placeholder: "0.1.0"
+      placeholder: "0.3.0"
     validations:
       required: true
 

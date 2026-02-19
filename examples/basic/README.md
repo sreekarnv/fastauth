@@ -1,364 +1,104 @@
-# Basic FastAuth Example
+# FastAuth — Basic Example
 
-A simple FastAPI application demonstrating FastAuth integration with SQLite database.
+Minimal credentials-only setup: email/password auth with SQLite storage and argon2 password hashing. Emails are printed to the console (no SMTP needed).
 
-## What This Example Shows
+## What it demonstrates
 
-- ✅ Complete FastAuth setup with SQLite
-- ✅ User registration and authentication
-- ✅ Email verification (console output)
-- ✅ Password reset functionality
-- ✅ Token refresh
-- ✅ Protected routes
-- ✅ Environment-based configuration
+- `CredentialsProvider` — register, login, logout, password reset, email verification
+- `SQLAlchemyAdapter` — SQLite via aiosqlite
+- `ConsoleTransport` — emails printed to stdout
+- JWT sessions (HS256)
+- `GET /auth/me` — fetch the currently logged-in user
+- Protecting your own routes with `require_auth`, `require_role`, `require_permission`
+- Cookie-based token delivery (opt-in)
 
-## Project Structure
-
-```
-basic/
-├── app/
-│   ├── __init__.py
-│   ├── main.py          # FastAPI app with FastAuth routes
-│   ├── database.py      # Database connection and session
-│   └── settings.py      # Configuration management
-├── .env.example         # Example environment variables
-└── README.md           # This file
-```
-
-## Quick Start
-
-### 1. Install Dependencies
-
-From the repository root:
+## Setup
 
 ```bash
-cd examples/basic
-
-# Install FastAuth (FastAPI is a peer dependency)
-pip install sreekarnv-fastauth
-
-# Install FastAPI and uvicorn
-pip install fastapi uvicorn[standard]
+pip install sreekarnv-fastauth[standard,email]
+uvicorn main:app --reload
 ```
 
-Or install from the parent directory (for development):
+Before running in production, replace the `secret` value with the output of:
 
 ```bash
-pip install -e ../..
-pip install fastapi uvicorn[standard]
+fastauth generate-secret
 ```
 
-### 2. Set Up Environment
+## Fetching the logged-in user
 
-Copy the example environment file:
+FastAuth mounts a `GET /auth/me` endpoint automatically. It returns the current user or `401` if not authenticated.
 
 ```bash
-cp .env.example .env
+curl http://localhost:8000/auth/me \
+  -H "Authorization: Bearer <access_token>"
 ```
 
-Edit `.env` if needed:
-
-```bash
-# Database
-DATABASE_URL=sqlite:///./fastauth.db
-
-# Secret Key (change in production!)
-SECRET_KEY=dev-secret-key-change-this-in-production
-
-# Email (console for development)
-EMAIL_BACKEND=console
-
-# Auth
-REQUIRE_EMAIL_VERIFICATION=false  # Set to true to require email verification
-```
-
-### 3. Run the Application
-
-```bash
-uvicorn app.main:app --reload
-```
-
-The API will be available at `http://localhost:8000`
-
-### 4. Try It Out
-
-Open your browser to `http://localhost:8000/docs` to see the interactive API documentation.
-
-## API Endpoints
-
-The application includes all FastAuth endpoints:
-
-### Authentication
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login with email and password
-- `POST /auth/logout` - Logout and revoke refresh token
-- `POST /auth/refresh` - Get new access token
-
-### Password Reset
-- `POST /auth/password-reset/request` - Request password reset email
-- `POST /auth/password-reset/confirm` - Reset password with token
-
-### Email Verification
-- `POST /auth/email-verification/request` - Request verification email
-- `POST /auth/email-verification/confirm` - Verify email with token
-- `POST /auth/email-verification/resend` - Resend verification email
-
-### Protected Routes (Example)
-- `GET /protected` - Example protected endpoint
-
-## Usage Examples
-
-### Register a User
-
-```bash
-curl -X POST "http://localhost:8000/auth/register" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "securepassword123"
-  }'
-```
-
-Response:
 ```json
 {
   "id": "...",
   "email": "user@example.com",
-  "is_verified": false,
-  "is_active": true,
-  "created_at": "2024-01-01T00:00:00"
+  "name": null,
+  "image": null,
+  "email_verified": false,
+  "is_active": true
 }
 ```
 
-### Login
+## Protecting your own routes
 
-```bash
-curl -X POST "http://localhost:8000/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "securepassword123"
-  }'
-```
-
-Response:
-```json
-{
-  "access_token": "eyJ...",
-  "refresh_token": "eyJ...",
-  "token_type": "bearer"
-}
-```
-
-### Access Protected Route
-
-```bash
-curl -X GET "http://localhost:8000/protected" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
-
-Response:
-```json
-{
-  "message": "You are authenticated",
-  "user_id": "..."
-}
-```
-
-### Refresh Token
-
-```bash
-curl -X POST "http://localhost:8000/auth/refresh" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "refresh_token": "YOUR_REFRESH_TOKEN"
-  }'
-```
-
-### Request Password Reset
-
-```bash
-curl -X POST "http://localhost:8000/auth/password-reset/request" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com"
-  }'
-```
-
-The reset token will be printed to the console (since we're using `console` email backend).
-
-### Confirm Password Reset
-
-```bash
-curl -X POST "http://localhost:8000/auth/password-reset/confirm" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "token": "TOKEN_FROM_CONSOLE",
-    "new_password": "newpassword123"
-  }'
-```
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_URL` | `sqlite:///./fastauth.db` | Database connection string |
-| `SECRET_KEY` | `dev-secret-key` | Secret key for JWT tokens (**change in production!**) |
-| `REQUIRE_EMAIL_VERIFICATION` | `false` | Require email verification before login |
-| `EMAIL_BACKEND` | `console` | Email provider (`console`, `smtp`) |
-| `SMTP_HOST` | - | SMTP server hostname |
-| `SMTP_PORT` | `587` | SMTP server port |
-| `SMTP_USERNAME` | - | SMTP username |
-| `SMTP_PASSWORD` | - | SMTP password |
-| `SMTP_FROM_EMAIL` | `no-reply@example.com` | From email address |
-
-### Email Verification
-
-To enable email verification:
-
-1. Set `REQUIRE_EMAIL_VERIFICATION=true` in `.env`
-2. Configure email backend (SMTP or other)
-3. New users must verify their email before logging in
-
-**Development (Console):**
-```bash
-EMAIL_BACKEND=console
-REQUIRE_EMAIL_VERIFICATION=true
-```
-Verification tokens will print to console.
-
-**Production (SMTP):**
-```bash
-EMAIL_BACKEND=smtp
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-SMTP_FROM_EMAIL=noreply@yourapp.com
-REQUIRE_EMAIL_VERIFICATION=true
-```
-
-## Understanding the Code
-
-### main.py
-
-The main application file:
+Import the dependency helpers from `fastauth.api.deps`:
 
 ```python
-from fastapi import FastAPI
-from fastauth.api.auth import router as auth_router
-from fastauth.api import dependencies
-from app.database import get_session, init_db
+from fastauth.api.deps import require_auth, require_role, require_permission
 
-app = FastAPI(title="FastAuth Basic Example")
+@app.get("/dashboard")
+async def dashboard(user = Depends(require_auth)):
+    return {"hello": user["email"]}
 
-# Initialize database tables
-init_db()
+@app.get("/admin")
+async def admin(user = Depends(require_role("admin"))):
+    ...
 
-# Include FastAuth routes
-app.include_router(auth_router)
-
-# Override session dependency to use our database
-app.dependency_overrides[dependencies.get_session] = get_session
+@app.get("/reports")
+async def reports(user = Depends(require_permission("reports:read"))):
+    ...
 ```
 
-### database.py
+## Cookie-based token delivery
 
-Database setup with SQLModel:
+By default tokens are returned in the JSON response body. To use `HttpOnly` cookies instead (recommended for browser-based apps), set `token_delivery="cookie"` in your config:
 
 ```python
-from sqlmodel import Session, SQLModel, create_engine
-
-engine = create_engine(settings.database_url)
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-def init_db():
-    SQLModel.metadata.create_all(engine)  # Create all tables
+config = FastAuthConfig(
+    ...
+    token_delivery="cookie",
+    debug=True,          # sets cookie_secure=False for local dev automatically
+    # cookie_samesite="lax",    # default
+    # cookie_httponly=True,     # default
+    # cookie_domain=None,       # default
+)
 ```
 
-### settings.py
+With cookies enabled:
+- `POST /auth/login` and `POST /auth/register` set `HttpOnly` cookies
+- `POST /auth/logout` clears the cookies
+- `POST /auth/refresh` reads the refresh token from the cookie (no request body needed)
+- `GET /auth/me` and all protected routes read the access token from the cookie automatically
 
-Configuration management with Pydantic:
+`cookie_secure` defaults to `True` in production (`debug=False`) and `False` in local dev (`debug=True`), so no manual change is needed when deploying.
 
-```python
-from pydantic_settings import BaseSettings
+## Endpoints
 
-class Settings(BaseSettings):
-    database_url: str = "sqlite:///./fastauth.db"
-    secret_key: str = "dev-secret-key"
+All FastAuth routes are mounted under `/auth`:
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_ignore_empty=True,
-    )
-```
-
-## Security Notes
-
-⚠️ **This is a development example. For production:**
-
-1. **Change the SECRET_KEY** - Use a strong, random secret key:
-   ```bash
-   SECRET_KEY=$(openssl rand -hex 32)
-   ```
-
-2. **Use HTTPS** - Always use TLS/SSL in production
-
-3. **Configure real email** - Use SMTP or email service (SendGrid, etc.)
-
-4. **Use PostgreSQL/MySQL** - SQLite is not recommended for production
-
-5. **Enable email verification** - Set `REQUIRE_EMAIL_VERIFICATION=true`
-
-6. **Set strong passwords** - Enforce password requirements
-
-7. **Rate limiting** - FastAuth has built-in rate limiting
-
-## Troubleshooting
-
-### Database Issues
-
-**Problem:** `no such table: user`
-
-**Solution:** Delete the database and restart:
-```bash
-rm fastauth.db
-uvicorn app.main:app --reload
-```
-
-### Email Not Sending
-
-**Problem:** Email verification token not visible
-
-**Solution:** Check console output if using `EMAIL_BACKEND=console`:
-```
-Email verification token: abc123...
-```
-
-### Import Errors
-
-**Problem:** `ModuleNotFoundError: No module named 'fastauth'`
-
-**Solution:** Install FastAuth from the parent directory:
-```bash
-pip install -e ../..
-```
-
-## Next Steps
-
-- Add custom user fields (see main README)
-- Implement role-based access control
-- Add more protected routes
-- Configure production email provider
-- Deploy to production
-
-## Resources
-
-- [FastAuth Documentation](../../README.md)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [SQLModel Documentation](https://sqlmodel.tiangolo.com/)
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/auth/me` | Get the current logged-in user |
+| `POST` | `/auth/register` | Create a new account |
+| `POST` | `/auth/login` | Obtain access + refresh tokens |
+| `POST` | `/auth/logout` | Invalidate session |
+| `POST` | `/auth/refresh` | Exchange a refresh token |
+| `GET` | `/auth/verify-email` | Verify email via token link |
+| `POST` | `/auth/forgot-password` | Request a password reset email |
+| `POST` | `/auth/reset-password` | Reset password with token |
