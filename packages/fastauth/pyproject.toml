@@ -7,6 +7,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Sreekar Nutulapati", email = "sreekarnv1@gmail.com" },
 ]
+readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: FastAPI",
@@ -70,3 +71,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fastauth"]
+
+[project.urls]
+Homepage = "https://github.com/sreekarnv/fastauth"
+Repository = "https://github.com/sreekarnv/fastauth"
+Documentation = "https://sreekarnv.github.io/fastauth/"
+"Bug Tracker" = "https://github.com/sreekarnv/fastauth/issues"
+Changelog = "https://github.com/sreekarnv/fastauth/blob/main/CHANGELOG.md"

@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-19
+
+### Added
+- **Complete rewrite** from v0.2.x: NextAuth-inspired modular architecture with ABC protocols for providers/adapters/backends.[file:31]
+- **Monorepo**: uv workspace (`packages/fastauth`), extras (`standard`, `jwt`, `oauth`, `sqlalchemy`, `redis`, `email`, `cli`).
+- **Core**: `FastAuthConfig` dataclass, JWT (HS256/RS256 w/ joserfc), sessions (JWT/database), RBAC (roles/permissions), OAuth orchestration, email dispatcher, event hooks.
+- **Providers**: Credentials (argon2-cffi), Google (PKCE), GitHub.
+- **Adapters**: Memory (dev/testing), SQLAlchemy (User/Session/Token/OAuthAccount/Role models as `fastauth_*` tables).
+- **Session Backends**: Memory, Redis, Database (via SessionAdapter).
+- **Email Transports**: Console, SMTP (aiosmtplib/Jinja2), Webhook (microservices).
+- **API**: `FastAuth(config).mount(app)`, routes (register/login/refresh/logout/OAuth/session/account/rbac), deps (`get_current_user`, `require_role/permission`), `/.well-known/jwks.json`.
+- **CLI**: `fastauth version/init/generate-secret/providers/check` (typer/rich extra).
+- **Docs**: MkDocs (Material theme, mkdocstrings API ref), examples (basic/oauth/jwt-microservice/full).
+- **Build/Test**: Ruff (lint/format, replaces Black), pytest 95%+ coverage (all phases), GitHub Actions (lint/test 3.11-3.13/docs/PyPI).
+- **IDs**: cuid2 (sortable/URL-safe).
+- **Key Mgmt**: JWKS manager w/ rotation (microservices).
+
+### Changed
+- Migrated from Poetry to uv monorepo (faster sync, workspace support).
+- Dependencies: joserfc (full JOSE/JWK), cryptography (RSA).
+
+### Removed
+- v0.2.x codebase—**major rewrite, not backward-compatible**.
+
+### Breaking Changes
+- New API/config/schema—fresh setup required (no v0.2 → v0.3 migration).
+- Tables: `fastauth_users/sessions/tokens/oauthaccounts/roles`.
+- Install: `uv add fastauth[standard]` or `pip install fastauth[all]`.
+
 ## [0.2.6] - 2026-01-24
 
 ### Changed
@@ -273,7 +302,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.2.6...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/sreekarnv/fastauth/compare/v0.2.6...v0.3.0
 [0.2.6]: https://github.com/sreekarnv/fastauth/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/sreekarnv/fastauth/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/sreekarnv/fastauth/compare/v0.2.3...v0.2.4
