@@ -119,13 +119,11 @@ def create_account_router(auth: object) -> APIRouter:
             )
 
         stored = await fa.config.token_adapter.get_token(token, "email_change")
-        if not stored:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid or expired token",
-            )
-
-        if stored["raw_data"] is None or "email" not in stored["raw_data"]:
+        if (
+            not stored
+            or stored["raw_data"] is None
+            or "email" not in stored["raw_data"]
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired token",
