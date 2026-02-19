@@ -1501,7 +1501,7 @@ asyncio = [
 
 [[package]]
 name = "sreekarnv-fastauth"
-version = "0.3.0"
+version = "0.3.1"
 source = { editable = "packages/fastauth" }
 dependencies = [
     { name = "cuid2" },
@@ -1591,7 +1591,7 @@ provides-extras = ["fastapi", "jwt", "oauth", "sqlalchemy", "postgresql", "redis
 
 [[package]]
 name = "sreekarnv-fastauth-workspace"
-version = "0.3.0"
+version = "0.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "sreekarnv-fastauth", extra = ["cli", "email", "standard"] },

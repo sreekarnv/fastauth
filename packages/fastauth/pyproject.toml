@@ -1,6 +1,6 @@
 [project]
 name = "sreekarnv-fastauth"
-version = "0.3.0"
+version = "0.3.1"
 description = "NextAuth-inspired pluggable authentication for FastAPI"
 requires-python = ">=3.11"
 license = { text = "MIT" }
