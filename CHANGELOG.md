@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-19
+
+### Changed
+- Fixed issues within the `/auth/account/confirm-email-change` route
+- `/auth/account/confirm-email-change` route is not a `GET` route instead of `POST`
+
 ## [0.3.0] - 2026-02-19
 
 ### Added
