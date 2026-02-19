@@ -112,7 +112,7 @@ async def test_me_authenticated(json_client):
     assert data["name"] == "Test"
     assert "id" in data
     assert "email_verified" in data
-    assert "is_active" in data
+    assert "is_active" in data and data["is_active"]
 
 
 async def test_me_unauthenticated(json_client):

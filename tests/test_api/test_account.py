@@ -159,6 +159,20 @@ async def test_confirm_email_change(client, memory_token_adapter):
 
 
 async def test_confirm_email_change_invalid_token(client):
+    token = await _register_and_get_token(client)
+    await client.post(
+        "/auth/account/change-email",
+        json={"new_email": "", "password": "Pass123#"},
+        headers=_auth_header(token),
+    )
+
+    resp = await client.get(
+        f"/auth/account/confirm-email-change?token={token}",
+    )
+    assert resp.status_code == 400
+
+
+async def test_confirm_email_change_missing_email(client):
     resp = await client.get(
         "/auth/account/confirm-email-change?token=invalid_token",
     )
@@ -181,6 +195,21 @@ async def test_delete_account(client):
         json={"email": "test@example.com", "password": "Pass123#"},
     )
     assert login_resp.status_code == 401
+
+
+async def test_delete_account_and_fetch_user(client):
+    token = await _register_and_get_token(client)
+    resp = await client.request(
+        "DELETE",
+        "/auth/account",
+        json={"password": "Pass123#"},
+        headers=_auth_header(token),
+    )
+    assert resp.status_code == 200
+
+    # Get User should fail
+    get_user = await client.get("/auth/me", headers=_auth_header(token))
+    assert get_user.status_code == 401
 
 
 async def test_delete_account_wrong_password(client):
