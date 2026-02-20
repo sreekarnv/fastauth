@@ -121,6 +121,7 @@ def create_account_router(auth: object) -> APIRouter:
         stored = await fa.config.token_adapter.get_token(token, "email_change")
         if (
             not stored
+            or "raw_data" not in stored
             or stored["raw_data"] is None
             or "email" not in stored["raw_data"]
         ):

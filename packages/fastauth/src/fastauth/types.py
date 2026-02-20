@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 
 class UserData(TypedDict):
@@ -28,7 +28,7 @@ class TokenData(TypedDict):
     user_id: str
     token_type: str
     expires_at: datetime
-    raw_data: dict[str, Any] | None = None
+    raw_data: NotRequired[dict[str, Any] | None]
 
 
 class OAuthAccountData(TypedDict):
