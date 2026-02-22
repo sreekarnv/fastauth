@@ -9,9 +9,11 @@ graph TD
     APP["FastAPI Application"]
 
     subgraph ROUTER["FastAuth Router  /auth/*"]
-        ENDPOINTS["/signup · /signin · /signout · /refresh · /me
-/oauth/authorize · /oauth/callback
-/email/verify · /password/reset"]
+        ENDPOINTS["/register · /login · /logout · /refresh · /me
+/oauth/{provider}/authorize · /oauth/{provider}/callback
+/request-verify-email · /verify-email
+/forgot-password · /reset-password
+/account/* · /roles/* · /sessions/*"]
     end
 
     subgraph CORE["Core Logic"]
@@ -58,7 +60,7 @@ graph TD
 
 ## Sign-in flow (credentials)
 
-The sequence below shows what happens when a user posts `{ email, password }` to `/auth/signin`:
+The sequence below shows what happens when a user posts `{ email, password }` to `/auth/login`:
 
 ```mermaid
 sequenceDiagram
@@ -68,7 +70,7 @@ sequenceDiagram
     participant A as UserAdapter
     participant T as Core/Tokens
 
-    C->>FA: POST /auth/signin {email, password}
+    C->>FA: POST /auth/login {email, password}
     FA->>P: authenticate({email, password})
     P->>A: get_user_by_email(email)
     A-->>P: user record (or None)
@@ -77,13 +79,12 @@ sequenceDiagram
 
     alt authentication failed
         FA-->>C: 401 Unauthorized
-    else hooks.allow_signin returns False
-        FA-->>C: 403 Forbidden
     else success
+        FA->>FA: hooks.on_signin(user, "credentials")
         FA->>T: create_access_token(user)
         FA->>T: create_refresh_token(user)
         T-->>FA: {access_token, refresh_token}
-        FA-->>C: 200 OK {access_token, refresh_token}
+        FA-->>C: 200 OK {access_token, refresh_token, token_type, expires_in}
     end
 ```
 

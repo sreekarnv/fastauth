@@ -17,46 +17,56 @@ config = FastAuthConfig(
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/auth/signup` | Register a new user |
-| `POST` | `/auth/signin` | Sign in with email + password |
-| `POST` | `/auth/signout` | Sign out (invalidate session/token) |
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | Sign in with email + password |
+| `POST` | `/auth/logout` | Sign out (clears cookies or invalidates session) |
 | `POST` | `/auth/refresh` | Refresh token pair |
 | `GET`  | `/auth/me` | Return current user |
 
-### Sign up
+### Register
 
 ```bash
-curl -X POST http://localhost:8000/auth/signup \
+curl -X POST http://localhost:8000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email": "alice@example.com", "password": "s3cur3P@ss!"}'
 ```
 
-Response:
+The optional `name` field is also accepted:
+
+```bash
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "alice@example.com", "password": "s3cur3P@ss!", "name": "Alice"}'
+```
+
+Response (`201 Created`):
 
 ```json
 {
   "access_token": "eyJ...",
   "refresh_token": "eyJ...",
-  "token_type": "bearer"
+  "token_type": "bearer",
+  "expires_in": 900
 }
 ```
 
 ### Sign in
 
 ```bash
-curl -X POST http://localhost:8000/auth/signin \
+curl -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "alice@example.com", "password": "s3cur3P@ss!"}'
 ```
 
 ## Email verification
 
-When an `email_transport` and `token_adapter` are configured, FastAuth automatically sends a verification email on sign-up. The user must click the link before they can sign in.
+When an `email_transport` and `token_adapter` are configured, FastAuth automatically sends a verification email on registration.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/auth/email/request-verify` | Re-send the verification email |
-| `GET`  | `/auth/email/verify?token=<token>` | Mark email as verified |
+| `POST` | `/auth/request-verify-email` | Re-send the verification email (requires auth) |
+| `GET`  | `/auth/verify-email?token=<token>` | Mark email as verified |
+| `POST` | `/auth/verify-email` | Mark email as verified (body: `{"token": "..."}`) |
 
 See [Email Verification](../features/email-verification.md) for the full flow.
 
@@ -64,10 +74,21 @@ See [Email Verification](../features/email-verification.md) for the full flow.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/auth/password/forgot` | Send a reset email |
-| `POST` | `/auth/password/reset` | Set a new password using the reset token |
+| `POST` | `/auth/forgot-password` | Send a reset email |
+| `POST` | `/auth/reset-password` | Set a new password using the reset token |
 
 See [Password Reset](../features/password-reset.md).
+
+## Account management
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/auth/account/change-password` | Change password (requires auth) |
+| `POST` | `/auth/account/change-email` | Request email change (requires auth) |
+| `GET`  | `/auth/account/confirm-email-change?token=<token>` | Confirm the new email |
+| `DELETE` | `/auth/account` | Delete account (requires auth) |
+
+See [Account Management](../features/account.md) for details.
 
 ## Password hashing
 

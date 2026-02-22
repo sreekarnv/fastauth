@@ -26,42 +26,56 @@ sequenceDiagram
     participant E as Email Transport
     participant DB as Token Store
 
-    U->>C: POST /auth/signup {email, password}
-    C->>FA: POST /auth/signup
-    FA->>DB: create user (is_email_verified=False)
-    FA->>DB: create_token(type="email_verify", token=<uuid>)
+    U->>C: POST /auth/register {email, password}
+    C->>FA: POST /auth/register
+    FA->>DB: create user (email_verified=False)
+    FA->>DB: create_token(type="verification", token=<cuid>)
     FA->>E: send verification email with link
     FA-->>C: 201 Created (user created, not yet verified)
 
     U->>U: Opens email, clicks verification link
-    U->>C: GET /auth/email/verify?token=<uuid>
-    C->>FA: GET /auth/email/verify?token=<uuid>
-    FA->>DB: get_token(token, type="email_verify")
+    U->>C: GET /auth/verify-email?token=<cuid>
+    C->>FA: GET /auth/verify-email?token=<cuid>
+    FA->>DB: get_token(token, type="verification")
     alt token expired or not found
         FA-->>C: 400 Bad Request
     else valid
-        FA->>DB: update_user(is_email_verified=True)
+        FA->>DB: update_user(email_verified=True)
         FA->>DB: delete_token(token)
         FA->>FA: hooks.on_email_verify(user)
-        FA-->>C: 200 OK
+        FA-->>C: 200 OK {"message": "Email verified successfully"}
     end
 ```
 
 ## Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/auth/email/request-verify` | Re-send the verification email |
-| `GET`  | `/auth/email/verify?token=<token>` | Verify the email and activate the account |
+| Method | Path | Auth required | Description |
+|--------|------|:---:|-------------|
+| `POST` | `/auth/request-verify-email` | Yes | Re-send the verification email |
+| `GET`  | `/auth/verify-email?token=<token>` | No | Verify the email and activate the account |
+| `POST` | `/auth/verify-email` | No | Verify via body: `{"token": "..."}` |
 
-## Resend verification email
+### Resend verification email
 
-If the user didn't receive the email:
+The resend endpoint requires a valid access token (the user must be logged in):
 
 ```bash
-curl -X POST http://localhost:8000/auth/email/request-verify \
+curl -X POST http://localhost:8000/auth/request-verify-email \
+  -H "Authorization: Bearer <access_token>"
+```
+
+### Verify email
+
+The verification link in the email points to a `GET` endpoint. You can also submit the token via `POST`:
+
+```bash
+# Via GET (browser link)
+curl http://localhost:8000/auth/verify-email?token=<token-from-email>
+
+# Via POST (API client)
+curl -X POST http://localhost:8000/auth/verify-email \
   -H "Content-Type: application/json" \
-  -d '{"email": "alice@example.com"}'
+  -d '{"token": "<token-from-email>"}'
 ```
 
 ## Email transports

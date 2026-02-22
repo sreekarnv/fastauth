@@ -93,6 +93,7 @@ nav:
       - Cookie Delivery: features/cookies.md
       - Email Verification: features/email-verification.md
       - Password Reset: features/password-reset.md
+      - Account Management: features/account.md
       - OAuth Flow: features/oauth.md
       - RBAC: features/rbac.md
       - JWT: features/jwt.md
@@ -101,7 +102,9 @@ nav:
       - Basic App: guides/basic.md
       - Adding OAuth: guides/oauth.md
       - Microservice JWT: guides/microservice.md
+      - Testing: guides/testing.md
       - Production Checklist: guides/production.md
+  - Troubleshooting: troubleshooting.md
   - Reference:
       - FastAuth: reference/fastauth.md
       - Configuration: reference/config.md

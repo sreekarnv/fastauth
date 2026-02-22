@@ -9,7 +9,7 @@ graph LR
     CLIENT["Client"]
 
     subgraph AUTH["Auth Service  :8000"]
-        SIGNIN["POST /auth/signin
+        SIGNIN["POST /auth/login
 signs with RSA private key"]
         JWKS_EP["GET /.well-known/jwks.json
 public key endpoint"]
@@ -20,7 +20,7 @@ public key endpoint"]
 verifies with RSA public key"]
     end
 
-    CLIENT -->|"1. POST /auth/signin"| SIGNIN
+    CLIENT -->|"1. POST /auth/login"| SIGNIN
     SIGNIN -->|"2. access_token"| CLIENT
     CLIENT -->|"3. Bearer token"| DATA
     DATA -.->|"4. fetch JWKS once"| JWKS_EP
@@ -137,7 +137,7 @@ uvicorn resource_service:app --port 8001 --reload
 
 ```bash
 # Sign in via auth service
-TOKEN=$(curl -s -X POST http://localhost:8000/auth/signin \
+TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","password":"s3cr3t"}' \
   | jq -r .access_token)

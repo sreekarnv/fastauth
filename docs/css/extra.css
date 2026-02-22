@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap");
+
 [data-md-color-scheme="slate"] {
     --md-default-bg-color: #0d1117;
     --md-default-bg-color--light: #161b22;
@@ -10,102 +12,293 @@
     --md-code-bg-color: #161b22;
     --md-code-fg-color: #e6edf3;
     --md-typeset-a-color: #67e8f9;
+
+    --fa-cyan: #00d4ff;
+    --fa-cyan-dim: rgba(0, 212, 255, 0.18);
+    --fa-border: rgba(255, 255, 255, 0.07);
+    --fa-num-color: rgba(0, 212, 255, 0.22);
 }
 
-.hero {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-    text-align: center;
-    border-bottom: 1px solid var(--md-default-fg-color--lightest);
-    margin-bottom: 2rem;
+.fa-hero {
+    padding: 4.5rem 0 4rem;
+    position: relative;
+    border-bottom: 1px solid var(--fa-border);
+    margin-bottom: 0;
 }
 
-.hero h1 {
-    font-size: clamp(2.4rem, 5.5vw, 3.75rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 1.25rem;
-    background: linear-gradient(135deg, #ffffff 30%, #67e8f9 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.fa-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--fa-cyan-dim),
+        transparent
+    );
+    pointer-events: none;
 }
 
-.hero .hero__tagline {
-    font-size: 1.15rem;
-    font-weight: 500;
-    color: var(--md-default-fg-color--light);
-    margin-bottom: 0.75rem;
-}
-
-.hero .hero__desc {
-    max-width: 44rem;
-    margin: 0 auto 2.25rem;
-    font-size: 1rem;
-    color: var(--md-default-fg-color--lighter);
-    line-height: 1.75;
-}
-
-.hero .md-button {
-    margin: 0.3rem;
-    border-radius: 6px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    padding: 0.6rem 1.4rem;
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-    gap: 1.1rem;
-    margin: 2rem 0 3rem;
-}
-
-.feature-card {
-    padding: 1.4rem 1.5rem;
-    border: 1px solid var(--md-default-fg-color--lightest);
-    border-radius: 8px;
-    background: var(--md-default-bg-color--light);
-    transition:
-        border-color 0.18s ease,
-        transform 0.18s ease;
-}
-
-.feature-card:hover {
-    border-color: var(--md-accent-fg-color);
-    transform: translateY(-2px);
-}
-
-.feature-card strong:first-child {
+.fa-hero__eyebrow {
+    font-family: "JetBrains Mono", monospace !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.08em;
+    color: var(--md-default-fg-color--lightest) !important;
+    margin-bottom: 1.75rem !important;
+    margin-top: 0 !important;
     display: block;
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    color: var(--md-accent-fg-color);
 }
 
-.feature-card p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--md-default-fg-color--lighter);
+.fa-hero h1,
+.fa-hero .md-typeset h1,
+.md-typeset .fa-hero h1 {
+    font-family: "Syne", sans-serif !important;
+    font-size: clamp(2rem, 3.5vw, 3rem) !important;
+    font-weight: 800 !important;
+    line-height: 0.93 !important;
+    letter-spacing: -0.035em !important;
+    color: #f0f0f2 !important;
+    margin: 0 0 1.75rem !important;
+    padding-bottom: 0 !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    border-bottom: none !important;
+}
+
+.fa-hero h1 .headerlink,
+.fa-hero .md-typeset h1 .headerlink,
+.md-typeset .fa-hero h1 .headerlink {
+    display: none !important;
+}
+
+.fa-hero__tagline {
+    font-size: 1.0625rem !important;
+    font-weight: 500;
+    color: var(--md-default-fg-color--light) !important;
+    margin-bottom: 0.6rem !important;
+    line-height: 1.5;
+}
+
+.fa-hero__desc {
+    font-size: 0.9375rem !important;
+    color: var(--md-default-fg-color--lighter) !important;
+    max-width: 50ch;
+    line-height: 1.75;
+    margin-bottom: 2.25rem !important;
+}
+
+.fa-hero__cta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.fa-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.fa-btn--primary {
+    background: var(--fa-cyan);
+    color: #000 !important;
+    border: 1px solid transparent;
+}
+
+.fa-btn--primary:hover {
+    background: #1ae0ff;
+    color: #000 !important;
+}
+
+.fa-btn--ghost {
+    background: transparent;
+    color: var(--md-default-fg-color--light) !important;
+    border: 1px solid var(--fa-border);
+}
+
+.fa-btn--ghost:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--md-default-fg-color) !important;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.fa-btn svg {
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.fa-features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 0;
+    row-gap: 0;
+    margin: 0 0 0.5rem;
+    border-top: 1px solid var(--fa-border);
+}
+
+.fa-feature {
+    padding: 1.875rem 2rem 1.875rem 0;
+    border-top: none;
+    border-right: 1px solid var(--fa-border);
+    border-bottom: 1px solid var(--fa-border);
+    padding-left: 1.5rem;
+    transition: background 0.15s ease;
+}
+
+.fa-feature:nth-child(4n) {
+    border-right: none;
+}
+
+.fa-feature:hover {
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.fa-feature__num {
+    display: block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    color: var(--fa-num-color);
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+}
+
+.fa-feature .fa-feature__name {
+    font-family: "Syne", sans-serif !important;
+    font-size: 0.9375rem !important;
+    font-weight: 700 !important;
+    color: #dde3ea !important;
+    line-height: 1.25 !important;
+    margin: 0 0 0.5rem !important;
+    padding: 0 !important;
+    border: none !important;
+    letter-spacing: -0.01em;
+}
+
+.fa-feature .fa-feature__desc {
+    font-size: 0.8125rem !important;
+    color: var(--md-default-fg-color--lighter) !important;
     line-height: 1.6;
+    margin: 0 !important;
 }
 
-.code-section {
-    margin: 2.5rem 0;
+.fa-feature .fa-feature__desc code {
+    font-size: 0.75rem;
+    color: var(--fa-cyan);
+    background: transparent;
+    padding: 0;
 }
 
-.code-section > p:first-child {
-    font-size: 1.5rem;
+.fa-next-steps {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+}
+
+/* ============================================================
+   HIDE AUTO-GENERATED PAGE TITLE ON HOME PAGE
+   MkDocs injects a <h1>Home</h1> before the markdown content.
+   When our .fa-hero is present, suppress it.
+   ============================================================ */
+.md-content__inner:has(.fa-hero) > h1:first-child {
+    display: none;
+}
+
+/* ============================================================
+   CONTENT PADDING FIX (non-home pages)
+   ============================================================ */
+.md-content__inner {
+    padding-top: 1.25rem !important;
+}
+
+.md-content__inner:has(.fa-hero) {
+    padding-top: 0 !important;
+}
+
+.md-typeset h1 {
+    margin-top: 0;
+}
+
+/* ============================================================
+   NAV FIX — prevent word-break on long labels (e.g. "SQLAlchemy")
+   ============================================================ */
+.md-nav__link {
+    word-break: keep-all;
+    overflow-wrap: normal;
+}
+
+.md-typeset table code {
+    white-space: nowrap;
+}
+
+.md-typeset h2 {
+    font-family: "Syne", sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-    text-align: center;
 }
 
-.next-steps {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--md-default-fg-color--lightest);
+.md-typeset hr {
+    border-color: var(--fa-border);
+    margin: 2rem 0;
+}
+
+.md-typeset .admonition {
+    border-left-width: 3px;
+}
+
+.md-typeset code:not(pre code) {
+    color: #a5f3fc;
+    background-color: rgba(0, 212, 255, 0.07);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+}
+@media screen and (max-width: 960px) {
+    .fa-features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .fa-feature:nth-child(4n) {
+        border-right: 1px solid var(--fa-border);
+    }
+
+    .fa-feature:nth-child(2n) {
+        border-right: none;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .fa-features {
+        grid-template-columns: 1fr;
+    }
+
+    .fa-feature {
+        border-right: none !important;
+    }
+
+    .fa-hero h1,
+    .fa-hero .md-typeset h1 {
+        font-size: clamp(2.75rem, 12vw, 4rem) !important;
+    }
+
+    .fa-hero__cta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }

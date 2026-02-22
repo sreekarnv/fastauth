@@ -61,22 +61,22 @@ After `auth.mount(app)`, the following endpoints are available at `/auth`:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/auth/signup` | Register a new user |
-| `POST` | `/auth/signin` | Sign in, receive access + refresh tokens |
-| `POST` | `/auth/signout` | Invalidate the current session |
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | Sign in, receive access + refresh tokens |
+| `POST` | `/auth/logout` | Sign out the current user |
 | `POST` | `/auth/refresh` | Exchange a refresh token for a new access token |
 | `GET`  | `/auth/me` | Return the current authenticated user |
 
 ## Try it out
 
 ```bash
-# Sign up
-curl -X POST http://localhost:8000/auth/signup \
+# Register
+curl -X POST http://localhost:8000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email": "alice@example.com", "password": "s3cur3!"}'
 
 # Sign in — note the access_token in the response
-curl -X POST http://localhost:8000/auth/signin \
+curl -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "alice@example.com", "password": "s3cur3!"}'
 

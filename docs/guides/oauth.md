@@ -43,7 +43,7 @@ config = FastAuthConfig(
     token_adapter=adapter.token,
     oauth_adapter=adapter.oauth,                      # stores linked accounts
     oauth_state_store=MemorySessionBackend(),          # CSRF state (use Redis in prod)
-    oauth_redirect_url="http://localhost:8000/auth/oauth/callback",
+    oauth_redirect_url="http://localhost:3000/auth/callback",  # optional frontend redirect
     email_transport=ConsoleTransport(),
     base_url="http://localhost:8000",
 )
@@ -69,31 +69,47 @@ auth.mount(app)
 | `GitHubProvider(...)` | Adds GitHub OAuth 2.0 |
 | `oauth_adapter=adapter.oauth` | Persists the link between a provider account and a local user |
 | `oauth_state_store=MemorySessionBackend()` | Stores the CSRF state token during the OAuth dance |
-| `oauth_redirect_url="..."` | The callback URL that providers redirect to |
+| `oauth_redirect_url="..."` | Where to redirect after a successful OAuth callback (with tokens in query params) |
 
-## Register the redirect URL
+## Register the redirect URL with providers
+
+The callback URL that OAuth providers redirect to is:
+
+```
+http://localhost:8000/auth/oauth/{provider}/callback
+```
 
 ### Google
 
 1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)
 2. Edit your OAuth 2.0 client
-3. Add `http://localhost:8000/auth/oauth/callback` to **Authorized redirect URIs**
+3. Add `http://localhost:8000/auth/oauth/google/callback` to **Authorized redirect URIs**
 
 ### GitHub
 
 1. Open [GitHub Developer Settings → OAuth Apps](https://github.com/settings/developers)
-2. Set **Authorization callback URL** to `http://localhost:8000/auth/oauth/callback`
+2. Set **Authorization callback URL** to `http://localhost:8000/auth/oauth/github/callback`
 
 ## Trigger the OAuth flow
 
-From your frontend, redirect the user to:
+From your frontend, call the authorize endpoint to get the provider's URL:
+
+```bash
+curl "http://localhost:8000/auth/oauth/google/authorize?redirect_uri=http://localhost:8000/auth/oauth/google/callback"
+```
+
+Response:
+```json
+{"url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&state=..."}
+```
+
+Redirect the user's browser to that URL. FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.
+
+After the OAuth flow completes, if `oauth_redirect_url` is set, FastAuth redirects to it with tokens as query parameters:
 
 ```
-GET /auth/oauth/authorize?provider=google
-GET /auth/oauth/authorize?provider=github
+http://localhost:3000/auth/callback?access_token=eyJ...&refresh_token=eyJ...&token_type=bearer&expires_in=900
 ```
-
-FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.
 
 ## Environment variables
 
@@ -109,4 +125,5 @@ uvicorn main:app --reload
 ## Production notes
 
 - Replace `MemorySessionBackend()` with `RedisSessionBackend(...)` so OAuth state survives across multiple processes.
-- Use HTTPS for `oauth_redirect_url` in production.
+- Use HTTPS callback URLs in production.
+- Set `oauth_redirect_url` to your production frontend URL.

@@ -31,9 +31,9 @@ config = FastAuthConfig(
 
 FastAuth routes requests to the right provider based on the endpoint called:
 
-- `POST /auth/signin` → CredentialsProvider
-- `GET /auth/oauth/authorize?provider=google` → GoogleProvider
-- `GET /auth/oauth/authorize?provider=github` → GitHubProvider
+- `POST /auth/login` → CredentialsProvider
+- `GET /auth/oauth/google/authorize` → GoogleProvider
+- `GET /auth/oauth/github/authorize` → GitHubProvider
 
 ## When to use each provider
 

@@ -13,7 +13,7 @@ Create a Google OAuth 2.0 client in the [Google Cloud Console](https://console.c
 1. Go to **APIs & Services → Credentials**
 2. Click **Create Credentials → OAuth client ID**
 3. Application type: **Web application**
-4. Add an **Authorized redirect URI**: `https://your-domain.com/auth/oauth/callback`
+4. Add an **Authorized redirect URI**: `https://your-domain.com/auth/oauth/google/callback`
 
 ## Setup
 
@@ -30,20 +30,20 @@ config = FastAuthConfig(
     ],
     oauth_adapter=adapter.oauth,
     oauth_state_store=MemorySessionBackend(),   # or RedisSessionBackend
-    oauth_redirect_url="https://your-domain.com/auth/oauth/callback",
+    oauth_redirect_url="https://your-domain.com/auth/callback",  # optional frontend redirect
     ...
 )
 ```
 
 ## Flow
 
-1. **Frontend redirects** the user to `/auth/oauth/authorize?provider=google`
-2. FastAuth generates a CSRF `state`, stores it, and redirects to Google's auth page
-3. Google redirects back to `oauth_redirect_url` with `code` and `state`
+1. **Frontend calls** `/auth/oauth/google/authorize?redirect_uri=...` — receives a `{"url": "..."}` response
+2. **Frontend redirects** the user to that URL (Google's auth page)
+3. Google redirects back to `/auth/oauth/google/callback` with `code` and `state`
 4. FastAuth exchanges the code for tokens, fetches the user's Google profile, and either:
    - creates a new local user, or
    - links the Google account to an existing user with the same email
-5. FastAuth issues an access + refresh token pair
+5. FastAuth issues an access + refresh token pair (or redirects to `oauth_redirect_url`)
 
 ```mermaid
 sequenceDiagram
@@ -52,21 +52,21 @@ sequenceDiagram
     participant FA as FastAuth
     participant G as Google
 
-    C->>FA: GET /auth/oauth/authorize?provider=google
+    C->>FA: GET /auth/oauth/google/authorize?redirect_uri=<callback_url>
     FA->>FA: generate state, store in oauth_state_store
-    FA-->>C: 302 Redirect → Google auth page
+    FA-->>C: {"url": "https://accounts.google.com/..."}
 
+    U->>C: Client redirects user to Google URL
     U->>G: Approves permissions
-    G-->>C: 302 Redirect → oauth_redirect_url?code=...&state=...
+    G-->>FA: 302 Redirect → /auth/oauth/google/callback?code=...&state=...
 
-    C->>FA: GET /auth/oauth/callback?code=...&state=...
     FA->>FA: verify state (CSRF check)
     FA->>G: exchange code for tokens
     G-->>FA: {access_token, id_token, ...}
     FA->>G: fetch user profile
     G-->>FA: {email, name, picture, ...}
     FA->>FA: find or create local user
-    FA-->>C: {access_token, refresh_token}
+    FA-->>C: {access_token, refresh_token} or redirect to oauth_redirect_url
 ```
 
 ## Requested scopes
