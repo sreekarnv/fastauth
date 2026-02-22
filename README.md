@@ -91,7 +91,7 @@ Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.
 - [Configuration](https://sreekarnv.github.io/fastauth/getting-started/configuration/)
 - [How it Works](https://sreekarnv.github.io/fastauth/concepts/how-it-works/)
 - [Guides](https://sreekarnv.github.io/fastauth/guides/basic/)
-- [API Reference](https://sreekarnv.github.io/fastauth/api/fastauth/)
+- [API Reference](https://sreekarnv.github.io/fastauth/reference/fastauth/)
 
 ---
 
