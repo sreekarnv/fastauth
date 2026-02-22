@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1316,6 +1335,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -1573,6 +1620,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1607,6 +1682,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1623,10 +1725,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1644,8 +1746,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2131,9 +2233,11 @@
     APP["FastAPI Application"]
 
     subgraph ROUTER["FastAuth Router  /auth/*"]
-        ENDPOINTS["/signup · /signin · /signout · /refresh · /me
-/oauth/authorize · /oauth/callback
-/email/verify · /password/reset"]
+        ENDPOINTS["/register · /login · /logout · /refresh · /me
+/oauth/{provider}/authorize · /oauth/{provider}/callback
+/request-verify-email · /verify-email
+/forgot-password · /reset-password
+/account/* · /roles/* · /sessions/*"]
     end
 
     subgraph CORE["Core Logic"]
@@ -2197,7 +2301,7 @@
 </table>
 <hr />
 <h2 id="sign-in-flow-credentials">Sign-in flow (credentials)<a class="headerlink" href="#sign-in-flow-credentials" title="Permanent link">&para;</a></h2>
-<p>The sequence below shows what happens when a user posts <code>{ email, password }</code> to <code>/auth/signin</code>:</p>
+<p>The sequence below shows what happens when a user posts <code>{ email, password }</code> to <code>/auth/login</code>:</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant C as Client
     participant FA as FastAuth Router
@@ -2205,7 +2309,7 @@
     participant A as UserAdapter
     participant T as Core/Tokens
 
-    C-&gt;&gt;FA: POST /auth/signin {email, password}
+    C-&gt;&gt;FA: POST /auth/login {email, password}
     FA-&gt;&gt;P: authenticate({email, password})
     P-&gt;&gt;A: get_user_by_email(email)
     A--&gt;&gt;P: user record (or None)
@@ -2214,13 +2318,12 @@
 
     alt authentication failed
         FA--&gt;&gt;C: 401 Unauthorized
-    else hooks.allow_signin returns False
-        FA--&gt;&gt;C: 403 Forbidden
     else success
+        FA-&gt;&gt;FA: hooks.on_signin(user, "credentials")
         FA-&gt;&gt;T: create_access_token(user)
         FA-&gt;&gt;T: create_refresh_token(user)
         T--&gt;&gt;FA: {access_token, refresh_token}
-        FA--&gt;&gt;C: 200 OK {access_token, refresh_token}
+        FA--&gt;&gt;C: 200 OK {access_token, refresh_token, token_type, expires_in}
     end</code></pre>
 <hr />
 <h2 id="request-authentication-flow">Request authentication flow<a class="headerlink" href="#request-authentication-flow" title="Permanent link">&para;</a></h2>

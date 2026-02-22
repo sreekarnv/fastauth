@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1205,6 +1224,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -1502,15 +1549,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#register-the-redirect-url" class="md-nav__link">
+  <a href="#register-the-redirect-url-with-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Register the redirect URL
+        Register the redirect URL with providers
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Register the redirect URL">
+    <nav class="md-nav" aria-label="Register the redirect URL with providers">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1617,6 +1664,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../production/" class="md-nav__link">
         
   
@@ -1651,6 +1726,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1667,10 +1769,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1688,8 +1790,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2073,15 +2175,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#register-the-redirect-url" class="md-nav__link">
+  <a href="#register-the-redirect-url-with-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Register the redirect URL
+        Register the redirect URL with providers
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Register the redirect URL">
+    <nav class="md-nav" aria-label="Register the redirect URL with providers">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2250,7 +2352,7 @@
 <a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>    <span class="n">token_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
 <a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>    <span class="n">oauth_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">oauth</span><span class="p">,</span>                      <span class="c1"># stores linked accounts</span>
 <a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>    <span class="n">oauth_state_store</span><span class="o">=</span><span class="n">MemorySessionBackend</span><span class="p">(),</span>          <span class="c1"># CSRF state (use Redis in prod)</span>
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000/auth/oauth/callback&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000/auth/callback&quot;</span><span class="p">,</span>  <span class="c1"># optional frontend redirect</span>
 <a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    <span class="n">email_transport</span><span class="o">=</span><span class="n">ConsoleTransport</span><span class="p">(),</span>
 <a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="p">)</span>
@@ -2294,40 +2396,49 @@
 </tr>
 <tr>
 <td><code>oauth_redirect_url="..."</code></td>
-<td>The callback URL that providers redirect to</td>
+<td>Where to redirect after a successful OAuth callback (with tokens in query params)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="register-the-redirect-url">Register the redirect URL<a class="headerlink" href="#register-the-redirect-url" title="Permanent link">&para;</a></h2>
+<h2 id="register-the-redirect-url-with-providers">Register the redirect URL with providers<a class="headerlink" href="#register-the-redirect-url-with-providers" title="Permanent link">&para;</a></h2>
+<p>The callback URL that OAuth providers redirect to is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>http://localhost:8000/auth/oauth/{provider}/callback
+</code></pre></div>
 <h3 id="google">Google<a class="headerlink" href="#google" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Open <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console → Credentials</a></li>
 <li>Edit your OAuth 2.0 client</li>
-<li>Add <code>http://localhost:8000/auth/oauth/callback</code> to <strong>Authorized redirect URIs</strong></li>
+<li>Add <code>http://localhost:8000/auth/oauth/google/callback</code> to <strong>Authorized redirect URIs</strong></li>
 </ol>
 <h3 id="github">GitHub<a class="headerlink" href="#github" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Open <a href="https://github.com/settings/developers">GitHub Developer Settings → OAuth Apps</a></li>
-<li>Set <strong>Authorization callback URL</strong> to <code>http://localhost:8000/auth/oauth/callback</code></li>
+<li>Set <strong>Authorization callback URL</strong> to <code>http://localhost:8000/auth/oauth/github/callback</code></li>
 </ol>
 <h2 id="trigger-the-oauth-flow">Trigger the OAuth flow<a class="headerlink" href="#trigger-the-oauth-flow" title="Permanent link">&para;</a></h2>
-<p>From your frontend, redirect the user to:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /auth/oauth/authorize?provider=google
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GET /auth/oauth/authorize?provider=github
+<p>From your frontend, call the authorize endpoint to get the provider's URL:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/auth/oauth/google/authorize?redirect_uri=http://localhost:8000/auth/oauth/google/callback&quot;</span>
 </code></pre></div>
-<p>FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.</p>
+<p>Response:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://accounts.google.com/o/oauth2/v2/auth?client_id=...&amp;state=...&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p>Redirect the user's browser to that URL. FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.</p>
+<p>After the OAuth flow completes, if <code>oauth_redirect_url</code> is set, FastAuth redirects to it with tokens as query parameters:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://localhost:3000/auth/callback?access_token=eyJ...&amp;refresh_token=eyJ...&amp;token_type=bearer&amp;expires_in=900
+</code></pre></div>
 <h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SECRET</span><span class="o">=</span><span class="k">$(</span>fastauth<span class="w"> </span>generate-secret<span class="k">)</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_CLIENT_ID</span><span class="o">=</span>...
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_CLIENT_SECRET</span><span class="o">=</span>...
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_CLIENT_ID</span><span class="o">=</span>...
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_CLIENT_SECRET</span><span class="o">=</span>...
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SECRET</span><span class="o">=</span><span class="k">$(</span>fastauth<span class="w"> </span>generate-secret<span class="k">)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_CLIENT_ID</span><span class="o">=</span>...
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_CLIENT_SECRET</span><span class="o">=</span>...
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_CLIENT_ID</span><span class="o">=</span>...
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_CLIENT_SECRET</span><span class="o">=</span>...
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload
 </code></pre></div>
 <h2 id="production-notes">Production notes<a class="headerlink" href="#production-notes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Replace <code>MemorySessionBackend()</code> with <code>RedisSessionBackend(...)</code> so OAuth state survives across multiple processes.</li>
-<li>Use HTTPS for <code>oauth_redirect_url</code> in production.</li>
+<li>Use HTTPS callback URLs in production.</li>
+<li>Set <code>oauth_redirect_url</code> to your production frontend URL.</li>
 </ul>
 
 

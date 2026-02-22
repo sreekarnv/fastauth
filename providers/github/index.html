@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1299,6 +1318,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -1556,6 +1603,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1590,6 +1665,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1606,10 +1708,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1627,8 +1729,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2098,7 +2200,7 @@
 <p>Register a GitHub OAuth App at <a href="https://github.com/settings/applications/new">https://github.com/settings/applications/new</a>:</p>
 <ul>
 <li><strong>Homepage URL</strong>: <code>https://your-domain.com</code></li>
-<li><strong>Authorization callback URL</strong>: <code>https://your-domain.com/auth/oauth/callback</code></li>
+<li><strong>Authorization callback URL</strong>: <code>https://your-domain.com/auth/oauth/github/callback</code></li>
 </ul>
 <p>Copy the <strong>Client ID</strong> and generate a <strong>Client Secret</strong>.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
@@ -2114,7 +2216,7 @@
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="p">],</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">oauth_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">oauth</span><span class="p">,</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">oauth_state_store</span><span class="o">=</span><span class="n">MemorySessionBackend</span><span class="p">(),</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;https://your-domain.com/auth/oauth/callback&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;https://your-domain.com/auth/callback&quot;</span><span class="p">,</span>  <span class="c1"># optional frontend redirect</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="o">...</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">)</span>
 </code></pre></div>
@@ -2125,8 +2227,9 @@
 <p>Users without a verified email on GitHub cannot sign in until they add and verify one.</p>
 </div>
 <h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">&para;</a></h2>
-<p>The flow is the same as <a href="../google/">Google OAuth</a> — authorize → callback → token pair. The provider ID for the <code>authorize</code> endpoint is <code>github</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /auth/oauth/authorize?provider=github
+<p>The flow is the same as <a href="../google/">Google OAuth</a> — call <code>/authorize</code>, redirect the user, handle the callback. The provider ID is <code>github</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /auth/oauth/github/authorize?redirect_uri=&lt;callback_url&gt;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GET /auth/oauth/github/callback?code=...&amp;state=...
 </code></pre></div>
 
 

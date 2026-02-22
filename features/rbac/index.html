@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1208,6 +1227,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../oauth/" class="md-nav__link">
         
   
@@ -1336,6 +1383,45 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Managing roles via API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assigning-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assigning a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revoking-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revoking a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-current-users-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get current user's roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1578,6 +1664,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1612,6 +1726,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1628,10 +1769,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1649,8 +1790,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2042,6 +2183,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Managing roles via API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assigning-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assigning a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revoking-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revoking a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-current-users-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get current user's roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2165,12 +2345,13 @@
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]}</span>
 </code></pre></div>
 <h2 id="managing-roles-via-api">Managing roles via API<a class="headerlink" href="#managing-roles-via-api" title="Permanent link">&para;</a></h2>
-<p>FastAuth exposes RBAC management endpoints under <code>/auth/roles</code>:</p>
+<p>All RBAC management endpoints require the <code>admin</code> role.</p>
 <table>
 <thead>
 <tr>
 <th>Method</th>
 <th>Path</th>
+<th>Body</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -2178,59 +2359,101 @@
 <tr>
 <td><code>POST</code></td>
 <td><code>/auth/roles</code></td>
+<td><code>{"name": "...", "permissions": [...]}</code></td>
 <td>Create a role</td>
 </tr>
 <tr>
 <td><code>GET</code></td>
 <td><code>/auth/roles</code></td>
+<td>—</td>
 <td>List all roles</td>
 </tr>
 <tr>
 <td><code>DELETE</code></td>
 <td><code>/auth/roles/{name}</code></td>
+<td>—</td>
 <td>Delete a role</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
 <td><code>/auth/roles/{name}/permissions</code></td>
+<td><code>{"permissions": [...]}</code></td>
 <td>Add permissions to a role</td>
 </tr>
 <tr>
 <td><code>DELETE</code></td>
 <td><code>/auth/roles/{name}/permissions</code></td>
+<td><code>{"permissions": [...]}</code></td>
 <td>Remove permissions</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
-<td><code>/auth/roles/{name}/users/{user_id}</code></td>
+<td><code>/auth/roles/assign</code></td>
+<td><code>{"user_id": "...", "role_name": "..."}</code></td>
 <td>Assign role to user</td>
 </tr>
 <tr>
-<td><code>DELETE</code></td>
-<td><code>/auth/roles/{name}/users/{user_id}</code></td>
+<td><code>POST</code></td>
+<td><code>/auth/roles/revoke</code></td>
+<td><code>{"user_id": "...", "role_name": "..."}</code></td>
 <td>Revoke role from user</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/auth/roles/user/{user_id}</code></td>
+<td>—</td>
+<td>Get roles and permissions for a user</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/auth/roles/me</code></td>
+<td>—</td>
+<td>Get current user's roles and permissions</td>
 </tr>
 </tbody>
 </table>
+<h3 id="assigning-a-role">Assigning a role<a class="headerlink" href="#assigning-a-role" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/roles/assign<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;admin_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;user_id&quot;: &quot;user-cuid&quot;, &quot;role_name&quot;: &quot;editor&quot;}&#39;</span>
+</code></pre></div>
+<h3 id="revoking-a-role">Revoking a role<a class="headerlink" href="#revoking-a-role" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/roles/revoke<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;admin_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;user_id&quot;: &quot;user-cuid&quot;, &quot;role_name&quot;: &quot;editor&quot;}&#39;</span>
+</code></pre></div>
+<h3 id="get-current-users-roles">Get current user's roles<a class="headerlink" href="#get-current-users-roles" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>http://localhost:8000/auth/roles/me<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;access_token&gt;&quot;</span>
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user-cuid&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;editor&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;posts:write&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;posts:delete&quot;</span><span class="p">]</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
+</code></pre></div>
 <h2 id="seed-roles-on-startup">Seed roles on startup<a class="headerlink" href="#seed-roles-on-startup" title="Permanent link">&para;</a></h2>
 <p>Define initial roles in <code>FastAuthConfig.roles</code> and they will be created on first startup:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="o">...</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">roles</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>  <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span> <span class="s2">&quot;users:delete&quot;</span><span class="p">,</span> <span class="s2">&quot;reports:read&quot;</span><span class="p">]},</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;editor&quot;</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;posts:write&quot;</span><span class="p">,</span> <span class="s2">&quot;posts:delete&quot;</span><span class="p">]},</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;viewer&quot;</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;posts:read&quot;</span><span class="p">,</span> <span class="s2">&quot;reports:read&quot;</span><span class="p">]},</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="p">],</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">default_role</span><span class="o">=</span><span class="s2">&quot;viewer&quot;</span><span class="p">,</span>  <span class="c1"># automatically assigned to every new user</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="o">...</span><span class="p">,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">roles</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>  <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span> <span class="s2">&quot;users:delete&quot;</span><span class="p">,</span> <span class="s2">&quot;reports:read&quot;</span><span class="p">]},</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;editor&quot;</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;posts:write&quot;</span><span class="p">,</span> <span class="s2">&quot;posts:delete&quot;</span><span class="p">]},</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;viewer&quot;</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;posts:read&quot;</span><span class="p">,</span> <span class="s2">&quot;reports:read&quot;</span><span class="p">]},</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="p">],</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">default_role</span><span class="o">=</span><span class="s2">&quot;viewer&quot;</span><span class="p">,</span>  <span class="c1"># automatically assigned to every new user</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="embedding-roles-in-the-jwt">Embedding roles in the JWT<a class="headerlink" href="#embedding-roles-in-the-jwt" title="Permanent link">&para;</a></h2>
 <p>Use the <code>modify_jwt</code> hook to embed the user's roles in the access token so downstream services don't need a database call:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">modify_jwt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">role_adapter</span><span class="p">:</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>            <span class="n">token</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">auth</span><span class="o">.</span><span class="n">role_adapter</span><span class="o">.</span><span class="n">get_user_roles</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="k">return</span> <span class="n">token</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">modify_jwt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">role_adapter</span><span class="p">:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>            <span class="n">token</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">auth</span><span class="o">.</span><span class="n">role_adapter</span><span class="o">.</span><span class="n">get_user_roles</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="k">return</span> <span class="n">token</span>
 </code></pre></div>
 
 

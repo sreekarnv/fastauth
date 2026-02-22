@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1288,6 +1307,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -1545,6 +1592,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1579,6 +1654,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1595,10 +1697,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1616,8 +1718,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2114,9 +2216,9 @@
 </code></pre></div>
 <p>FastAuth routes requests to the right provider based on the endpoint called:</p>
 <ul>
-<li><code>POST /auth/signin</code> → CredentialsProvider</li>
-<li><code>GET /auth/oauth/authorize?provider=google</code> → GoogleProvider</li>
-<li><code>GET /auth/oauth/authorize?provider=github</code> → GitHubProvider</li>
+<li><code>POST /auth/login</code> → CredentialsProvider</li>
+<li><code>GET /auth/oauth/google/authorize</code> → GoogleProvider</li>
+<li><code>GET /auth/oauth/github/authorize</code> → GitHubProvider</li>
 </ul>
 <h2 id="when-to-use-each-provider">When to use each provider<a class="headerlink" href="#when-to-use-each-provider" title="Permanent link">&para;</a></h2>
 <p><strong>CredentialsProvider</strong> — the right default. Email + password with bcrypt/argon2 hashing, email verification, and password reset built in.</p>

@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1242,9 +1261,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#resend-verification-email" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1252,6 +1272,22 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-email" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify email
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1318,6 +1354,34 @@
     
   
     Password Reset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
   
 
     
@@ -1595,6 +1659,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1629,6 +1721,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1645,10 +1764,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1666,8 +1785,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2048,9 +2167,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#resend-verification-email" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2058,6 +2178,22 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-email" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify email
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2189,24 +2325,24 @@
     participant E as Email Transport
     participant DB as Token Store
 
-    U-&gt;&gt;C: POST /auth/signup {email, password}
-    C-&gt;&gt;FA: POST /auth/signup
-    FA-&gt;&gt;DB: create user (is_email_verified=False)
-    FA-&gt;&gt;DB: create_token(type="email_verify", token=&lt;uuid&gt;)
+    U-&gt;&gt;C: POST /auth/register {email, password}
+    C-&gt;&gt;FA: POST /auth/register
+    FA-&gt;&gt;DB: create user (email_verified=False)
+    FA-&gt;&gt;DB: create_token(type="verification", token=&lt;cuid&gt;)
     FA-&gt;&gt;E: send verification email with link
     FA--&gt;&gt;C: 201 Created (user created, not yet verified)
 
     U-&gt;&gt;U: Opens email, clicks verification link
-    U-&gt;&gt;C: GET /auth/email/verify?token=&lt;uuid&gt;
-    C-&gt;&gt;FA: GET /auth/email/verify?token=&lt;uuid&gt;
-    FA-&gt;&gt;DB: get_token(token, type="email_verify")
+    U-&gt;&gt;C: GET /auth/verify-email?token=&lt;cuid&gt;
+    C-&gt;&gt;FA: GET /auth/verify-email?token=&lt;cuid&gt;
+    FA-&gt;&gt;DB: get_token(token, type="verification")
     alt token expired or not found
         FA--&gt;&gt;C: 400 Bad Request
     else valid
-        FA-&gt;&gt;DB: update_user(is_email_verified=True)
+        FA-&gt;&gt;DB: update_user(email_verified=True)
         FA-&gt;&gt;DB: delete_token(token)
         FA-&gt;&gt;FA: hooks.on_email_verify(user)
-        FA--&gt;&gt;C: 200 OK
+        FA--&gt;&gt;C: 200 OK {"message": "Email verified successfully"}
     end</code></pre>
 <h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
 <table>
@@ -2214,27 +2350,45 @@
 <tr>
 <th>Method</th>
 <th>Path</th>
+<th style="text-align: center;">Auth required</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>POST</code></td>
-<td><code>/auth/email/request-verify</code></td>
+<td><code>/auth/request-verify-email</code></td>
+<td style="text-align: center;">Yes</td>
 <td>Re-send the verification email</td>
 </tr>
 <tr>
 <td><code>GET</code></td>
-<td><code>/auth/email/verify?token=&lt;token&gt;</code></td>
+<td><code>/auth/verify-email?token=&lt;token&gt;</code></td>
+<td style="text-align: center;">No</td>
 <td>Verify the email and activate the account</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/auth/verify-email</code></td>
+<td style="text-align: center;">No</td>
+<td>Verify via body: <code>{"token": "..."}</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="resend-verification-email">Resend verification email<a class="headerlink" href="#resend-verification-email" title="Permanent link">&para;</a></h2>
-<p>If the user didn't receive the email:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/email/request-verify<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;email&quot;: &quot;alice@example.com&quot;}&#39;</span>
+<h3 id="resend-verification-email">Resend verification email<a class="headerlink" href="#resend-verification-email" title="Permanent link">&para;</a></h3>
+<p>The resend endpoint requires a valid access token (the user must be logged in):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/request-verify-email<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;access_token&gt;&quot;</span>
+</code></pre></div>
+<h3 id="verify-email">Verify email<a class="headerlink" href="#verify-email" title="Permanent link">&para;</a></h3>
+<p>The verification link in the email points to a <code>GET</code> endpoint. You can also submit the token via <code>POST</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Via GET (browser link)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span>http://localhost:8000/auth/verify-email?token<span class="o">=</span>&lt;token-from-email&gt;
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Via POST (API client)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/verify-email<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;token&quot;: &quot;&lt;token-from-email&gt;&quot;}&#39;</span>
 </code></pre></div>
 <h2 id="email-transports">Email transports<a class="headerlink" href="#email-transports" title="Permanent link">&para;</a></h2>
 <table>
@@ -2264,22 +2418,22 @@
 </tbody>
 </table>
 <h3 id="smtp">SMTP<a class="headerlink" href="#smtp" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.email_transports.smtp</span><span class="w"> </span><span class="kn">import</span> <span class="n">SMTPTransport</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">SMTPTransport</span><span class="p">(</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">hostname</span><span class="o">=</span><span class="s2">&quot;smtp.sendgrid.net&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;apikey&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SENDGRID_API_KEY&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">use_tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">sender</span><span class="o">=</span><span class="s2">&quot;noreply@example.com&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.email_transports.smtp</span><span class="w"> </span><span class="kn">import</span> <span class="n">SMTPTransport</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">SMTPTransport</span><span class="p">(</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">hostname</span><span class="o">=</span><span class="s2">&quot;smtp.sendgrid.net&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;apikey&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SENDGRID_API_KEY&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">use_tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">sender</span><span class="o">=</span><span class="s2">&quot;noreply@example.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="hook">Hook<a class="headerlink" href="#hook" title="Permanent link">&para;</a></h2>
 <p>Override <code>on_email_verify</code> to run custom logic after verification:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_email_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="k">await</span> <span class="n">grant_welcome_credits</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_email_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        <span class="k">await</span> <span class="n">grant_welcome_credits</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
 </code></pre></div>
 
 

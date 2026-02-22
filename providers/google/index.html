@@ -340,6 +340,25 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -1310,6 +1329,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Account Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -1567,6 +1614,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/production/" class="md-nav__link">
         
   
@@ -1601,6 +1676,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1617,10 +1719,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1638,8 +1740,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2122,7 +2224,7 @@
 <li>Go to <strong>APIs &amp; Services → Credentials</strong></li>
 <li>Click <strong>Create Credentials → OAuth client ID</strong></li>
 <li>Application type: <strong>Web application</strong></li>
-<li>Add an <strong>Authorized redirect URI</strong>: <code>https://your-domain.com/auth/oauth/callback</code></li>
+<li>Add an <strong>Authorized redirect URI</strong>: <code>https://your-domain.com/auth/oauth/google/callback</code></li>
 </ol>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -2137,19 +2239,19 @@
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="p">],</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">oauth_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">oauth</span><span class="p">,</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">oauth_state_store</span><span class="o">=</span><span class="n">MemorySessionBackend</span><span class="p">(),</span>   <span class="c1"># or RedisSessionBackend</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;https://your-domain.com/auth/oauth/callback&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">oauth_redirect_url</span><span class="o">=</span><span class="s2">&quot;https://your-domain.com/auth/callback&quot;</span><span class="p">,</span>  <span class="c1"># optional frontend redirect</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="o">...</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Frontend redirects</strong> the user to <code>/auth/oauth/authorize?provider=google</code></li>
-<li>FastAuth generates a CSRF <code>state</code>, stores it, and redirects to Google's auth page</li>
-<li>Google redirects back to <code>oauth_redirect_url</code> with <code>code</code> and <code>state</code></li>
+<li><strong>Frontend calls</strong> <code>/auth/oauth/google/authorize?redirect_uri=...</code> — receives a <code>{"url": "..."}</code> response</li>
+<li><strong>Frontend redirects</strong> the user to that URL (Google's auth page)</li>
+<li>Google redirects back to <code>/auth/oauth/google/callback</code> with <code>code</code> and <code>state</code></li>
 <li>FastAuth exchanges the code for tokens, fetches the user's Google profile, and either:</li>
 <li>creates a new local user, or</li>
 <li>links the Google account to an existing user with the same email</li>
-<li>FastAuth issues an access + refresh token pair</li>
+<li>FastAuth issues an access + refresh token pair (or redirects to <code>oauth_redirect_url</code>)</li>
 </ol>
 <pre class="mermaid"><code>sequenceDiagram
     participant U as User
@@ -2157,21 +2259,21 @@
     participant FA as FastAuth
     participant G as Google
 
-    C-&gt;&gt;FA: GET /auth/oauth/authorize?provider=google
+    C-&gt;&gt;FA: GET /auth/oauth/google/authorize?redirect_uri=&lt;callback_url&gt;
     FA-&gt;&gt;FA: generate state, store in oauth_state_store
-    FA--&gt;&gt;C: 302 Redirect → Google auth page
+    FA--&gt;&gt;C: {"url": "https://accounts.google.com/..."}
 
+    U-&gt;&gt;C: Client redirects user to Google URL
     U-&gt;&gt;G: Approves permissions
-    G--&gt;&gt;C: 302 Redirect → oauth_redirect_url?code=...&amp;state=...
+    G--&gt;&gt;FA: 302 Redirect → /auth/oauth/google/callback?code=...&amp;state=...
 
-    C-&gt;&gt;FA: GET /auth/oauth/callback?code=...&amp;state=...
     FA-&gt;&gt;FA: verify state (CSRF check)
     FA-&gt;&gt;G: exchange code for tokens
     G--&gt;&gt;FA: {access_token, id_token, ...}
     FA-&gt;&gt;G: fetch user profile
     G--&gt;&gt;FA: {email, name, picture, ...}
     FA-&gt;&gt;FA: find or create local user
-    FA--&gt;&gt;C: {access_token, refresh_token}</code></pre>
+    FA--&gt;&gt;C: {access_token, refresh_token} or redirect to oauth_redirect_url</code></pre>
 <h2 id="requested-scopes">Requested scopes<a class="headerlink" href="#requested-scopes" title="Permanent link">&para;</a></h2>
 <p>By default the Google provider requests <code>openid email profile</code>. This gives FastAuth the user's email address and basic profile information.</p>
 <h2 id="account-linking">Account linking<a class="headerlink" href="#account-linking" title="Permanent link">&para;</a></h2>
