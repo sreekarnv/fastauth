@@ -12,18 +12,19 @@ sequenceDiagram
     participant SS as State Store
     participant P as OAuth Provider (Google/GitHub)
 
-    C->>FA: GET /auth/oauth/authorize?provider=google
+    C->>FA: GET /auth/oauth/{provider}/authorize?redirect_uri=...
     FA->>FA: generate random state
     FA->>SS: write(state_id, {state}, ttl=600)
-    FA-->>C: 302 Redirect → provider auth URL (with state param)
+    FA-->>C: {"url": "https://provider.com/oauth?..."} (redirect URL)
 
+    U->>C: Client redirects user to provider URL
     U->>P: Approves requested permissions
-    P-->>C: 302 Redirect → oauth_redirect_url?code=AUTH_CODE&state=STATE
+    P-->>C: 302 Redirect → /auth/oauth/{provider}/callback?code=AUTH_CODE&state=STATE
 
-    C->>FA: GET /auth/oauth/callback?code=AUTH_CODE&state=STATE
+    C->>FA: GET /auth/oauth/{provider}/callback?code=AUTH_CODE&state=STATE
     FA->>SS: read(state_id) — CSRF check
     FA->>P: POST token endpoint (exchange code)
-    P-->>FA: {access_token, refresh_token, id_token}
+    P-->>FA: {access_token, id_token, ...}
     FA->>P: GET /user (fetch profile)
     P-->>FA: {email, name, avatar, ...}
 
@@ -32,13 +33,17 @@ sequenceDiagram
         FA->>FA: create_user(email, ...)
         FA->>FA: create_oauth_account(provider, account_id, user_id)
         FA->>FA: hooks.on_signup(user)
-    else existing user
-        FA->>FA: hooks.on_oauth_link(user, provider) if new account
     end
 
     FA->>FA: hooks.allow_signin(user, provider)
+    FA->>FA: hooks.on_signin(user, provider)
     FA->>FA: issue access + refresh tokens
-    FA-->>C: {access_token, refresh_token}
+
+    alt oauth_redirect_url configured
+        FA-->>C: 302 → oauth_redirect_url?access_token=...&refresh_token=...
+    else
+        FA-->>C: {"access_token": "...", "refresh_token": "..."}
+    end
 ```
 
 ## Configuration
@@ -53,9 +58,9 @@ config = FastAuthConfig(
         GoogleProvider(client_id="...", client_secret="..."),
         GitHubProvider(client_id="...", client_secret="..."),
     ],
-    oauth_adapter=adapter.oauth,           # persist linked accounts
-    oauth_state_store=MemorySessionBackend(),  # store CSRF state
-    oauth_redirect_url="https://your-app.com/auth/oauth/callback",
+    oauth_adapter=adapter.oauth,                # persist linked accounts
+    oauth_state_store=MemorySessionBackend(),   # store CSRF state
+    oauth_redirect_url="https://your-app.com/auth/callback",  # optional frontend redirect
     ...
 )
 ```
@@ -64,8 +69,50 @@ config = FastAuthConfig(
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/auth/oauth/authorize?provider=<id>` | Start the OAuth flow (redirects to provider) |
-| `GET` | `/auth/oauth/callback?code=...&state=...` | Handle the provider callback |
+| `GET` | `/auth/oauth/{provider}/authorize?redirect_uri=<uri>` | Start the OAuth flow — returns `{"url": "..."}` |
+| `GET` | `/auth/oauth/{provider}/callback?code=...&state=...` | Handle the provider callback |
+| `GET` | `/auth/oauth/accounts` | List the current user's linked OAuth accounts |
+| `DELETE` | `/auth/oauth/accounts/{provider}` | Unlink an OAuth account |
+
+The `{provider}` path parameter is the provider's ID: `google` or `github`.
+
+### Start the OAuth flow
+
+```bash
+curl "http://localhost:8000/auth/oauth/google/authorize?redirect_uri=http://localhost:8000/auth/oauth/google/callback"
+```
+
+Response:
+
+```json
+{
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&state=..."
+}
+```
+
+Redirect the user's browser to this URL.
+
+### List linked accounts
+
+```bash
+curl http://localhost:8000/auth/oauth/accounts \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Response:
+
+```json
+[
+  {"provider": "google", "provider_account_id": "12345"}
+]
+```
+
+### Unlink an account
+
+```bash
+curl -X DELETE http://localhost:8000/auth/oauth/accounts/google \
+  -H "Authorization: Bearer <access_token>"
+```
 
 ## CSRF protection
 
@@ -81,6 +128,16 @@ config = FastAuthConfig(
     oauth_state_store=RedisSessionBackend(url="redis://localhost:6379"),
 )
 ```
+
+## Handling the callback response
+
+If `oauth_redirect_url` is set in your config, FastAuth redirects to it after a successful OAuth callback, appending tokens as query parameters:
+
+```
+GET https://your-app.com/auth/callback?access_token=eyJ...&refresh_token=eyJ...&token_type=bearer&expires_in=900
+```
+
+Your frontend can extract these tokens and store them. If `oauth_redirect_url` is not set, the tokens are returned as a JSON body instead.
 
 ## Account linking
 

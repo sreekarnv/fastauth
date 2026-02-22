@@ -39,17 +39,54 @@ async def reports(user=Depends(require_permission("reports:read"))):
 
 ## Managing roles via API
 
-FastAuth exposes RBAC management endpoints under `/auth/roles`:
+All RBAC management endpoints require the `admin` role.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/auth/roles` | Create a role |
-| `GET`  | `/auth/roles` | List all roles |
-| `DELETE` | `/auth/roles/{name}` | Delete a role |
-| `POST` | `/auth/roles/{name}/permissions` | Add permissions to a role |
-| `DELETE` | `/auth/roles/{name}/permissions` | Remove permissions |
-| `POST` | `/auth/roles/{name}/users/{user_id}` | Assign role to user |
-| `DELETE` | `/auth/roles/{name}/users/{user_id}` | Revoke role from user |
+| Method | Path | Body | Description |
+|--------|------|------|-------------|
+| `POST` | `/auth/roles` | `{"name": "...", "permissions": [...]}` | Create a role |
+| `GET`  | `/auth/roles` | — | List all roles |
+| `DELETE` | `/auth/roles/{name}` | — | Delete a role |
+| `POST` | `/auth/roles/{name}/permissions` | `{"permissions": [...]}` | Add permissions to a role |
+| `DELETE` | `/auth/roles/{name}/permissions` | `{"permissions": [...]}` | Remove permissions |
+| `POST` | `/auth/roles/assign` | `{"user_id": "...", "role_name": "..."}` | Assign role to user |
+| `POST` | `/auth/roles/revoke` | `{"user_id": "...", "role_name": "..."}` | Revoke role from user |
+| `GET`  | `/auth/roles/user/{user_id}` | — | Get roles and permissions for a user |
+| `GET`  | `/auth/roles/me` | — | Get current user's roles and permissions |
+
+### Assigning a role
+
+```bash
+curl -X POST http://localhost:8000/auth/roles/assign \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "user-cuid", "role_name": "editor"}'
+```
+
+### Revoking a role
+
+```bash
+curl -X POST http://localhost:8000/auth/roles/revoke \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "user-cuid", "role_name": "editor"}'
+```
+
+### Get current user's roles
+
+```bash
+curl http://localhost:8000/auth/roles/me \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Response:
+
+```json
+{
+  "user_id": "user-cuid",
+  "roles": ["editor"],
+  "permissions": ["posts:write", "posts:delete"]
+}
+```
 
 ## Seed roles on startup
 

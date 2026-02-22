@@ -4,7 +4,7 @@ This guide walks through the full `examples/basic` application — a FastAPI app
 
 ## What we're building
 
-- Email + password sign-up and sign-in
+- Email + password register and sign-in
 - Email verification (printed to console in dev)
 - Protected routes requiring authentication, roles, and permissions
 - SQLite database via SQLAlchemy
@@ -121,6 +121,24 @@ uvicorn main:app --reload
 ```
 
 Then visit `http://localhost:8000/docs`.
+
+## Try it
+
+```bash
+# Register
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "alice@example.com", "password": "s3cr3t!"}'
+
+# Sign in
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "alice@example.com", "password": "s3cr3t!"}'
+
+# Call a protected route
+curl http://localhost:8000/dashboard \
+  -H "Authorization: Bearer <access_token>"
+```
 
 ## Generating a production secret
 

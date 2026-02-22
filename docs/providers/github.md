@@ -11,7 +11,7 @@ pip install "sreekarnv-fastauth[standard,oauth]"
 Register a GitHub OAuth App at <https://github.com/settings/applications/new>:
 
 - **Homepage URL**: `https://your-domain.com`
-- **Authorization callback URL**: `https://your-domain.com/auth/oauth/callback`
+- **Authorization callback URL**: `https://your-domain.com/auth/oauth/github/callback`
 
 Copy the **Client ID** and generate a **Client Secret**.
 
@@ -30,7 +30,7 @@ config = FastAuthConfig(
     ],
     oauth_adapter=adapter.oauth,
     oauth_state_store=MemorySessionBackend(),
-    oauth_redirect_url="https://your-domain.com/auth/oauth/callback",
+    oauth_redirect_url="https://your-domain.com/auth/callback",  # optional frontend redirect
     ...
 )
 ```
@@ -44,8 +44,9 @@ GitHub accounts may have a private email address. FastAuth fetches the user's pr
 
 ## Flow
 
-The flow is the same as [Google OAuth](google.md) — authorize → callback → token pair. The provider ID for the `authorize` endpoint is `github`:
+The flow is the same as [Google OAuth](google.md) — call `/authorize`, redirect the user, handle the callback. The provider ID is `github`:
 
 ```
-GET /auth/oauth/authorize?provider=github
+GET /auth/oauth/github/authorize?redirect_uri=<callback_url>
+GET /auth/oauth/github/callback?code=...&state=...
 ```

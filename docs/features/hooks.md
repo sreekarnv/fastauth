@@ -42,6 +42,9 @@ Only override the methods you need. All default implementations are no-ops (exce
 |--------|---------|--------|
 | `allow_signin(user, provider)` | `bool` | Return `False` → HTTP 403 |
 
+!!! note
+    `allow_signin` is only called during **OAuth** sign-ins. Credentials (`/auth/login`) do not invoke this hook — use `on_signin` for side effects or query the user's state in your adapter before returning.
+
 ### Mutation hooks
 
 | Method | Returns | Effect |
@@ -51,7 +54,7 @@ Only override the methods you need. All default implementations are no-ops (exce
 
 ## Examples
 
-### Block banned users
+### Block banned users (OAuth only)
 
 ```python
 class MyHooks(EventHooks):

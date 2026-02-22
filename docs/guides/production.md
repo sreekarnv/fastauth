@@ -117,9 +117,9 @@ FastAuth does not include built-in rate limiting. Add it at the infrastructure l
 - **Application**: `slowapi` (FastAPI-compatible rate limiter)
 
 Consider rate limiting these endpoints in particular:
-- `POST /auth/signin` — prevent brute-force attacks
-- `POST /auth/password/forgot` — prevent email flooding
-- `POST /auth/signup` — prevent account spam
+- `POST /auth/login` — prevent brute-force attacks
+- `POST /auth/forgot-password` — prevent email flooding
+- `POST /auth/register` — prevent account spam
 
 ## Monitoring
 
