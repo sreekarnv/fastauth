@@ -14,6 +14,7 @@ FastAuth uses optional **extras** so you only install what you need.
 | `fastapi` | FastAPI + Uvicorn | `pip install "sreekarnv-fastauth[fastapi]"` |
 | `jwt` | joserfc + cryptography (HS256/RS256 signing) | `pip install "sreekarnv-fastauth[jwt]"` |
 | `oauth` | httpx (Google, GitHub OAuth clients) | `pip install "sreekarnv-fastauth[oauth]"` |
+| `webauthn` | py-webauthn (passkeys / FIDO2) | `pip install "sreekarnv-fastauth[webauthn]"` |
 | `sqlalchemy` | SQLAlchemy + aiosqlite | `pip install "sreekarnv-fastauth[sqlalchemy]"` |
 | `postgresql` | asyncpg driver | `pip install "sreekarnv-fastauth[postgresql]"` |
 | `redis` | redis-py async client | `pip install "sreekarnv-fastauth[redis]"` |
