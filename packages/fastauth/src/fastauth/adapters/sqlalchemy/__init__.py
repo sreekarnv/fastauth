@@ -13,6 +13,7 @@ from fastauth.adapters.sqlalchemy.models import Base
 
 if TYPE_CHECKING:
     from fastauth.adapters.sqlalchemy.oauth import SQLAlchemyOAuthAccountAdapter
+    from fastauth.adapters.sqlalchemy.passkey import SQLAlchemyPasskeyAdapter
     from fastauth.adapters.sqlalchemy.rbac import SQLAlchemyRoleAdapter
     from fastauth.adapters.sqlalchemy.session import SQLAlchemySessionAdapter
     from fastauth.adapters.sqlalchemy.token import SQLAlchemyTokenAdapter
@@ -145,3 +146,13 @@ class SQLAlchemyAdapter:
         from fastauth.adapters.sqlalchemy.oauth import SQLAlchemyOAuthAccountAdapter
 
         return SQLAlchemyOAuthAccountAdapter(self._session_factory)
+
+    @property
+    def passkey(self) -> SQLAlchemyPasskeyAdapter:
+        """
+        Return a :class: \
+        `~fastauth.adapters.sqlalchemy.passkey.SQLAlchemyPasskeyAdapter`.
+        """
+        from fastauth.adapters.sqlalchemy.passkey import SQLAlchemyPasskeyAdapter
+
+        return SQLAlchemyPasskeyAdapter(self._session_factory)

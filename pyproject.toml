@@ -25,6 +25,7 @@ dev = [
     "redis>=7.1.1",
     "aiosqlite>=0.22.1",
     "asyncpg>=0.31.0",
+    "webauthn>=2.7.1",
 ]
 
 [tool.uv.workspace]

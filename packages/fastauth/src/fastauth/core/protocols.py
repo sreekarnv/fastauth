@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from typing import Any, Literal, Protocol
 
-from fastauth.types import OAuthAccountData, RoleData, SessionData, TokenData, UserData
+from fastauth.types import (
+    OAuthAccountData,
+    PasskeyData,
+    RoleData,
+    SessionData,
+    TokenData,
+    UserData,
+)
 
 
 class UserAdapter(Protocol):
@@ -107,6 +114,30 @@ class RoleAdapter(Protocol):
     async def get_user_permissions(self, user_id: str) -> set[str]: ...
 
 
+class PasskeyAdapter(Protocol):
+    """Protocol for persisting WebAuthn/Passkey credentials."""
+
+    async def create_passkey(
+        self,
+        user_id: str,
+        credential_id: str,
+        public_key: bytes,
+        sign_count: int,
+        aaguid: str,
+        name: str,
+    ) -> PasskeyData: ...
+
+    async def get_passkey(self, credential_id: str) -> PasskeyData | None: ...
+
+    async def get_passkeys_by_user(self, user_id: str) -> list[PasskeyData]: ...
+
+    async def update_sign_count(
+        self, credential_id: str, sign_count: int, last_used_at: str
+    ) -> None: ...
+
+    async def delete_passkey(self, credential_id: str) -> None: ...
+
+
 class AuthProvider(Protocol):
     id: str
     name: str
@@ -114,7 +145,7 @@ class AuthProvider(Protocol):
 
 
 class OAuthProvider(AuthProvider, Protocol):
-    auth_type: str
+    auth_type = "oauth"
 
     async def get_authorization_url(
         self, state: str, redirect_uri: str, **kwargs: Any
@@ -132,7 +163,7 @@ class OAuthProvider(AuthProvider, Protocol):
 
 
 class CredentialsProvider(AuthProvider, Protocol):
-    auth_type: str
+    auth_type = "credentials"
 
     async def authenticate(self, credentials: dict[str, Any]) -> UserData | None: ...
 
@@ -282,6 +313,12 @@ class EventHooks:
             The (possibly modified) session dict.
         """
         return session
+
+    async def on_passkey_registered(self, user: UserData, passkey: PasskeyData) -> None:
+        pass
+
+    async def on_passkey_deleted(self, user: UserData, passkey: PasskeyData) -> None:
+        pass
 
     async def modify_jwt(self, token: dict[str, Any], user: UserData) -> dict[str, Any]:
         """Mutate the JWT payload before it is signed.

@@ -8,6 +8,7 @@ from fastauth.core.protocols import UserAdapter
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
 from fastauth.types import (
     OAuthAccountData,
+    PasskeyData,
     RoleData,
     SessionData,
     TokenData,
@@ -254,3 +255,59 @@ class MemoryOAuthAccountAdapter:
         self, provider: str, provider_account_id: str
     ) -> None:
         self._accounts.pop((provider, provider_account_id), None)
+
+
+class MemoryPasskeyAdapter:
+    """In-memory passkey adapter for testing."""
+
+    def __init__(self) -> None:
+        self._passkeys: dict[str, PasskeyData] = {}
+        self._user_index: dict[str, list[str]] = {}
+
+    async def create_passkey(
+        self,
+        user_id: str,
+        credential_id: str,
+        public_key: bytes,
+        sign_count: int,
+        aaguid: str,
+        name: str,
+    ) -> PasskeyData:
+        from datetime import datetime, timezone
+
+        now = datetime.now(timezone.utc).isoformat()
+        passkey: PasskeyData = {
+            "id": credential_id,
+            "user_id": user_id,
+            "public_key": public_key,
+            "sign_count": sign_count,
+            "aaguid": aaguid,
+            "name": name,
+            "created_at": now,
+            "last_used_at": None,
+        }
+        self._passkeys[credential_id] = passkey
+        self._user_index.setdefault(user_id, []).append(credential_id)
+        return passkey
+
+    async def get_passkey(self, credential_id: str) -> PasskeyData | None:
+        return self._passkeys.get(credential_id)
+
+    async def get_passkeys_by_user(self, user_id: str) -> list[PasskeyData]:
+        ids = self._user_index.get(user_id, [])
+        return [self._passkeys[cid] for cid in ids if cid in self._passkeys]
+
+    async def update_sign_count(
+        self, credential_id: str, sign_count: int, last_used_at: str
+    ) -> None:
+        passkey = self._passkeys.get(credential_id)
+        if passkey:
+            passkey["sign_count"] = sign_count
+            passkey["last_used_at"] = last_used_at
+
+    async def delete_passkey(self, credential_id: str) -> None:
+        passkey = self._passkeys.pop(credential_id, None)
+        if passkey:
+            user_ids = self._user_index.get(passkey["user_id"], [])
+            if credential_id in user_ids:
+                user_ids.remove(credential_id)

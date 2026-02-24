@@ -45,6 +45,17 @@ class RoleData(TypedDict):
     permissions: list[str]
 
 
+class PasskeyData(TypedDict):
+    id: str
+    user_id: str
+    public_key: bytes
+    sign_count: int
+    aaguid: str
+    name: str
+    created_at: str
+    last_used_at: str | None
+
+
 class TokenPair(TypedDict):
     access_token: str
     refresh_token: str
