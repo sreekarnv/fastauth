@@ -14,7 +14,6 @@ from fastauth.session_backends.memory import MemorySessionBackend
 from fastauth.types import PasskeyData, UserData
 from httpx import ASGITransport, AsyncClient
 
-
 RP_ID = "testserver"
 ORIGIN = "http://testserver"
 
@@ -79,7 +78,9 @@ async def passkey_client():
 
 
 async def _register_and_login(client, email="pk@example.com", password="Pass123#"):
-    resp = await client.post("/auth/register", json={"email": email, "password": password})
+    resp = await client.post(
+        "/auth/register", json={"email": email, "password": password}
+    )
     return resp.json()["access_token"]
 
 
@@ -196,7 +197,9 @@ async def test_complete_registration_invalid_challenge(passkey_client):
     client, *_ = passkey_client
     token = await _register_and_login(client, "invchall@example.com")
 
-    client_data_json = _make_client_data_json("nonexistent-challenge", "webauthn.create")
+    client_data_json = _make_client_data_json(
+        "nonexistent-challenge", "webauthn.create"
+    )
     credential = {
         "id": "cred",
         "rawId": "cred",
@@ -270,7 +273,10 @@ async def test_complete_registration_fires_hook(passkey_client):
             "id": "ZmFrZQ",
             "rawId": "ZmFrZQ",
             "type": "public-key",
-            "response": {"clientDataJSON": client_data_json, "attestationObject": "fake"},
+            "response": {
+                "clientDataJSON": client_data_json,
+                "attestationObject": "fake",
+            },
         }
         with patch(
             "fastauth.api.passkeys.verify_registration_response",
@@ -322,7 +328,9 @@ async def test_list_passkeys_empty(passkey_client):
 async def test_list_passkeys_only_own(passkey_client):
     client, user_adapter, passkey_adapter, _ = passkey_client
     other = await user_adapter.create_user("other@example.com")
-    await passkey_adapter.create_passkey(other["id"], "other-cred", b"pk", 0, "", "Other")
+    await passkey_adapter.create_passkey(
+        other["id"], "other-cred", b"pk", 0, "", "Other"
+    )
 
     token = await _register_and_login(client, "mine@example.com")
     resp = await client.get(
@@ -362,7 +370,9 @@ async def test_delete_passkey_not_found(passkey_client):
 async def test_delete_passkey_wrong_user(passkey_client):
     client, user_adapter, passkey_adapter, _ = passkey_client
     other = await user_adapter.create_user("otherown@example.com")
-    await passkey_adapter.create_passkey(other["id"], "other-cred", b"pk", 0, "", "Other")
+    await passkey_adapter.create_passkey(
+        other["id"], "other-cred", b"pk", 0, "", "Other"
+    )
 
     token = await _register_and_login(client, "thief@example.com")
     resp = await client.delete(
@@ -390,7 +400,9 @@ async def test_delete_passkey_fires_hook(passkey_client):
         token = await _register_and_login(c, "delhook@example.com")
         me = await c.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
         user_id = me.json()["id"]
-        await passkey_adapter2.create_passkey(user_id, "hook-cred", b"pk", 0, "", "Hook Key")
+        await passkey_adapter2.create_passkey(
+            user_id, "hook-cred", b"pk", 0, "", "Hook Key"
+        )
         resp = await c.delete(
             "/auth/passkeys/hook-cred",
             headers={"Authorization": f"Bearer {token}"},
@@ -547,7 +559,7 @@ async def test_complete_authentication_invalid_challenge(passkey_client):
 
 async def test_complete_authentication_passkey_not_found(passkey_client):
     client, user_adapter, passkey_adapter, _ = passkey_client
-    user = await user_adapter.create_user("pknf@example.com")
+    await user_adapter.create_user("pknf@example.com")
 
     begin = await client.post(
         "/auth/passkeys/authenticate/begin",
@@ -697,8 +709,8 @@ async def test_complete_authentication_cookie_delivery(passkey_client):
 
     app, user_adapter2, passkey_adapter2, _ = _build_app()
     from fastauth.config import FastAuthConfig, JWTConfig
-    from fastauth.providers.passkey import PasskeyProvider
     from fastauth.providers.credentials import CredentialsProvider
+    from fastauth.providers.passkey import PasskeyProvider
 
     user_adapter2 = MemoryUserAdapter()
     passkey_adapter2 = MemoryPasskeyAdapter()

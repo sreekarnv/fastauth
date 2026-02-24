@@ -1,4 +1,3 @@
-import pytest
 from fastauth.providers.passkey import PasskeyProvider
 
 
