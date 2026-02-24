@@ -1660,6 +1660,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#why-windows-hello-touch-id-appears-in-the-sign-in-dialog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Windows Hello / Touch ID appears in the sign-in dialog
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2297,6 +2308,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#why-windows-hello-touch-id-appears-in-the-sign-in-dialog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Windows Hello / Touch ID appears in the sign-in dialog
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2454,7 +2476,7 @@
 <a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>
 <a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">TemplateResponse</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">request</span><span class="p">})</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">TemplateResponse</span><span class="p">(</span><span class="s2">&quot;index.jinja2&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">request</span><span class="p">})</span>
 <a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>
 <a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>
 <a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/profile&quot;</span><span class="p">)</span>
@@ -2474,6 +2496,10 @@
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
 </code></pre></div>
 <p><code>rp_id</code> is the Relying Party ID. The browser checks that it matches the domain of the page performing the ceremony. For production, use your actual domain: <code>"example.com"</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use <code>localhost</code>, not <code>127.0.0.1</code></p>
+<p>WebAuthn requires a registrable domain as <code>rp_id</code>. IP addresses (including <code>127.0.0.1</code>) are not valid. Always open the app at <code>http://localhost:8000</code> during local development.</p>
+</div>
 <p>Multiple origins (e.g. dev + prod):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">PasskeyProvider</span><span class="p">(</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">rp_id</span><span class="o">=</span><span class="s2">&quot;example.com&quot;</span><span class="p">,</span>
@@ -2526,6 +2552,9 @@
 <a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
 </code></pre></div>
 <p><code>startRegistration</code> and <code>startAuthentication</code> wrap <code>navigator.credentials.create</code> and <code>navigator.credentials.get</code> respectively and handle all base64url encoding for you.</p>
+<h3 id="why-windows-hello-touch-id-appears-in-the-sign-in-dialog">Why Windows Hello / Touch ID appears in the sign-in dialog<a class="headerlink" href="#why-windows-hello-touch-id-appears-in-the-sign-in-dialog" title="Permanent link">&para;</a></h3>
+<p>For the platform authenticator picker (Windows Hello, Touch ID, Face ID) to appear, the credential must be stored as a <strong>resident/discoverable key</strong>. FastAuth requests <code>residentKey: preferred</code> during registration, so most authenticators store it automatically.</p>
+<p>When calling <code>authenticate/begin</code> without an email, <code>allowCredentials</code> is empty and the browser shows all available passkeys for the <code>rp_id</code>. When an email is provided, the server sends a targeted <code>allowCredentials</code> list — more reliable on older devices that do not support discoverable credentials.</p>
 <h2 id="run-it">Run it<a class="headerlink" href="#run-it" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;sreekarnv-fastauth[standard,webauthn]&quot;</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload

@@ -1537,6 +1537,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#discoverable-credentials-windows-hello-platform-authenticators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discoverable credentials (Windows Hello / platform authenticators)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#security-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2492,6 +2503,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#discoverable-credentials-windows-hello-platform-authenticators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discoverable credentials (Windows Hello / platform authenticators)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#security-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2698,7 +2720,7 @@
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="p">});</span>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">optRes</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
 <a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">credential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">startRegistration</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">credential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">startRegistration</span><span class="p">({</span><span class="w"> </span><span class="nx">optionsJSON</span><span class="o">:</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="p">});</span>
 <a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
 <a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;/auth/passkeys/register/complete&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
@@ -2729,7 +2751,7 @@
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="err">{ &quot;email&quot;: &quot;user@example.com&quot; }</span>
 </code></pre></div>
-<p>Providing <code>email</code> filters <code>allowCredentials</code> to that user's registered passkeys. Omit it for a discoverable credential (residents key) flow where the authenticator picks the account.</p>
+<p>Providing <code>email</code> filters <code>allowCredentials</code> to that user's registered passkeys, which is the most reliable approach across all platforms. Omit it for a fully discoverable credential flow where the authenticator presents an account picker — this requires the credential to have been registered as a resident key (FastAuth requests <code>residentKey: preferred</code> by default).</p>
 <h3 id="complete-authentication">Complete authentication<a class="headerlink" href="#complete-authentication" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="err">POST /auth/passkeys/authenticate/complete</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="err">Content-Type: application/json</span>
@@ -2755,7 +2777,7 @@
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="p">});</span>
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">optRes</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
 <a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">credential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">startAuthentication</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">credential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">startAuthentication</span><span class="p">({</span><span class="w"> </span><span class="nx">optionsJSON</span><span class="o">:</span><span class="w"> </span><span class="nx">options</span><span class="w"> </span><span class="p">});</span>
 <a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
 <a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;/auth/passkeys/authenticate/complete&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
@@ -2803,6 +2825,13 @@
 <a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_passkey_deleted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">passkey</span><span class="p">:</span> <span class="n">PasskeyData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> removed passkey: </span><span class="si">{</span><span class="n">passkey</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="discoverable-credentials-windows-hello-platform-authenticators">Discoverable credentials (Windows Hello / platform authenticators)<a class="headerlink" href="#discoverable-credentials-windows-hello-platform-authenticators" title="Permanent link">&para;</a></h2>
+<p>Platform authenticators like Windows Hello and Touch ID only appear in the sign-in dialog when the credential was stored as a <strong>resident key</strong> (also called a discoverable credential). FastAuth requests <code>residentKey: preferred</code> during registration, so most authenticators will store the credential in their vault automatically.</p>
+<p>If you omit the <code>email</code> field in the <code>authenticate/begin</code> request, the authenticator presents a full account picker — no username required. If you include <code>email</code>, the server sends a targeted <code>allowCredentials</code> list, which is more reliable on devices that do not support discoverable credentials.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use <code>localhost</code>, not <code>127.0.0.1</code></p>
+<p>WebAuthn <code>rp_id</code> must be a registrable domain. IP addresses (including <code>127.0.0.1</code>) are not valid. During local development always open the app at <code>http://localhost:&lt;port&gt;</code>.</p>
+</div>
 <h2 id="security-notes">Security notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Keep <code>rp_id</code> set to your exact domain. Never use a parent domain unless intentional.</li>
