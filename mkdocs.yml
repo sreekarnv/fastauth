@@ -102,6 +102,7 @@ nav:
   - Guides:
       - Basic App: guides/basic.md
       - Adding OAuth: guides/oauth.md
+      - Passkeys: guides/passkeys.md
       - Microservice JWT: guides/microservice.md
       - Testing: guides/testing.md
       - Production Checklist: guides/production.md

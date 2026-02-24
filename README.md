@@ -8,13 +8,13 @@
 
 **NextAuth-inspired pluggable authentication for FastAPI.**
 
-FastAuth gives you a complete auth system — credentials, OAuth, email verification, password reset, RBAC, and JWT — without locking you into any particular database or ORM.
+FastAuth gives you a complete auth system — credentials, OAuth, passkeys (WebAuthn), email verification, password reset, RBAC, and JWT — without locking you into any particular database or ORM.
 
 ---
 
 ## Features
 
-- **Multiple providers** — email/password, Google OAuth, GitHub OAuth
+- **Multiple providers** — email/password, Google OAuth, GitHub OAuth, passkeys (WebAuthn)
 - **Pluggable adapters** — SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own
 - **JWT & database sessions** — stateless tokens or server-side sessions
 - **Cookie delivery** — HttpOnly, Secure, SameSite out of the box
@@ -36,6 +36,7 @@ pip install "sreekarnv-fastauth[standard]"
 |-------|----------|
 | `standard` | FastAPI, JWT (joserfc), SQLAlchemy, Argon2 |
 | `oauth` | httpx (Google, GitHub OAuth) |
+| `webauthn` | py-webauthn (passkeys / FIDO2) |
 | `email` | aiosmtplib, Jinja2 |
 | `redis` | redis-py async |
 | `postgresql` | asyncpg |
