@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-02-24
+
+### Added
+- **Passkeys (WebAuthn)** authentication provider via the new `webauthn` optional extra (`pip install "sreekarnv-fastauth[webauthn]"`)
+  - `PasskeyProvider` — configure `rp_id`, `rp_name`, and one or more `origin` values
+  - `SQLAlchemyPasskeyAdapter` — persists credentials in the `fastauth_passkeys` table with cascade delete
+  - `MemoryPasskeyAdapter` — in-memory adapter for testing
+  - Six new endpoints mounted under `/auth/passkeys/`: `POST register/begin`, `POST register/complete`, `GET /` (list), `DELETE /{id}`, `POST authenticate/begin`, `POST authenticate/complete`
+  - `PasskeyData` TypedDict and `PasskeyAdapter` Protocol in `fastauth.types` / `fastauth.core.protocols`
+  - `passkey_adapter` and `passkey_state_store` fields in `FastAuthConfig`
+  - `residentKey: preferred` requested during registration — enables Windows Hello, Touch ID, and Face ID account pickers without entering an email
+  - Event hooks: `on_passkey_registered(user, passkey)` and `on_passkey_deleted(user, passkey)`
+  - `adapter.passkey` property on `SQLAlchemyAdapter`
+- **Passkeys example** (`examples/passkeys/`) — full working demo with Jinja2 template, vanilla JS, and `@simplewebauthn/browser` loaded from CDN; includes IP-address detection warning for local development
+- **Passkeys guide** (`docs/guides/passkeys.md`) and updated feature reference (`docs/features/passkeys.md`)
+
+### Fixed
+- `MemoryUserAdapter.update_user` — email index was not updated when the `email` field was changed (the old email key remained in `_email_index` indefinitely)
+
+### Changed
+- `[all]` extra now includes `webauthn`
+- `README.md`, `docs/getting-started/installation.md`, and `mkdocs.yml` updated with passkeys entry points and the `webauthn` extra
+
 ## [0.3.1] - 2026-02-19
 
 ### Changed
@@ -308,7 +331,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/sreekarnv/fastauth/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/sreekarnv/fastauth/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sreekarnv/fastauth/compare/v0.2.6...v0.3.0
 [0.2.6]: https://github.com/sreekarnv/fastauth/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/sreekarnv/fastauth/compare/v0.2.4...v0.2.5
