@@ -95,6 +95,7 @@ nav:
       - Password Reset: features/password-reset.md
       - Account Management: features/account.md
       - OAuth Flow: features/oauth.md
+      - Passkeys (WebAuthn): features/passkeys.md
       - RBAC: features/rbac.md
       - JWT: features/jwt.md
       - Event Hooks: features/hooks.md
