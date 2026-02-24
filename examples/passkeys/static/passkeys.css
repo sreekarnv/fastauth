@@ -1,0 +1,223 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#ip-warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #7f1d1d;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    z-index: 100;
+}
+
+#ip-warning a {
+    color: #fde68a;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+}
+
+h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #fff;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1.75rem;
+}
+
+h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #2a2a2a;
+    margin: 1.5rem 0;
+}
+
+label {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 0.3rem;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #e8e8e8;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+input:focus {
+    border-color: #555;
+}
+
+.btn {
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-primary {
+    background: #fff;
+    color: #000;
+}
+.btn-outline {
+    background: transparent;
+    border: 1px solid #444;
+    color: #e8e8e8;
+}
+.btn-danger {
+    background: transparent;
+    border: 1px solid #7f1d1d;
+    color: #f87171;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+}
+.btn-danger:hover {
+    opacity: 0.75;
+}
+
+.row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.row input {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.status {
+    font-size: 0.82rem;
+    margin-top: 0.75rem;
+    min-height: 1.2em;
+}
+
+.status.ok {
+    color: #4ade80;
+}
+.status.err {
+    color: #f87171;
+}
+
+.passkey-list {
+    list-style: none;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.passkey-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    gap: 0.75rem;
+}
+
+.passkey-info {
+    font-size: 0.82rem;
+    color: #bbb;
+}
+
+.empty {
+    font-size: 0.82rem;
+    color: #555;
+    padding: 0.4rem 0;
+}
+
+.user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.user-bar span {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.user-bar button {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: #888;
+    cursor: pointer;
+}
+
+.user-bar button:hover {
+    color: #e8e8e8;
+    border-color: #555;
+}
+
+.passkey-icon {
+    font-size: 1.1rem;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FastAuth - Passkeys Demo</title>
+        <link
+            href="{{ url_for('static', path='passkeys.css') }}"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div id="ip-warning" hidden>
+            WebAuthn requires a hostname — open this page at
+            <a href="http://localhost:8000">http://localhost:8000</a>, not via an IP address.
+        </div>
+
+        <div class="card">
+            <h1>FastAuth <span style="color: #555">✦</span> Passkeys Demo</h1>
+            <p class="subtitle">Passwordless authentication with WebAuthn</p>
+
+            <div id="auth-section" hidden>
+                <h2>Sign in with passkey</h2>
+                <input
+                    type="email"
+                    id="passkey-email"
+                    placeholder="email (optional)"
+                />
+                <button class="btn btn-primary" id="passkey-signin-btn">
+                    <span class="passkey-icon">🔑</span> Sign in with passkey
+                </button>
+
+                <hr class="divider" />
+
+                <h2>Credentials</h2>
+                <form id="register-form">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        id="reg-email"
+                        placeholder="you@example.com"
+                        required
+                    />
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        id="reg-password"
+                        placeholder="••••••••"
+                        required
+                    />
+                    <button type="submit" class="btn btn-outline">
+                        Create account
+                    </button>
+                </form>
+
+                <hr class="divider" />
+
+                <form id="login-form">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        id="login-email"
+                        placeholder="you@example.com"
+                        required
+                    />
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        id="login-password"
+                        placeholder="••••••••"
+                        required
+                    />
+                    <button type="submit" class="btn btn-outline">
+                        Sign in
+                    </button>
+                </form>
+
+                <p class="status" id="auth-status"></p>
+            </div>
+
+            <div id="passkey-section" hidden>
+                <div class="user-bar">
+                    <span id="user-email"></span>
+                    <button id="signout-btn">Sign out</button>
+                </div>
+
+                <h2>Register a new passkey</h2>
+                <div class="row">
+                    <input
+                        type="text"
+                        id="passkey-name"
+                        placeholder='e.g. "MacBook Touch ID"'
+                    />
+                    <button
+                        class="btn btn-primary"
+                        id="add-passkey-btn"
+                        style="width: auto; padding: 0 1rem"
+                    >
+                        Add
+                    </button>
+                </div>
+
+                <h2>Your passkeys</h2>
+                <ul class="passkey-list" id="passkey-list"></ul>
+
+                <p class="status" id="passkey-status"></p>
+            </div>
+        </div>
+
+        <script
+            type="module"
+            src="{{ url_for('static', path='passkeys.js') }}"
+        ></script>
+    </body>
+</html>
