@@ -10,6 +10,7 @@ if TYPE_CHECKING:
         EmailTransport,
         EventHooks,
         OAuthAccountAdapter,
+        PasskeyAdapter,
         SessionBackend,
         TokenAdapter,
         UserAdapter,
@@ -113,6 +114,8 @@ class FastAuthConfig:
     oauth_state_store: SessionBackend | None = None
     oauth_redirect_url: str | None = None
     token_adapter: TokenAdapter | None = None
+    passkey_adapter: PasskeyAdapter | None = None
+    passkey_state_store: SessionBackend | None = None
     base_url: str = "http://localhost:8000"
     cors_origins: list[str] | None = None
     roles: list[dict[str, Any]] | None = None

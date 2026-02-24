@@ -1,6 +1,17 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, String, Table, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+    Table,
+    Text,
+)
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 from sqlalchemy.orm.base import Mapped
 
@@ -37,6 +48,11 @@ class UserModel(Base):
     )
     oauth_accounts = relationship(
         "OAuthAccountModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    passkeys = relationship(
+        "PasskeyModel",
         back_populates="user",
         cascade="all, delete-orphan",
     )
@@ -106,3 +122,22 @@ class OAuthAccountModel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     user = relationship("UserModel", back_populates="oauth_accounts")
+
+
+class PasskeyModel(Base):
+    __tablename__ = "fastauth_passkeys"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("fastauth_users.id"), index=True
+    )
+    public_key: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    sign_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    aaguid: Mapped[str] = mapped_column(String, nullable=False, default="")
+    name: Mapped[str] = mapped_column(String, nullable=False, default="Passkey")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_used_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user = relationship("UserModel", back_populates="passkeys")

@@ -58,9 +58,12 @@ cli = [
     "typer>=0.9.0",
     "rich>=13.0.0",
 ]
+webauthn = [
+    "webauthn>=2.7.1",
+]
 
 standard = ["sreekarnv-fastauth[fastapi,jwt,sqlalchemy,argon2]"]
-all = ["sreekarnv-fastauth[fastapi,jwt,oauth,sqlalchemy,redis,email,argon2,cli]"]
+all = ["sreekarnv-fastauth[fastapi,jwt,oauth,sqlalchemy,redis,email,argon2,cli,webauthn]"]
 
 [project.scripts]
 fastauth = "fastauth.cli:app"
