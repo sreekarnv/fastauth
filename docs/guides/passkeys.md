@@ -64,7 +64,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.jinja2", {"request": request})
 
 
 @app.get("/profile")
@@ -93,6 +93,9 @@ PasskeyProvider(
 ```
 
 `rp_id` is the Relying Party ID. The browser checks that it matches the domain of the page performing the ceremony. For production, use your actual domain: `"example.com"`.
+
+!!! warning "Use `localhost`, not `127.0.0.1`"
+    WebAuthn requires a registrable domain as `rp_id`. IP addresses (including `127.0.0.1`) are not valid. Always open the app at `http://localhost:8000` during local development.
 
 Multiple origins (e.g. dev + prod):
 
@@ -165,6 +168,12 @@ const tokens = await fetch("/auth/passkeys/authenticate/complete", {
 ```
 
 `startRegistration` and `startAuthentication` wrap `navigator.credentials.create` and `navigator.credentials.get` respectively and handle all base64url encoding for you.
+
+### Why Windows Hello / Touch ID appears in the sign-in dialog
+
+For the platform authenticator picker (Windows Hello, Touch ID, Face ID) to appear, the credential must be stored as a **resident/discoverable key**. FastAuth requests `residentKey: preferred` during registration, so most authenticators store it automatically.
+
+When calling `authenticate/begin` without an email, `allowCredentials` is empty and the browser shows all available passkeys for the `rp_id`. When an email is provided, the server sends a targeted `allowCredentials` list — more reliable on older devices that do not support discoverable credentials.
 
 ## Run it
 

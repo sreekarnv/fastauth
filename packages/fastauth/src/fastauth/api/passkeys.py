@@ -14,7 +14,11 @@ from webauthn import (
     verify_registration_response,
 )
 from webauthn.helpers import base64url_to_bytes
-from webauthn.helpers.structs import PublicKeyCredentialDescriptor
+from webauthn.helpers.structs import (
+    AuthenticatorSelectionCriteria,
+    PublicKeyCredentialDescriptor,
+    ResidentKeyRequirement,
+)
 
 from fastauth._compat import require
 from fastauth.api.deps import require_auth
@@ -82,6 +86,9 @@ def create_passkeys_router(auth: object) -> APIRouter:
             user_name=user["email"],
             user_display_name=user.get("name") or user["email"],
             exclude_credentials=exclude,
+            authenticator_selection=AuthenticatorSelectionCriteria(
+                resident_key=ResidentKeyRequirement.PREFERRED,
+            ),
         )
 
         challenge_b64 = _b64url_encode(options.challenge)
