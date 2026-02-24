@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastauth.core.tokens import cuid_generator
-from fastauth.exceptions import UserAlreadyExistsError
+from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
 
 
 async def test_create_user(memory_user_adapter):
@@ -66,6 +66,21 @@ async def test_update_user(memory_user_adapter):
     assert updated_user["email_verified"] is True
 
 
+async def test_update_user_not_found(memory_user_adapter):
+    with pytest.raises(UserNotFoundError):
+        await memory_user_adapter.update_user("nonexistent", name="Bob")
+
+
+async def test_update_user_email_change(memory_user_adapter):
+    user = await memory_user_adapter.create_user(
+        email="old@b.com", name="ABC", hashed_password="hash123#"
+    )
+    updated = await memory_user_adapter.update_user(user["id"], email="new@b.com")
+    assert updated["email"] == "new@b.com"
+    assert await memory_user_adapter.get_user_by_email("new@b.com") is not None
+    assert await memory_user_adapter.get_user_by_email("old@b.com") is None
+
+
 async def test_delete_user_hard(memory_user_adapter):
     user = await memory_user_adapter.create_user(
         email="a@b.com", name="ABC", hashed_password="hash123#"
@@ -83,6 +98,16 @@ async def test_delete_user_soft(memory_user_adapter):
     _user = await memory_user_adapter.get_user_by_id(user["id"])
     assert _user is not None
     assert _user["is_active"] is False
+
+
+async def test_delete_user_not_found(memory_user_adapter):
+    with pytest.raises(UserNotFoundError):
+        await memory_user_adapter.delete_user("nonexistent")
+
+
+async def test_set_hashed_password_not_found(memory_user_adapter):
+    with pytest.raises(UserNotFoundError):
+        await memory_user_adapter.set_hashed_password("nonexistent", "hash")
 
 
 async def test_password_storage(memory_user_adapter):

@@ -60,12 +60,13 @@ class MemoryUserAdapter(UserAdapter):
         if not user:
             raise UserNotFoundError(f"User '{user_id}' not found")
 
+        old_email = user["email"]
+
         for key, value in kwargs.items():
             if key in user:
                 user[key] = value  # type: ignore[literal-required]
 
-        if "email" in kwargs and kwargs["email"] != user["email"]:
-            old_email = user["email"]
+        if "email" in kwargs and kwargs["email"] != old_email:
             del self._email_index[old_email]
             self._email_index[kwargs["email"]] = user_id  # type: ignore[index]
 
