@@ -117,7 +117,7 @@ async function registerPasskey(accessToken, name) {
   });
   const options = await optRes.json();
 
-  const credential = await startRegistration(options);
+  const credential = await startRegistration({ optionsJSON: options });
 
   const res = await fetch("/auth/passkeys/register/complete", {
     method: "POST",
@@ -156,7 +156,7 @@ Content-Type: application/json
 { "email": "user@example.com" }
 ```
 
-Providing `email` filters `allowCredentials` to that user's registered passkeys. Omit it for a discoverable credential (residents key) flow where the authenticator picks the account.
+Providing `email` filters `allowCredentials` to that user's registered passkeys, which is the most reliable approach across all platforms. Omit it for a fully discoverable credential flow where the authenticator presents an account picker — this requires the credential to have been registered as a resident key (FastAuth requests `residentKey: preferred` by default).
 
 ### Complete authentication
 
@@ -191,7 +191,7 @@ async function signInWithPasskey(email) {
   });
   const options = await optRes.json();
 
-  const credential = await startAuthentication(options);
+  const credential = await startAuthentication({ optionsJSON: options });
 
   const res = await fetch("/auth/passkeys/authenticate/complete", {
     method: "POST",
@@ -256,6 +256,15 @@ class MyHooks(EventHooks):
     async def on_passkey_deleted(self, user: UserData, passkey: PasskeyData) -> None:
         print(f"{user['email']} removed passkey: {passkey['name']}")
 ```
+
+## Discoverable credentials (Windows Hello / platform authenticators)
+
+Platform authenticators like Windows Hello and Touch ID only appear in the sign-in dialog when the credential was stored as a **resident key** (also called a discoverable credential). FastAuth requests `residentKey: preferred` during registration, so most authenticators will store the credential in their vault automatically.
+
+If you omit the `email` field in the `authenticate/begin` request, the authenticator presents a full account picker — no username required. If you include `email`, the server sends a targeted `allowCredentials` list, which is more reliable on devices that do not support discoverable credentials.
+
+!!! warning "Use `localhost`, not `127.0.0.1`"
+    WebAuthn `rp_id` must be a registrable domain. IP addresses (including `127.0.0.1`) are not valid. During local development always open the app at `http://localhost:<port>`.
 
 ## Security notes
 

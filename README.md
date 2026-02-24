@@ -83,6 +83,33 @@ uvicorn main:app --reload
 
 ---
 
+## Passkeys (WebAuthn)
+
+Add Touch ID, Face ID, and Windows Hello sign-in with one extra import:
+
+```python
+from fastauth.providers.passkey import PasskeyProvider
+from fastauth.session_backends.memory import MemorySessionBackend
+
+auth = FastAuth(FastAuthConfig(
+    ...
+    providers=[
+        CredentialsProvider(),
+        PasskeyProvider(rp_id="example.com", rp_name="My App", origin="https://example.com"),
+    ],
+    passkey_adapter=adapter.passkey,
+    passkey_state_store=MemorySessionBackend(),
+))
+```
+
+```bash
+pip install "sreekarnv-fastauth[standard,webauthn]"
+```
+
+See the [Passkeys guide](https://sreekarnv.github.io/fastauth/guides/passkeys/) and [example app](./examples/passkeys/).
+
+---
+
 ## Documentation
 
 Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.io/fastauth)**
@@ -91,6 +118,7 @@ Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.
 - [Quick Start](https://sreekarnv.github.io/fastauth/getting-started/quick-start/)
 - [Configuration](https://sreekarnv.github.io/fastauth/getting-started/configuration/)
 - [How it Works](https://sreekarnv.github.io/fastauth/concepts/how-it-works/)
+- [Passkeys (WebAuthn)](https://sreekarnv.github.io/fastauth/features/passkeys/)
 - [Guides](https://sreekarnv.github.io/fastauth/guides/basic/)
 - [API Reference](https://sreekarnv.github.io/fastauth/reference/fastauth/)
 
