@@ -19,9 +19,15 @@ def create_magic_links_router(auth: object) -> APIRouter:
     router = APIRouter(
         prefix="/magic-links",
         responses={
-            401: {"model": ErrorDetail, "description": "Authentication required or token invalid"},
+            401: {
+                "model": ErrorDetail,
+                "description": "Authentication required or token invalid",
+            },
             403: {"model": ErrorDetail, "description": "Access forbidden"},
-            501: {"model": ErrorDetail, "description": "MagicLinksProvider not configured"},
+            501: {
+                "model": ErrorDetail,
+                "description": "MagicLinksProvider not configured",
+            },
         },
     )
 

@@ -60,11 +60,20 @@ def create_passkeys_router(auth: object) -> APIRouter:
     router = APIRouter(
         prefix="/passkeys",
         responses={
-            400: {"model": ErrorDetail, "description": "Bad request or invalid challenge"},
-            401: {"model": ErrorDetail, "description": "Authentication required or verification failed"},
+            400: {
+                "model": ErrorDetail,
+                "description": "Bad request or invalid challenge",
+            },
+            401: {
+                "model": ErrorDetail,
+                "description": "Authentication required or verification failed",
+            },
             403: {"model": ErrorDetail, "description": "Access forbidden"},
             404: {"model": ErrorDetail, "description": "Passkey not found"},
-            501: {"model": ErrorDetail, "description": "PasskeyProvider not configured"},
+            501: {
+                "model": ErrorDetail,
+                "description": "PasskeyProvider not configured",
+            },
         },
     )
 

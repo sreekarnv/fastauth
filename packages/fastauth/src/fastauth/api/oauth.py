@@ -59,10 +59,19 @@ def create_oauth_router(auth: object) -> APIRouter:
     router = APIRouter(
         prefix="/oauth",
         responses={
-            400: {"model": ErrorDetail, "description": "Bad request or missing configuration"},
-            401: {"model": ErrorDetail, "description": "Authentication required or token invalid"},
+            400: {
+                "model": ErrorDetail,
+                "description": "Bad request or missing configuration",
+            },
+            401: {
+                "model": ErrorDetail,
+                "description": "Authentication required or token invalid",
+            },
             403: {"model": ErrorDetail, "description": "Access forbidden"},
-            404: {"model": ErrorDetail, "description": "Provider or resource not found"},
+            404: {
+                "model": ErrorDetail,
+                "description": "Provider or resource not found",
+            },
         },
     )
 
@@ -221,7 +230,12 @@ def create_oauth_router(auth: object) -> APIRouter:
     @router.get(
         "/{provider}/link",
         response_model=AuthorizeResponse,
-        responses={409: {"model": ErrorDetail, "description": "Provider already linked to a user"}},
+        responses={
+            409: {
+                "model": ErrorDetail,
+                "description": "Provider already linked to a user",
+            }
+        },
     )
     async def link_begin(
         request: Request,
@@ -300,6 +314,8 @@ def create_oauth_router(auth: object) -> APIRouter:
             ) from e
         if fa.config.hooks:
             await fa.config.hooks.on_oauth_link(user, provider)
-        return MessageResponse(message=f"{provider.capitalize()} account linked successfully")
+        return MessageResponse(
+            message=f"{provider.capitalize()} account linked successfully"
+        )
 
     return router

@@ -125,8 +125,14 @@ def _clear_auth_cookies(response: Response, fa: FastAuth) -> None:
 def create_auth_router(auth: object) -> APIRouter:
     router = APIRouter(
         responses={
-            400: {"model": ErrorDetail, "description": "Bad request or missing configuration"},
-            401: {"model": ErrorDetail, "description": "Authentication required or token invalid"},
+            400: {
+                "model": ErrorDetail,
+                "description": "Bad request or missing configuration",
+            },
+            401: {
+                "model": ErrorDetail,
+                "description": "Authentication required or token invalid",
+            },
         }
     )
 
@@ -147,7 +153,9 @@ def create_auth_router(auth: object) -> APIRouter:
         "/register",
         response_model=TokenResponse,
         status_code=status.HTTP_201_CREATED,
-        responses={409: {"model": ErrorDetail, "description": "Email already registered"}},
+        responses={
+            409: {"model": ErrorDetail, "description": "Email already registered"}
+        },
     )
     async def register(
         request: Request, body: RegisterRequest, response: Response

@@ -21,8 +21,8 @@ Everything enabled: credentials + Google + GitHub OAuth, Redis-backed sessions, 
 ## Setup
 
 ```bash
-cp .env.example .env       
-python generate_keys.py    
+cp .env.example .env
+python generate_keys.py
 pip install sreekarnv-fastauth[all]
 uvicorn main:app --reload
 ```
