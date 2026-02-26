@@ -15,6 +15,7 @@ FastAuth gives you a complete auth system — credentials, OAuth, passkeys (WebA
 ## Features
 
 - **Multiple providers** — email/password, magic links, Google OAuth, GitHub OAuth, passkeys (WebAuthn)
+- **OAuth account linking** — connect additional providers to an existing account while authenticated
 - **Pluggable adapters** — SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own
 - **JWT & database sessions** — stateless tokens or server-side sessions
 - **Cookie delivery** — HttpOnly, Secure, SameSite out of the box
@@ -133,6 +134,29 @@ pip install "sreekarnv-fastauth[standard,webauthn]"
 ```
 
 See the [Passkeys guide](https://sreekarnv.github.io/fastauth/guides/passkeys/) and [example app](./examples/passkeys/).
+
+---
+
+## OAuth Account Linking
+
+Authenticated users can connect additional OAuth providers to their existing account — no new sign-in flow required.
+
+```python
+# 1. Get the authorization URL (requires Bearer token)
+GET /auth/oauth/google/link?redirect_uri=https://your-app.com/callback
+
+# → {"url": "https://accounts.google.com/o/oauth2/auth?..."}
+
+# 2. After the provider redirects back, the callback completes the link
+GET /auth/oauth/google/link/callback?code=...&state=...
+
+# → {"message": "Google account linked successfully"}
+
+# 3. List all linked providers
+GET /auth/oauth/accounts
+```
+
+Requires `oauth_state_store` and `oauth_adapter` in `FastAuthConfig`. Attempting to link an already-linked provider account returns `400`.
 
 ---
 

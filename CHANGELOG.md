@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **OAuth account linking** — authenticated users can now connect additional OAuth providers to their existing account without going through the full sign-in flow
+  - `GET /auth/oauth/{provider}/link?redirect_uri=...` — requires Bearer token; returns the provider authorization URL with a link-scoped PKCE state
+  - `GET /auth/oauth/{provider}/link/callback?code=...&state=...` — public; exchanges the code, creates the `OAuthAccount` record, fires the `on_oauth_link` hook, and returns `{"message": "<Provider> account linked successfully"}`
+  - Returns `400` when the provider account is already linked to any user
+  - `initiate_link_flow` and `link_oauth_account` added to `fastauth.core.oauth`
+- **OpenAPI error schemas** — all routers now declare structured error responses via `responses=` so type-checker users, SDK generators, and API explorers see documented error shapes
+  - New `ErrorDetail` Pydantic model in `fastauth.api.schemas` matching FastAPI's default `{"detail": "..."}` format
+  - `create_auth_router` — `400`, `401` on all endpoints; `409` on `POST /register`
+  - `create_oauth_router` — `400`, `401`, `403`, `404` on all endpoints; `409` on `GET /{provider}/link`
+  - `create_magic_links_router` — `401`, `403`, `501`
+  - `create_passkeys_router` — `400`, `401`, `403`, `404`, `501`
+
+### Fixed
+
+- Pre-commit hooks were not installed (`pre-commit install` had never been run); running it now creates `.git/hooks/pre-commit`
+- `.pre-commit-config.yaml` referenced non-existent ruff version `v0.14.10`; corrected to `v0.15.1`
+
 ## [0.5.0] - 2026-02-27
 
 ### Added
