@@ -878,6 +878,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../providers/magic-links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magic Links
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../providers/google/" class="md-nav__link">
         
   
@@ -1308,6 +1336,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/magic-links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magic Links
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/rbac/" class="md-nav__link">
         
   
@@ -1517,6 +1573,34 @@
     
   
     Passkeys
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/magic-links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magic Links
   
 
     
@@ -2336,6 +2420,21 @@ Provide a :class:<code>~fastauth.core.protocols.SessionBackend</code> such as
               <div class="doc-md-description">
                 <p>Transport used to deliver verification and password-reset
 emails. Omit to disable email flows entirely.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.FastAuthConfig.email_template_dir">email_template_dir</span></code></td>
+            <td>
+                  <code><span title="str">str</span> | <span title="pathlib.Path">Path</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory containing custom Jinja2 email templates.
+Any file placed here overrides the corresponding built-in template;
+templates not present in this directory fall back to the built-in ones.
+See the :ref:<code>custom email templates &lt;custom-email-templates&gt;</code> guide for
+the expected filenames and available template variables.</p>
               </div>
             </td>
           </tr>
