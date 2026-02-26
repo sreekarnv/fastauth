@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.auth import MessageResponse, _issue_tracked_tokens, _set_auth_cookies
+from fastauth.api.schemas import ErrorDetail
 from fastauth.app import FastAuth
 from fastauth.exceptions import AuthenticationError
 from fastauth.providers.magic_links import MagicLinksProvider
@@ -15,7 +16,20 @@ def create_magic_links_router(auth: object) -> APIRouter:
     assert isinstance(auth, FastAuth)
 
     fa: FastAuth = auth
-    router = APIRouter(prefix="/magic-links")
+    router = APIRouter(
+        prefix="/magic-links",
+        responses={
+            401: {
+                "model": ErrorDetail,
+                "description": "Authentication required or token invalid",
+            },
+            403: {"model": ErrorDetail, "description": "Access forbidden"},
+            501: {
+                "model": ErrorDetail,
+                "description": "MagicLinksProvider not configured",
+            },
+        },
+    )
 
     def _get_provider() -> MagicLinksProvider:
         for provider in fa.config.providers:
