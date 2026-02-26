@@ -83,6 +83,7 @@ nav:
       - Tokens & Sessions: concepts/tokens.md
   - Providers:
       - Credentials: providers/credentials.md
+      - Magic Links: providers/magic-links.md
       - Google OAuth: providers/google.md
       - GitHub OAuth: providers/github.md
   - Adapters:
@@ -96,6 +97,7 @@ nav:
       - Account Management: features/account.md
       - OAuth Flow: features/oauth.md
       - Passkeys (WebAuthn): features/passkeys.md
+      - Magic Links: features/magic-links.md
       - RBAC: features/rbac.md
       - JWT: features/jwt.md
       - Event Hooks: features/hooks.md
@@ -103,6 +105,7 @@ nav:
       - Basic App: guides/basic.md
       - Adding OAuth: guides/oauth.md
       - Passkeys: guides/passkeys.md
+      - Magic Links: guides/magic-links.md
       - Microservice JWT: guides/microservice.md
       - Testing: guides/testing.md
       - Production Checklist: guides/production.md
