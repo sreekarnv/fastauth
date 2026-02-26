@@ -63,8 +63,7 @@ async def test_login_returns_message(magic_client):
 async def test_login_auto_creates_user(magic_client):
     client, user_adapter, _ = magic_client
     await client.post(
-        "/auth/magic-links/login",
-        json={"email": "autocreate@example.com"}
+        "/auth/magic-links/login", json={"email": "autocreate@example.com"}
     )
 
     user = await user_adapter.get_user_by_email("autocreate@example.com")
@@ -132,9 +131,7 @@ async def test_callback_inactive_user_returns_401(magic_client):
     user = await user_adapter.create_user("inactive@example.com")
     await user_adapter.update_user(user["id"], is_active=False)
 
-    await client.post(
-        "/auth/magic-links/login", json={"email": "inactive@example.com"}
-    )
+    await client.post("/auth/magic-links/login", json={"email": "inactive@example.com"})
     token = _get_magic_token(token_adapter)
 
     resp = await client.get(f"/auth/magic-links/callback?token={token}")
@@ -181,9 +178,7 @@ async def test_callback_cookie_delivery_sets_cookie():
     app, _, token_adapter = _build_app(token_delivery="cookie")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
-        await c.post(
-            "/auth/magic-links/login", json={"email": "cookie@example.com"}
-        )
+        await c.post("/auth/magic-links/login", json={"email": "cookie@example.com"})
         token = _get_magic_token(token_adapter)
         resp = await c.get(f"/auth/magic-links/callback?token={token}")
 
@@ -195,7 +190,5 @@ async def test_magic_links_router_not_mounted_without_provider():
     app, *_ = _build_app(providers=[CredentialsProvider()])
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
-        resp = await c.post(
-            "/auth/magic-links/login", json={"email": "x@example.com"}
-        )
+        resp = await c.post("/auth/magic-links/login", json={"email": "x@example.com"})
     assert resp.status_code == 404
