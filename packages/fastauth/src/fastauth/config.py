@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 from fastauth.exceptions import ConfigError
@@ -73,6 +74,11 @@ class FastAuthConfig:
             :class:`~fastauth.session_backends.redis.RedisSessionBackend`.
         email_transport: Transport used to deliver verification and password-reset
             emails. Omit to disable email flows entirely.
+        email_template_dir: Directory containing custom Jinja2 email templates.
+            Any file placed here overrides the corresponding built-in template;
+            templates not present in this directory fall back to the built-in ones.
+            See the :ref:`custom email templates <custom-email-templates>` guide for
+            the expected filenames and available template variables.
         hooks: An :class:`~fastauth.core.protocols.EventHooks` subclass for
             lifecycle callbacks (``on_signup``, ``modify_jwt``, etc.).
         oauth_adapter: Adapter for persisting linked OAuth accounts.
@@ -109,6 +115,7 @@ class FastAuthConfig:
     route_prefix: str = "/auth"
     session_backend: SessionBackend | None = None
     email_transport: EmailTransport | None = None
+    email_template_dir: str | Path | None = None
     hooks: EventHooks | None = None
     oauth_adapter: OAuthAccountAdapter | None = None
     oauth_state_store: SessionBackend | None = None

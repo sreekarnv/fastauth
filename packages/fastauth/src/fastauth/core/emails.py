@@ -11,12 +11,13 @@ if TYPE_CHECKING:
 
 
 def _create_env(template_dir: str | Path | None = None) -> Environment:
-    from jinja2 import Environment, FileSystemLoader, PackageLoader
+    from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 
+    package_loader = PackageLoader("fastauth", "templates")
     if template_dir is not None:
-        loader = FileSystemLoader(str(template_dir))
+        loader = ChoiceLoader([FileSystemLoader(str(template_dir)), package_loader])
     else:
-        loader = PackageLoader("fastauth", "templates")
+        loader = package_loader
     return Environment(loader=loader, autoescape=True)
 
 

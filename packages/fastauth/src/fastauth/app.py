@@ -55,6 +55,7 @@ class FastAuth:
             self.email_dispatcher = EmailDispatcher(
                 transport=config.email_transport,
                 base_url=config.base_url,
+                template_dir=config.email_template_dir,
             )
 
     def mount(self, app: object) -> None:
