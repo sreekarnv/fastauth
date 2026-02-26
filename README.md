@@ -8,17 +8,18 @@
 
 **NextAuth-inspired pluggable authentication for FastAPI.**
 
-FastAuth gives you a complete auth system — credentials, OAuth, passkeys (WebAuthn), email verification, password reset, RBAC, and JWT — without locking you into any particular database or ORM.
+FastAuth gives you a complete auth system — credentials, OAuth, passkeys (WebAuthn), magic links, email verification, password reset, RBAC, and JWT — without locking you into any particular database or ORM.
 
 ---
 
 ## Features
 
-- **Multiple providers** — email/password, Google OAuth, GitHub OAuth, passkeys (WebAuthn)
+- **Multiple providers** — email/password, magic links, Google OAuth, GitHub OAuth, passkeys (WebAuthn)
 - **Pluggable adapters** — SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own
 - **JWT & database sessions** — stateless tokens or server-side sessions
 - **Cookie delivery** — HttpOnly, Secure, SameSite out of the box
-- **Email flows** — verification and password reset with customizable transports
+- **Email flows** — verification, password reset, and magic links with customizable transports
+- **Custom email templates** — drop Jinja2 templates into any directory; unoverridden templates fall back to built-ins
 - **RBAC** — roles and fine-grained permissions on any route
 - **Event hooks** — intercept sign-in/sign-up and modify JWT payloads
 - **RS256 / JWKS** — rotate keys and expose a JWKS endpoint for microservices
@@ -70,7 +71,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
-auth.mount(app)  # registers /auth/signup, /auth/signin, /auth/signout, …
+auth.mount(app)  # registers /auth/register, /auth/login, /auth/logout, …
 
 @app.get("/dashboard")
 async def dashboard(user=Depends(require_auth)):
@@ -80,6 +81,31 @@ async def dashboard(user=Depends(require_auth)):
 ```bash
 uvicorn main:app --reload
 ```
+
+---
+
+## Magic Links
+
+Passwordless sign-in with a one-time link sent to the user's email. No password required — unknown emails are auto-registered on first use.
+
+```python
+from fastauth.providers.magic_links import MagicLinksProvider
+from fastauth.email_transports.smtp import SMTPTransport
+
+auth = FastAuth(FastAuthConfig(
+    ...
+    providers=[MagicLinksProvider()],
+    token_adapter=adapter.token,
+    email_transport=SMTPTransport(...),
+    base_url="https://your-app.com",
+))
+```
+
+```bash
+pip install "sreekarnv-fastauth[standard,email]"
+```
+
+See the [Magic Links guide](https://sreekarnv.github.io/fastauth/guides/magic-links/) and [example app](./examples/magic_link/).
 
 ---
 
@@ -110,6 +136,31 @@ See the [Passkeys guide](https://sreekarnv.github.io/fastauth/guides/passkeys/) 
 
 ---
 
+## Custom Email Templates
+
+Drop Jinja2 templates into any directory to override FastAuth's built-in emails. Only the files you provide are replaced — everything else falls back to the defaults automatically.
+
+```python
+from pathlib import Path
+
+auth = FastAuth(FastAuthConfig(
+    ...
+    email_template_dir=Path("my_templates/"),
+))
+```
+
+| Template file | Sent when | Variables |
+|---|---|---|
+| `welcome.jinja2` | User registers | `name` |
+| `verification.jinja2` | Email verification | `name`, `url`, `expires_in_minutes` |
+| `password_reset.jinja2` | Password reset | `name`, `url`, `expires_in_minutes` |
+| `email_change.jinja2` | Email change | `name`, `new_email`, `url`, `expires_in_minutes` |
+| `magic_link_login.jinja2` | Magic link sign-in | `name`, `url` |
+
+See the [example app](./examples/custom_templates/).
+
+---
+
 ## Documentation
 
 Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.io/fastauth)**
@@ -118,6 +169,7 @@ Full documentation at **[sreekarnv.github.io/fastauth](https://sreekarnv.github.
 - [Quick Start](https://sreekarnv.github.io/fastauth/getting-started/quick-start/)
 - [Configuration](https://sreekarnv.github.io/fastauth/getting-started/configuration/)
 - [How it Works](https://sreekarnv.github.io/fastauth/concepts/how-it-works/)
+- [Magic Links](https://sreekarnv.github.io/fastauth/features/magic-links/)
 - [Passkeys (WebAuthn)](https://sreekarnv.github.io/fastauth/features/passkeys/)
 - [Guides](https://sreekarnv.github.io/fastauth/guides/basic/)
 - [API Reference](https://sreekarnv.github.io/fastauth/reference/fastauth/)

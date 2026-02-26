@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-27
+
+### Added
+
+- **Magic Links** passwordless authentication provider
+  - `MagicLinksProvider` — configurable `max_age` (default 15 minutes)
+  - `POST /auth/magic-links/login` — requests a link; auto-creates the user if the email is new
+  - `GET /auth/magic-links/callback?token=<token>` — one-time token exchange returning an access/refresh token pair
+  - Tokens are single-use and deleted immediately on first use
+  - Full hook support: `allow_signin` gate and `on_signin` callback, both receiving `provider="magic_link"`
+  - `is_active` check on callback; `token_delivery="cookie"` supported
+  - Router is mounted only when `MagicLinksProvider` is present in `config.providers`
+- **Custom email templates** via `email_template_dir` in `FastAuthConfig`
+  - Point to any directory; files found there override the corresponding built-in template
+  - Uses `ChoiceLoader` — unoverridden templates fall back to FastAuth's built-ins automatically
+  - Supported templates: `welcome.jinja2`, `verification.jinja2`, `password_reset.jinja2`, `email_change.jinja2`, `magic_link_login.jinja2`
+- **Magic Links example** (`examples/magic_link/`) — SQLite + SMTP, environment-variable driven
+- **Custom templates example** (`examples/custom_templates/`) — dark-themed HTML templates matching the FastAuth docs palette, demonstrating per-template override with built-in fallback
+
+### Fixed
+
+- `send_magic_link_login_request` — missing `str` type annotation on `token` parameter
+- `magic_link_login.jinja2` — corrected heading copy ("Log In to your email" → "Log in to your account") and added expiry hint to body text
+
+### Changed
+
+- `mkdocs.yml` — added Magic Links entries under Providers, Features, and Guides nav sections
+- Docs: added `docs/features/magic-links.md`, `docs/providers/magic-links.md`, `docs/guides/magic-links.md`
+
 ## [0.4.0] - 2026-02-24
 
 ### Added
@@ -331,7 +360,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/sreekarnv/fastauth/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sreekarnv/fastauth/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/sreekarnv/fastauth/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sreekarnv/fastauth/compare/v0.2.6...v0.3.0

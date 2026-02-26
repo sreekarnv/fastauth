@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Any
 
 from cuid2 import cuid_wrapper
 from sqlalchemy import delete, select
@@ -23,7 +24,7 @@ def _to_oauth_data(model: OAuthAccountModel) -> OAuthAccountData:
 
 
 class SQLAlchemyOAuthAccountAdapter:
-    def __init__(self, session_factory: object) -> None:
+    def __init__(self, session_factory: Any) -> None:
         self._session_factory = session_factory
 
     async def create_oauth_account(self, account: OAuthAccountData) -> OAuthAccountData:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlalchemy import delete, select, update
 
@@ -22,7 +23,7 @@ def _to_passkey_data(model: PasskeyModel) -> PasskeyData:
 
 
 class SQLAlchemyPasskeyAdapter:
-    def __init__(self, session_factory: object) -> None:
+    def __init__(self, session_factory: Any) -> None:
         self._session_factory = session_factory
 
     async def create_passkey(
