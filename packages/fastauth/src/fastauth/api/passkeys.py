@@ -23,6 +23,7 @@ from webauthn.helpers.structs import (
 from fastauth._compat import require
 from fastauth.api.auth import _issue_tracked_tokens
 from fastauth.api.deps import require_auth
+from fastauth.api.schemas import ErrorDetail
 
 if TYPE_CHECKING:
     from fastauth.app import FastAuth
@@ -56,7 +57,16 @@ def create_passkeys_router(auth: object) -> APIRouter:
     state_store: SessionBackend = auth.config.passkey_state_store
     fa: FastAuth = auth
 
-    router = APIRouter(prefix="/passkeys")
+    router = APIRouter(
+        prefix="/passkeys",
+        responses={
+            400: {"model": ErrorDetail, "description": "Bad request or invalid challenge"},
+            401: {"model": ErrorDetail, "description": "Authentication required or verification failed"},
+            403: {"model": ErrorDetail, "description": "Access forbidden"},
+            404: {"model": ErrorDetail, "description": "Passkey not found"},
+            501: {"model": ErrorDetail, "description": "PasskeyProvider not configured"},
+        },
+    )
 
     def _get_provider() -> PasskeyProvider:
         for provider in fa.config.providers:

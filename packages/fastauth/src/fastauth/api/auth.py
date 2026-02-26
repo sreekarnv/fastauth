@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.deps import require_auth
+from fastauth.api.schemas import ErrorDetail
 from fastauth.core.credentials import hash_password
 from fastauth.core.tokens import create_token_pair, decode_token
 from fastauth.exceptions import (
@@ -122,7 +123,12 @@ def _clear_auth_cookies(response: Response, fa: FastAuth) -> None:
 
 
 def create_auth_router(auth: object) -> APIRouter:
-    router = APIRouter()
+    router = APIRouter(
+        responses={
+            400: {"model": ErrorDetail, "description": "Bad request or missing configuration"},
+            401: {"model": ErrorDetail, "description": "Authentication required or token invalid"},
+        }
+    )
 
     def _get_credentials_provider() -> CredentialsProvider | None:
         from fastauth.app import FastAuth
@@ -138,7 +144,10 @@ def create_auth_router(auth: object) -> APIRouter:
         return user
 
     @router.post(
-        "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+        "/register",
+        response_model=TokenResponse,
+        status_code=status.HTTP_201_CREATED,
+        responses={409: {"model": ErrorDetail, "description": "Email already registered"}},
     )
     async def register(
         request: Request, body: RegisterRequest, response: Response
