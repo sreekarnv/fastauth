@@ -62,7 +62,10 @@ async def test_login_returns_message(magic_client):
 
 async def test_login_auto_creates_user(magic_client):
     client, user_adapter, _ = magic_client
-    await client.post("/auth/magic-links/login", json={"email": "autocreate@example.com"})
+    await client.post(
+        "/auth/magic-links/login",
+        json={"email": "autocreate@example.com"}
+    )
 
     user = await user_adapter.get_user_by_email("autocreate@example.com")
     assert user is not None

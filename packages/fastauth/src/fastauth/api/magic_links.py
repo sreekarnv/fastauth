@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.auth import MessageResponse, _set_auth_cookies

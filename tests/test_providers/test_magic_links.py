@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock
 
 import pytest
-
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
 from fastauth.exceptions import AuthenticationError
 from fastauth.providers.magic_links import MagicLinksProvider
