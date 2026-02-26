@@ -314,6 +314,14 @@ class EventHooks:
         """
         return session
 
+    async def on_magic_link_sent(self, user: UserData) -> None:
+        """Called after a magic link email has been dispatched to a user.
+
+        Args:
+            user: The user the magic link was sent to.
+        """
+        pass
+
     async def on_passkey_registered(self, user: UserData, passkey: PasskeyData) -> None:
         pass
 

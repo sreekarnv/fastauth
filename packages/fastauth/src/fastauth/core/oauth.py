@@ -51,7 +51,16 @@ async def complete_oauth_flow(
     state_store: SessionBackend,
     user_adapter: UserAdapter,
     oauth_adapter: OAuthAccountAdapter,
-) -> tuple[UserData, bool]:
+) -> tuple[UserData, bool, bool]:
+    """Complete an OAuth sign-in flow.
+
+    Returns:
+        A 3-tuple of ``(user, is_new, email_verified_now)`` where
+        *is_new* is ``True`` when the user was just created and
+        *email_verified_now* is ``True`` when ``email_verified`` was
+        flipped to ``True`` during this call (useful for firing the
+        ``on_email_verify`` hook in the caller).
+    """
     stored = await state_store.read(f"oauth_state:{state}")
     if not stored:
         raise ProviderError("Invalid or expired OAuth state")
@@ -74,7 +83,11 @@ async def complete_oauth_flow(
         user = await user_adapter.get_user_by_id(existing["user_id"])
         if not user:
             raise ProviderError("Linked user account not found")
-        return user, False
+        email_verified_now = False
+        if not user.get("email_verified"):
+            user = await user_adapter.update_user(user["id"], email_verified=True)
+            email_verified_now = True
+        return user, False, email_verified_now
 
     user = await user_adapter.get_user_by_email(provider_user["email"])
     is_new = False
@@ -84,8 +97,15 @@ async def complete_oauth_flow(
             email=provider_user["email"],
             name=provider_user.get("name"),
             image=provider_user.get("image"),
+            email_verified=True,
         )
         is_new = True
+        email_verified_now = True
+    else:
+        email_verified_now = False
+        if not user.get("email_verified"):
+            user = await user_adapter.update_user(user["id"], email_verified=True)
+            email_verified_now = True
 
     _ = await oauth_adapter.create_oauth_account(
         {
@@ -98,4 +118,4 @@ async def complete_oauth_flow(
         }
     )
 
-    return user, is_new
+    return user, is_new, email_verified_now

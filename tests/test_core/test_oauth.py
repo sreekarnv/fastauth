@@ -93,7 +93,7 @@ async def test_complete_new_user(provider, state_store, user_adapter, oauth_adap
         state_store=state_store,
     )
 
-    user, is_new = await complete_oauth_flow(
+    user, is_new, email_verified_now = await complete_oauth_flow(
         provider=provider,
         code="auth-code",
         state=state,
@@ -104,7 +104,9 @@ async def test_complete_new_user(provider, state_store, user_adapter, oauth_adap
     )
 
     assert is_new is True
+    assert email_verified_now is True
     assert user["email"] == "oauth@example.com"
+    assert user["email_verified"] is True
 
     accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])
     assert len(accounts) == 1
@@ -119,7 +121,7 @@ async def test_complete_existing_oauth_account(
         redirect_uri="http://localhost/callback",
         state_store=state_store,
     )
-    user1, _ = await complete_oauth_flow(
+    user1, _, _ = await complete_oauth_flow(
         provider=provider,
         code="code1",
         state=state1,
@@ -134,7 +136,7 @@ async def test_complete_existing_oauth_account(
         redirect_uri="http://localhost/callback",
         state_store=state_store,
     )
-    user2, is_new = await complete_oauth_flow(
+    user2, is_new, _ = await complete_oauth_flow(
         provider=provider,
         code="code2",
         state=state2,
@@ -160,7 +162,7 @@ async def test_complete_links_to_existing_email_user(
         redirect_uri="http://localhost/callback",
         state_store=state_store,
     )
-    user, is_new = await complete_oauth_flow(
+    user, is_new, email_verified_now = await complete_oauth_flow(
         provider=provider,
         code="auth-code",
         state=state,
@@ -171,7 +173,9 @@ async def test_complete_links_to_existing_email_user(
     )
 
     assert is_new is False
+    assert email_verified_now is True
     assert user["id"] == existing["id"]
+    assert user["email_verified"] is True
 
     accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])
     assert len(accounts) == 1

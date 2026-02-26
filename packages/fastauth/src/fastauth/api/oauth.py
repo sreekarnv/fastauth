@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
+from fastauth.api.auth import _issue_tracked_tokens
 from fastauth.api.deps import require_auth
 from fastauth.core.oauth import complete_oauth_flow, initiate_oauth_flow
-from fastauth.core.tokens import create_token_pair
 from fastauth.exceptions import ProviderError
 
 if TYPE_CHECKING:
@@ -108,7 +108,7 @@ def create_oauth_router(auth: object) -> APIRouter:
         callback_uri = str(request.url_for("callback", provider=provider))
 
         try:
-            user, is_new = await complete_oauth_flow(
+            user, is_new, email_verified_now = await complete_oauth_flow(
                 provider=oauth_provider,
                 code=code,
                 state=state,
@@ -126,6 +126,8 @@ def create_oauth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             if is_new:
                 await fa.config.hooks.on_signup(user)
+            if email_verified_now and not is_new:
+                await fa.config.hooks.on_email_verify(user)
             allowed = await fa.config.hooks.allow_signin(user, provider)
             if not allowed:
                 raise HTTPException(
@@ -135,7 +137,7 @@ def create_oauth_router(auth: object) -> APIRouter:
             await fa.config.hooks.on_signin(user, provider)
             await fa.config.hooks.on_oauth_link(user, provider)
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.oauth_redirect_url:
             params = urlencode(
