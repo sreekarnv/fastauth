@@ -113,3 +113,18 @@ class EmailDispatcher:
             subject="Confirm your new email address",
             body_html=html,
         )
+
+    async def send_magic_link_login_request(self, user: UserData, token: str) -> None:
+        if not self.transport or self._env is None:
+            return
+        url = f"{self.base_url}/auth/magic-links/callback?token={token}"
+        template = self._env.get_template("magic_link_login.jinja2")
+        html = template.render(
+            name=user.get("name") or user["email"],
+            url=url,
+        )
+        await self.transport.send(
+            to=user["email"],
+            subject="Log In to your account",
+            body_html=html,
+        )

@@ -26,6 +26,7 @@ dev = [
     "aiosqlite>=0.22.1",
     "asyncpg>=0.31.0",
     "webauthn>=2.7.1",
+    "dotenv>=0.9.9",
 ]
 
 [tool.uv.workspace]
