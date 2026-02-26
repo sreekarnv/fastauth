@@ -2156,6 +2156,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#fastauth.core.protocols.EventHooks.on_magic_link_sent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_magic_link_sent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fastauth.core.protocols.EventHooks.modify_jwt" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2562,6 +2573,17 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;modify_session
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastauth.core.protocols.EventHooks.on_magic_link_sent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;on_magic_link_sent
       
     </span>
   </a>
@@ -3656,6 +3678,61 @@ FastAuth to respond with HTTP 403.</p>
               <div class="doc-md-description">
                 <p>The (possibly modified) session dict.</p>
               </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="fastauth.core.protocols.EventHooks.on_magic_link_sent" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">on_magic_link_sent</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#fastauth.core.protocols.EventHooks.on_magic_link_sent" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">on_magic_link_sent</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Called after a magic link email has been dispatched to a user.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>user</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            fastauth.types.UserData" href="../types/#fastauth.types.UserData">UserData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The user the magic link was sent to.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
             </td>
           </tr>
       </tbody>
