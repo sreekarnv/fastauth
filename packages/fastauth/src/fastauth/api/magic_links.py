@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, EmailStr
 
-from fastauth.api.auth import MessageResponse, _set_auth_cookies
+from fastauth.api.auth import MessageResponse, _issue_tracked_tokens, _set_auth_cookies
 from fastauth.app import FastAuth
-from fastauth.core.tokens import create_token_pair
 from fastauth.exceptions import AuthenticationError
 from fastauth.providers.magic_links import MagicLinksProvider
 
@@ -37,8 +36,13 @@ def create_magic_links_router(auth: object) -> APIRouter:
             user = await fa.config.adapter.create_user(
                 email=input.email, hashed_password=None
             )
+            if fa.config.hooks:
+                await fa.config.hooks.on_signup(user)
 
         await provider.send_login_request(fa, user)
+
+        if fa.config.hooks:
+            await fa.config.hooks.on_magic_link_sent(user)
 
         return MessageResponse(message="Magic link sent — check your email")
 
@@ -68,7 +72,12 @@ def create_magic_links_router(auth: object) -> APIRouter:
                     detail="Sign-in not allowed",
                 )
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        if not user.get("email_verified"):
+            user = await fa.config.adapter.update_user(user["id"], email_verified=True)
+            if fa.config.hooks:
+                await fa.config.hooks.on_email_verify(user)
+
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)

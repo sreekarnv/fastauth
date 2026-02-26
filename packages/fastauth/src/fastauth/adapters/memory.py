@@ -27,7 +27,7 @@ class MemoryUserAdapter(UserAdapter):
         self._email_index: dict[str, str] = {}
 
     async def create_user(
-        self, email: str, hashed_password: str | None = None, **kwargs: str | None
+        self, email: str, hashed_password: str | None = None, **kwargs: object
     ) -> UserData:
         if email in self._email_index:
             raise UserAlreadyExistsError(f"User with email '{email}' already exists")
@@ -36,9 +36,9 @@ class MemoryUserAdapter(UserAdapter):
         user: UserData = {
             "id": user_id,
             "email": email,
-            "name": kwargs.get("name"),
-            "image": kwargs.get("image"),
-            "email_verified": False,
+            "name": kwargs.get("name"),  # type: ignore[typeddict-item]
+            "image": kwargs.get("image"),  # type: ignore[typeddict-item]
+            "email_verified": bool(kwargs.get("email_verified", False)),
             "is_active": True,
         }
         self._users[user_id] = user

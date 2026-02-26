@@ -23,6 +23,28 @@ if TYPE_CHECKING:
 generate_token = cuid_wrapper()
 
 
+async def _issue_tracked_tokens(fa: FastAuth, user: UserData) -> TokenPair:
+    """Create a token pair and, when *token_adapter* is configured, record the
+    refresh-token JTI in the allowlist so that reuse can be detected later."""
+    tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+    if fa.config.token_adapter:
+        refresh_claims = decode_token(
+            tokens["refresh_token"], fa.config, fa.jwks_manager
+        )
+        jti: str = refresh_claims["jti"]
+        expires_at = datetime.fromtimestamp(refresh_claims["exp"], tz=timezone.utc)
+        await fa.config.token_adapter.create_token(
+            {
+                "token": jti,
+                "user_id": user["id"],
+                "token_type": "refresh_jti",
+                "expires_at": expires_at,
+                "raw_data": None,
+            }
+        )
+    return tokens
+
+
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
@@ -147,7 +169,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signup(user)
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
@@ -182,7 +204,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signin(user, "credentials")
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
@@ -245,10 +267,24 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Invalid refresh token",
             )
 
+        old_jti = claims.get("jti")
+        if fa.config.token_adapter and old_jti:
+            stored = await fa.config.token_adapter.get_token(old_jti, "refresh_jti")
+            if not stored:
+                # Replay detected — revoke the entire token family for this user
+                await fa.config.token_adapter.delete_user_tokens(
+                    user["id"], "refresh_jti"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Refresh token has already been used",
+                )
+            await fa.config.token_adapter.delete_token(old_jti)
+
         if fa.config.hooks:
             await fa.config.hooks.on_token_refresh(user)
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)

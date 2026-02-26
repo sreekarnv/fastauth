@@ -21,8 +21,8 @@ from webauthn.helpers.structs import (
 )
 
 from fastauth._compat import require
+from fastauth.api.auth import _issue_tracked_tokens
 from fastauth.api.deps import require_auth
-from fastauth.core.tokens import create_token_pair
 
 if TYPE_CHECKING:
     from fastauth.app import FastAuth
@@ -299,7 +299,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
                     detail="Sign-in not allowed",
                 )
 
-        tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+        tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
