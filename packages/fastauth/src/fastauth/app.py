@@ -84,7 +84,7 @@ class FastAuth:
         app.include_router(router, prefix=self.config.route_prefix)
 
         # Mount JWKS endpoint at root (not under route_prefix)
-        if self.jwks_manager:
+        if self.config.jwt.jwks_enabled:
             from fastauth.api.jwks import create_jwks_router
 
             jwks_router = create_jwks_router(self)
@@ -107,7 +107,7 @@ class FastAuth:
                 yield
 
             app = FastAPI(lifespan=lifespan)
-            auth.mount(app)
+            auth.mount(app)  # mount registers routes based on config, not runtime state
             ```
         """
         if self.config.jwt.algorithm.startswith("RS"):
