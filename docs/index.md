@@ -1,6 +1,6 @@
 <div class="fa-hero" markdown>
 
-<p class="fa-hero__eyebrow">v0.5.2 &nbsp;·&nbsp; Python 3.11+ &nbsp;·&nbsp; FastAPI</p>
+<p class="fa-hero__eyebrow">v0.5.3 &nbsp;·&nbsp; Python 3.11+ &nbsp;·&nbsp; FastAPI</p>
 
 # FastAuth
 

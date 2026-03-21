@@ -27,6 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pre-commit hooks were not installed (`pre-commit install` had never been run); running it now creates `.git/hooks/pre-commit`
 - `.pre-commit-config.yaml` referenced non-existent ruff version `v0.14.10`; corrected to `v0.15.1`
 
+## [0.5.3] - 2026-03-21
+
+### Added
+
+- `FastAuth.initialize_roles()` — new lifespan method that seeds roles defined in `config.roles` into the role adapter, mirroring the existing `initialize_jwks()` pattern
+
+### Fixed
+
+- `default_role` was never assigned to new users despite being set in `FastAuthConfig` — `assign_default_role` is now called after user creation in all three registration paths: credentials (`POST /auth/register`), magic links (auto-signup on first login), and OAuth (first-time sign-in)
+
 ## [0.5.2] - 2026-03-21
 
 ### Fixed
@@ -386,7 +396,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.5.2...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/sreekarnv/fastauth/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/sreekarnv/fastauth/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/sreekarnv/fastauth/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/sreekarnv/fastauth/compare/v0.4.0...v0.5.0
