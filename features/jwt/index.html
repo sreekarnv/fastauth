@@ -2411,7 +2411,7 @@
 
 
 <h1 id="jwt">JWT<a class="headerlink" href="#jwt" title="Permanent link">&para;</a></h1>
-<p>FastAuth uses <a href="https://joserfc.readthedocs.io/">joserfc</a> for JWT creation and validation. Both symmetric (HS256) and asymmetric (RS256/RS512) algorithms are supported.</p>
+<p>FastAuth uses <a href="https://jose.authlib.org">joserfc</a> for JWT creation and validation. Both symmetric (HS256) and asymmetric (RS256/RS512) algorithms are supported.</p>
 <h2 id="hs256-default">HS256 (default)<a class="headerlink" href="#hs256-default" title="Permanent link">&para;</a></h2>
 <p>Uses a shared HMAC secret. Simple to set up, suitable for single-service deployments.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAuthConfig</span>
