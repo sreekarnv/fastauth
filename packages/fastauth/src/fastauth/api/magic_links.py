@@ -50,6 +50,12 @@ def create_magic_links_router(auth: object) -> APIRouter:
             user = await fa.config.adapter.create_user(
                 email=input.email, hashed_password=None
             )
+            if fa.role_adapter and fa.config.default_role:
+                from fastauth.core.rbac import assign_default_role
+
+                await assign_default_role(
+                    fa.role_adapter, user["id"], fa.config.default_role
+                )
             if fa.config.hooks:
                 await fa.config.hooks.on_signup(user)
 

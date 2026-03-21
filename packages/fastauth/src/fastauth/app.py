@@ -90,6 +90,25 @@ class FastAuth:
             jwks_router = create_jwks_router(self)
             app.include_router(jwks_router)
 
+    async def initialize_roles(self) -> None:
+        """Seed roles defined in ``config.roles`` into the role adapter.
+
+        Must be called inside the application lifespan startup handler when
+        ``config.roles`` is set and a ``role_adapter`` has been assigned.
+
+        Example:
+            ```python
+            @asynccontextmanager
+            async def lifespan(app: FastAPI):
+                await auth.initialize_roles()
+                yield
+            ```
+        """
+        if self.role_adapter and self.config.roles:
+            from fastauth.core.rbac import seed_roles
+
+            await seed_roles(self.role_adapter, self.config.roles)
+
     async def initialize_jwks(self) -> None:
         """Initialize the JWKS manager for RSA-based JWT signing.
 

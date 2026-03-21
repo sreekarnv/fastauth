@@ -183,6 +183,13 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="A user with this email already exists",
             ) from e
 
+        if fa.role_adapter and fa.config.default_role:
+            from fastauth.core.rbac import assign_default_role
+
+            await assign_default_role(
+                fa.role_adapter, user["id"], fa.config.default_role
+            )
+
         if fa.config.hooks:
             await fa.config.hooks.on_signup(user)
 

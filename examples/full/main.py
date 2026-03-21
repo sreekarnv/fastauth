@@ -2,6 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastauth import FastAuth, FastAuthConfig, JWTConfig
 from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
@@ -10,6 +11,8 @@ from fastauth.providers.credentials import CredentialsProvider
 from fastauth.providers.github import GitHubProvider
 from fastauth.providers.google import GoogleProvider
 from fastauth.session_backends.redis import RedisSessionBackend
+
+load_dotenv(".env")
 
 _PRIVATE_KEY = Path("private_key.pem").read_text()
 _PUBLIC_KEY = Path("public_key.pem").read_text()
@@ -31,7 +34,7 @@ email_transport = SMTPTransport(
 )
 
 config = FastAuthConfig(
-    secret=os.environ["SECRET"],
+    secret="secret",
     providers=[
         CredentialsProvider(),
         GoogleProvider(
@@ -45,6 +48,7 @@ config = FastAuthConfig(
     ],
     adapter=adapter.user,
     token_adapter=adapter.token,
+    token_delivery="cookie",
     session_strategy="database",
     session_backend=redis_backend,
     oauth_adapter=adapter.oauth,
@@ -82,6 +86,7 @@ auth.role_adapter = adapter.role
 async def lifespan(app: FastAPI):
     await adapter.create_tables()
     await auth.initialize_jwks()
+    await auth.initialize_roles()
     yield
 
 
