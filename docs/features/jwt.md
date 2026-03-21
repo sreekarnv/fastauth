@@ -1,6 +1,6 @@
 # JWT
 
-FastAuth uses [joserfc](https://joserfc.readthedocs.io/) for JWT creation and validation. Both symmetric (HS256) and asymmetric (RS256/RS512) algorithms are supported.
+FastAuth uses [joserfc](https://jose.authlib.org) for JWT creation and validation. Both symmetric (HS256) and asymmetric (RS256/RS512) algorithms are supported.
 
 ## HS256 (default)
 

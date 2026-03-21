@@ -113,7 +113,6 @@ async def verify_token(token_str: str) -> dict:
     jwks = await get_jwks()
     try:
         token = jwt.decode(token_str, jwks)
-        token.validate()
         return token.claims
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
