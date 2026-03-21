@@ -2579,7 +2579,7 @@ JWKS manager has been initialized.</p>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">yield</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">auth</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">auth</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>  <span class="c1"># mount registers routes based on config, not runtime state</span>
 </code></pre></div>
 </details>
 
