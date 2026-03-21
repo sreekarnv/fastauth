@@ -23,8 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- JWKS route (`/.well-known/jwks.json`) was never registered when `initialize_jwks()` is called inside the FastAPI lifespan handler — `FastAuth.mount()` now checks `config.jwt.jwks_enabled` (static config) instead of `self.jwks_manager` (runtime state), which was always `None` at mount time
 - Pre-commit hooks were not installed (`pre-commit install` had never been run); running it now creates `.git/hooks/pre-commit`
 - `.pre-commit-config.yaml` referenced non-existent ruff version `v0.14.10`; corrected to `v0.15.1`
+
+## [0.5.2] - 2026-03-21
+
+### Fixed
+
+- JWKS route (`/.well-known/jwks.json`) was never registered when `initialize_jwks()` is called inside the FastAPI lifespan handler — `FastAuth.mount()` now checks `config.jwt.jwks_enabled` (static config) instead of `self.jwks_manager` (runtime state), which was always `None` at mount time
 
 ## [0.5.0] - 2026-02-27
 
@@ -379,7 +386,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting protection
 - SQL injection protection via parameterized queries
 
-[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.5.0...HEAD
+[unreleased]: https://github.com/sreekarnv/fastauth/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/sreekarnv/fastauth/compare/v0.5.1...v0.5.2
+[0.5.1]: https://github.com/sreekarnv/fastauth/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/sreekarnv/fastauth/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sreekarnv/fastauth/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/sreekarnv/fastauth/compare/v0.3.0...v0.3.1
