@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastauth import FastAuth
 from fastauth.adapters.memory import (
     MemoryOAuthAccountAdapter,
+    MemoryRoleAdapter,
     MemoryUserAdapter,
 )
 from fastauth.config import FastAuthConfig, JWTConfig
@@ -286,3 +287,44 @@ async def test_unlink_nonexistent(client):
 async def test_unauthenticated_accounts(client):
     resp = await client.get("/auth/oauth/accounts")
     assert resp.status_code == 401
+
+
+async def test_oauth_callback_assigns_default_role_to_new_user():
+    user_adapter = MemoryUserAdapter()
+    oauth_adapter = MemoryOAuthAccountAdapter()
+    state_store = MemorySessionBackend()
+    role_adapter = MemoryRoleAdapter()
+    await role_adapter.create_role(name="member", permissions=[])
+
+    config = FastAuthConfig(
+        secret="test-secret-for-oauth",
+        providers=[FakeOAuthProvider()],
+        adapter=user_adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+        oauth_adapter=oauth_adapter,
+        oauth_state_store=state_store,
+        default_role="member",
+    )
+    auth = FastAuth(config)
+    auth.role_adapter = role_adapter
+
+    app = FastAPI()
+    auth.mount(app)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        await state_store.write(
+            "oauth_state:test-state",
+            {"code_verifier": "verifier", "provider": "fake"},
+            ttl=600,
+        )
+        resp = await c.get(
+            "/auth/oauth/fake/callback",
+            params={"code": "auth-code", "state": "test-state"},
+        )
+        assert resp.status_code == 200
+
+    user = await user_adapter.get_user_by_email("oauth@example.com")
+    assert user is not None
+    roles = await role_adapter.get_user_roles(user["id"])
+    assert "member" in roles
