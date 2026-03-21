@@ -33,8 +33,10 @@ email_transport = SMTPTransport(
     from_email=os.environ["SMTP_FROM"],
 )
 
+secret = os.environ["SECRET"] if os.environ["SECRET"] else "secret"
+
 config = FastAuthConfig(
-    secret="secret",
+    secret=secret,
     providers=[
         CredentialsProvider(),
         GoogleProvider(
