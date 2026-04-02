@@ -19,6 +19,40 @@ if TYPE_CHECKING:
 
 
 @dataclass
+class PasswordConfig:
+    """Password strength and security settings.
+
+    Attributes:
+        min_length: Minimum password length (default: 8).
+        require_uppercase: Require at least one uppercase letter.
+        require_lowercase: Require at least one lowercase letter.
+        require_digit: Require at least one digit.
+        require_special: Require at least one special character.
+        max_length: Maximum password length (default: 128).
+    """
+
+    min_length: int = 8
+    require_uppercase: bool = False
+    require_lowercase: bool = False
+    require_digit: bool = False
+    require_special: bool = False
+    max_length: int = 128
+
+
+@dataclass
+class SecurityConfig:
+    """Security settings including account lockout.
+
+    Attributes:
+        max_login_attempts: Maximum failed login attempts before lockout (default: 5).
+        lockout_duration: Duration of lockout in seconds (default: 300 = 5 minutes).
+    """
+
+    max_login_attempts: int = 5
+    lockout_duration: int = 300  # 5 minutes
+
+
+@dataclass
 class JWTConfig:
     """JWT signing and validation settings.
 
@@ -105,12 +139,16 @@ class FastAuthConfig:
         cookie_samesite: ``SameSite`` policy — ``"lax"``, ``"strict"``, or
             ``"none"`` (default: ``"lax"``).
         cookie_domain: Optional domain scope for cookies.
+        password: Password strength and validation settings.
+        security: Security settings including account lockout.
     """
 
     secret: str
     providers: list[Any]
     adapter: UserAdapter
     jwt: JWTConfig = field(default_factory=JWTConfig)
+    password: PasswordConfig = field(default_factory=PasswordConfig)
+    security: SecurityConfig = field(default_factory=SecurityConfig)
     session_strategy: Literal["jwt", "database"] = "jwt"
     route_prefix: str = "/auth"
     session_backend: SessionBackend | None = None
