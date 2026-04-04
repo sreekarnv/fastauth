@@ -66,3 +66,30 @@ async def test_cleanup_expired():
     count = await adapter.cleanup_expired()
     assert count == 2
     assert await adapter.get_session("s1") is not None
+
+
+async def test_list_user_sessions():
+    adapter = MemorySessionAdapter()
+    await adapter.create_session(_make_session("s1", "u1"))
+    await adapter.create_session(_make_session("s2", "u1"))
+    await adapter.create_session(_make_session("s3", "u2"))
+
+    sessions = await adapter.list_user_sessions("u1")
+    assert len(sessions) == 2
+    assert {s["id"] for s in sessions} == {"s1", "s2"}
+
+
+async def test_list_user_sessions_empty():
+    adapter = MemorySessionAdapter()
+    sessions = await adapter.list_user_sessions("u1")
+    assert sessions == []
+
+
+async def test_list_user_sessions_excludes_expired():
+    adapter = MemorySessionAdapter()
+    await adapter.create_session(_make_session("s1", "u1", hours=1))
+    await adapter.create_session(_make_session("s2", "u1", hours=-1))
+
+    sessions = await adapter.list_user_sessions("u1")
+    assert len(sessions) == 1
+    assert sessions[0]["id"] == "s1"
