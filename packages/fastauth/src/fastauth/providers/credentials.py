@@ -55,8 +55,9 @@ class CredentialsProvider:
         attempt = await token_adapter.get_token(
             f"login_attempt:{user_id}", "login_attempt"
         )
-        if attempt and attempt.get("locked_until"):
-            locked_until = attempt["locked_until"]
+        raw_data = attempt.get("raw_data") if attempt else None
+        if raw_data and raw_data.get("locked_until"):
+            locked_until = raw_data["locked_until"]
             if locked_until > datetime.now(timezone.utc):
                 raise AccountLockedError(
                     int((locked_until - datetime.now(timezone.utc)).total_seconds())
@@ -70,8 +71,9 @@ class CredentialsProvider:
         )
 
         now = datetime.now(timezone.utc)
-        if attempt and attempt.get("attempts"):
-            attempts = attempt["attempts"] + 1
+        raw_data = attempt.get("raw_data") if attempt else None
+        if raw_data and raw_data.get("attempts"):
+            attempts = raw_data["attempts"] + 1
         else:
             attempts = 1
 

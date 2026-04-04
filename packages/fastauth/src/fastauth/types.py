@@ -56,6 +56,13 @@ class PasskeyData(TypedDict):
     last_used_at: str | None
 
 
+class LoginAttemptData(TypedDict):
+    user_id: str
+    attempts: int
+    locked_until: datetime | None
+    last_attempt_at: datetime
+
+
 class TokenPair(TypedDict):
     access_token: str
     refresh_token: str
