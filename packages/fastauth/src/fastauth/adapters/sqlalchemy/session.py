@@ -61,6 +61,18 @@ class SQLAlchemySessionAdapter:
             )
             await db.commit()
 
+    async def list_user_sessions(self, user_id: str) -> list[SessionData]:
+        async with self._session_factory() as db:
+            now = datetime.now(timezone.utc)
+            result = await db.execute(
+                select(SessionModel).where(
+                    SessionModel.user_id == user_id,
+                    SessionModel.expires_at > now,
+                )
+            )
+            models = result.scalars().all()
+            return [_to_session_data(m) for m in models]
+
     async def cleanup_expired(self) -> int:
         async with self._session_factory() as db:
             now = datetime.now(timezone.utc)
