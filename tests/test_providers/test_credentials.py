@@ -5,6 +5,16 @@ from fastauth.exceptions import AccountLockedError, AuthenticationError
 from fastauth.providers.credentials import CredentialsProvider
 
 
+def test_account_locked_error_without_locked_until():
+    err = AccountLockedError()
+    assert "Too many failed login attempts" in str(err)
+
+
+def test_account_locked_error_with_locked_until():
+    err = AccountLockedError(locked_until=120)
+    assert "2 minutes" in str(err)
+
+
 @pytest.fixture
 def user_adapter():
     return MemoryUserAdapter()

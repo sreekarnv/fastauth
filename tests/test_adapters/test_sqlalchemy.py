@@ -222,6 +222,38 @@ async def test_delete_user_sessions(adapter):
     assert await adapter.session.get_session("s2") is None
 
 
+async def test_list_user_sessions(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    other = await adapter.user.create_user("bob@example.com")
+    await adapter.session.create_session(_session_data(user["id"], "s1"))
+    await adapter.session.create_session(_session_data(user["id"], "s2"))
+    await adapter.session.create_session(_session_data(other["id"], "s3"))
+
+    sessions = await adapter.session.list_user_sessions(user["id"])
+    assert len(sessions) == 2
+    assert {s["id"] for s in sessions} == {"s1", "s2"}
+
+
+async def test_list_user_sessions_empty(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    sessions = await adapter.session.list_user_sessions(user["id"])
+    assert sessions == []
+
+
+async def test_list_user_sessions_excludes_expired(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.session.create_session(_session_data(user["id"], "active"))
+    expired = {
+        **_session_data(user["id"], "expired"),
+        "expires_at": datetime.now(timezone.utc) - timedelta(hours=1),
+    }
+    await adapter.session.create_session(expired)
+
+    sessions = await adapter.session.list_user_sessions(user["id"])
+    assert len(sessions) == 1
+    assert sessions[0]["id"] == "active"
+
+
 async def test_create_and_get_role(adapter):
     role = await adapter.role.create_role("admin", ["read", "write"])
     assert role["name"] == "admin"
