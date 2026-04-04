@@ -53,3 +53,15 @@ class ProviderError(FastAuthError):
 
     Typically wraps OAuth provider failures (bad ``code``, revoked tokens, etc.).
     """
+
+
+class AccountLockedError(AuthenticationError):
+    """Raised when an account is locked due to too many failed login attempts."""
+
+    def __init__(self, locked_until: int | None = None):
+        if locked_until:
+            super().__init__(
+                f"Account is locked. Try again in {locked_until // 60} minutes"
+            )
+        else:
+            super().__init__("Account is locked. Too many failed login attempts.")

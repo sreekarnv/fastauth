@@ -39,7 +39,7 @@ class MemoryUserAdapter(UserAdapter):
             "name": kwargs.get("name"),  # type: ignore[typeddict-item]
             "image": kwargs.get("image"),  # type: ignore[typeddict-item]
             "email_verified": bool(kwargs.get("email_verified", False)),
-            "is_active": True,
+            "is_active": kwargs.get("is_active", True),
         }
         self._users[user_id] = user
         self._passwords[user_id] = hashed_password
@@ -160,6 +160,14 @@ class MemorySessionAdapter:
         ]
         for sid in to_delete:
             del self._sessions[sid]
+
+    async def list_user_sessions(self, user_id: str) -> list[SessionData]:
+        now = datetime.now(timezone.utc)
+        return [
+            s
+            for s in self._sessions.values()
+            if s["user_id"] == user_id and s["expires_at"] > now
+        ]
 
     async def cleanup_expired(self) -> int:
         now = datetime.now(timezone.utc)

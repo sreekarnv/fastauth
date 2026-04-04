@@ -171,6 +171,9 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         try:
+            from fastauth.core.credentials import validate_password
+
+            validate_password(body.password, fa.config.password)
             hashed = hash_password(body.password)
             user = await fa.config.adapter.create_user(
                 email=body.email,
@@ -218,6 +221,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 adapter=fa.config.adapter,
                 email=body.email,
                 password=body.password,
+                token_adapter=fa.config.token_adapter,
             )
         except AuthenticationError as e:
             raise HTTPException(
