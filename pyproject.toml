@@ -1,6 +1,6 @@
 [project]
 name = "sreekarnv-fastauth-workspace"
-version = "0.5.4"
+version = "0.5.5"
 description = "FastAuth monorepo workspace root"
 readme = "README.md"
 requires-python = ">=3.11"

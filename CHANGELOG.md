@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.5] - 2026-05-08
 
 ### Added
 
@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JWKS route (`/.well-known/jwks.json`) was never registered when `initialize_jwks()` is called inside the FastAPI lifespan handler — `FastAuth.mount()` now checks `config.jwt.jwks_enabled` (static config) instead of `self.jwks_manager` (runtime state), which was always `None` at mount time
 - Pre-commit hooks were not installed (`pre-commit install` had never been run); running it now creates `.git/hooks/pre-commit`
 - `.pre-commit-config.yaml` referenced non-existent ruff version `v0.14.10`; corrected to `v0.15.1`
+
+## [Unreleased]
 
 ## [0.5.3] - 2026-03-21
 
