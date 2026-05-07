@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Token introspection (RFC 7662)** — new `/auth/token/introspect` endpoint to check token validity
+  - Returns `active: true/false` based on token validity and (for refresh tokens) JTI allowlist status
+  - Returns token claims: `sub`, `exp`, `jti`, `type`, `email`
+  - Never raises 4xx for invalid tokens — returns `active: false` instead
+- **Token revocation (RFC 7009)** — new `/auth/token/revoke` endpoint to invalidate refresh tokens
+  - Only token owner can revoke their own tokens (checks `sub` claim)
+  - Removes JTI from allowlist when token adapter is configured
+  - Returns `400` for access tokens (only refresh tokens supported)
+  - Returns `403` when trying to revoke another user's token
+- **Remember me login** — extended refresh token TTL option during login
+  - `POST /auth/login` accepts optional `remember: boolean` field
+  - When `remember: true`, refresh token TTL extends to 90 days (vs default 30 days)
+  - New `JWTConfig.remember_me_ttl` config option (default: 7,776,000 seconds)
+- **Profile endpoints** — new `/auth/account/profile` endpoints for user profile management
+  - `GET /auth/account/profile` — returns user profile (id, email, name, image)
+  - `PUT /auth/account/profile` — updates name and/or image fields
+
 - **OAuth account linking** — authenticated users can now connect additional OAuth providers to their existing account without going through the full sign-in flow
   - `GET /auth/oauth/{provider}/link?redirect_uri=...` — requires Bearer token; returns the provider authorization URL with a link-scoped PKCE state
   - `GET /auth/oauth/{provider}/link/callback?code=...&state=...` — public; exchanges the code, creates the `OAuthAccount` record, fires the `on_oauth_link` hook, and returns `{"message": "<Provider> account linked successfully"}`
