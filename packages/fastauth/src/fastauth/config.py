@@ -76,6 +76,7 @@ class JWTConfig:
     algorithm: str = "HS256"
     access_token_ttl: int = 900
     refresh_token_ttl: int = 2_592_000  # 30 days
+    remember_me_ttl: int = 7_776_000  # 90 days
     issuer: str | None = None
     audience: list[str] | None = None
     jwks_enabled: bool = False

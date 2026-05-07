@@ -24,10 +24,17 @@ if TYPE_CHECKING:
 generate_token = cuid_wrapper()
 
 
-async def _issue_tracked_tokens(fa: FastAuth, user: UserData) -> TokenPair:
+async def _issue_tracked_tokens(
+    fa: FastAuth, user: UserData, remember: bool = False
+) -> TokenPair:
     """Create a token pair and, when *token_adapter* is configured, record the
     refresh-token JTI in the allowlist so that reuse can be detected later."""
-    tokens = create_token_pair(user, fa.config, fa.jwks_manager)
+    refresh_ttl = (
+        fa.config.jwt.remember_me_ttl if remember else fa.config.jwt.refresh_token_ttl
+    )
+    tokens = create_token_pair(
+        user, fa.config, fa.jwks_manager, refresh_ttl_override=refresh_ttl
+    )
     if fa.config.token_adapter:
         refresh_claims = decode_token(
             tokens["refresh_token"], fa.config, fa.jwks_manager
@@ -55,6 +62,7 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    remember: bool = False
 
 
 class RefreshRequest(BaseModel):
@@ -232,7 +240,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signin(user, "credentials")
 
-        tokens = await _issue_tracked_tokens(fa, user)
+        tokens = await _issue_tracked_tokens(fa, user, remember=body.remember)
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)

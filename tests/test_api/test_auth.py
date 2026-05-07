@@ -1,4 +1,5 @@
 import pytest
+from fastauth.core.tokens import decode_token
 
 
 @pytest.fixture
@@ -132,3 +133,39 @@ async def test_protected_route_with_token(client):
     data = resp.json()
     assert resp.status_code == 200
     assert "message" in data and data["message"] == "protected_router loaded"
+
+
+async def test_login_remember_me_extends_refresh_ttl(client):
+
+    await __register_user(client)
+
+    normal = await client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "Pass123#"},
+    )
+    remember = await client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "Pass123#", "remember": True},
+    )
+    assert normal.status_code == 200
+    assert remember.status_code == 200
+
+    fa = client._transport.app.state.fastauth
+    normal_claims = decode_token(
+        normal.json()["refresh_token"], fa.config, fa.jwks_manager
+    )
+    remember_claims = decode_token(
+        remember.json()["refresh_token"], fa.config, fa.jwks_manager
+    )
+
+    assert remember_claims["exp"] > normal_claims["exp"]
+
+
+async def test_login_without_remember_uses_default_ttl(client):
+    await __register_user(client)
+    resp = await client.post(
+        "/auth/login",
+        json={"email": "test@example.com", "password": "Pass123#"},
+    )
+    assert resp.status_code == 200
+    assert "refresh_token" in resp.json()

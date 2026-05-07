@@ -76,16 +76,22 @@ def create_refresh_token(
     user: UserData,
     config: FastAuthConfig,
     jwks_manager: JWKSManager | None = None,
+    refresh_ttl_override: int | None = None,
 ) -> str:
     key, header = _get_signing_key_and_header(config, jwks_manager)
     now = datetime.now(timezone.utc)
+    ttl = (
+        refresh_ttl_override
+        if refresh_ttl_override is not None
+        else config.jwt.refresh_token_ttl
+    )
     claims: jwt.Claims = {
         "sub": user["id"],
         "jti": cuid_generator(),
         "iss": config.jwt.issuer,
         "aud": config.jwt.audience,
         "iat": int(now.timestamp()),
-        "exp": int((now + timedelta(seconds=config.jwt.refresh_token_ttl)).timestamp()),
+        "exp": int((now + timedelta(seconds=ttl)).timestamp()),
         "type": "refresh",
         "email": user["email"],
         "name": user["name"],
@@ -103,9 +109,10 @@ def create_token_pair(
     user: UserData,
     config: FastAuthConfig,
     jwks_manager: JWKSManager | None = None,
+    refresh_ttl_override: int | None = None,
 ) -> TokenPair:
     access = create_access_token(user, config, jwks_manager)
-    refresh = create_refresh_token(user, config, jwks_manager)
+    refresh = create_refresh_token(user, config, jwks_manager, refresh_ttl_override)
 
     return {
         "access_token": access,
