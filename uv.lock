@@ -1583,7 +1583,7 @@ asyncio = [
 
 [[package]]
 name = "sreekarnv-fastauth"
-version = "0.5.3"
+version = "0.5.4"
 source = { editable = "packages/fastauth" }
 dependencies = [
     { name = "cuid2" },

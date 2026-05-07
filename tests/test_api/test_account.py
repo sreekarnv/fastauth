@@ -230,3 +230,55 @@ async def test_delete_account_unauthenticated(client):
         json={"password": "Pass123#"},
     )
     assert resp.status_code == 401
+
+
+async def test_get_profile(client):
+    token = await _register_and_get_token(client)
+    resp = await client.get("/auth/account/profile", headers=_auth_header(token))
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["email"] == "test@example.com"
+    assert data["name"] == "Test"
+    assert "id" in data
+
+
+async def test_get_profile_unauthenticated(client):
+    resp = await client.get("/auth/account/profile")
+    assert resp.status_code == 401
+
+
+async def test_update_profile_name(client):
+    token = await _register_and_get_token(client)
+    resp = await client.put(
+        "/auth/account/profile",
+        json={"name": "Updated Name"},
+        headers=_auth_header(token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["name"] == "Updated Name"
+
+
+async def test_update_profile_image(client):
+    token = await _register_and_get_token(client)
+    resp = await client.put(
+        "/auth/account/profile",
+        json={"image": "https://example.com/avatar.png"},
+        headers=_auth_header(token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["image"] == "https://example.com/avatar.png"
+
+
+async def test_update_profile_no_fields(client):
+    token = await _register_and_get_token(client)
+    resp = await client.put(
+        "/auth/account/profile",
+        json={},
+        headers=_auth_header(token),
+    )
+    assert resp.status_code == 400
+
+
+async def test_update_profile_unauthenticated(client):
+    resp = await client.put("/auth/account/profile", json={"name": "X"})
+    assert resp.status_code == 401

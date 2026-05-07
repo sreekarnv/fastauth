@@ -35,8 +35,54 @@ class MessageResponse(BaseModel):
     message: str
 
 
+class ProfileResponse(BaseModel):
+    id: str
+    email: str
+    name: str | None = None
+    image: str | None = None
+
+
+class UpdateProfileRequest(BaseModel):
+    name: str | None = None
+    image: str | None = None
+
+
 def create_account_router(auth: object) -> APIRouter:
     router = APIRouter(prefix="/account")
+
+    @router.get("/profile", response_model=ProfileResponse)
+    async def get_profile(
+        user: UserData = Depends(require_auth),
+    ) -> ProfileResponse:
+        return ProfileResponse(
+            id=user["id"],
+            email=user["email"],
+            name=user.get("name"),
+            image=user.get("image"),
+        )
+
+    @router.put("/profile", response_model=ProfileResponse)
+    async def update_profile(
+        request: Request,
+        body: UpdateProfileRequest,
+        user: UserData = Depends(require_auth),
+    ) -> ProfileResponse:
+        fa: FastAuth = request.app.state.fastauth
+
+        updates = body.model_dump(exclude_none=True)
+        if not updates:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No fields to update",
+            )
+
+        updated = await fa.config.adapter.update_user(user["id"], **updates)
+        return ProfileResponse(
+            id=updated["id"],
+            email=updated["email"],
+            name=updated.get("name"),
+            image=updated.get("image"),
+        )
 
     @router.post("/change-password", response_model=MessageResponse)
     async def change_password(
