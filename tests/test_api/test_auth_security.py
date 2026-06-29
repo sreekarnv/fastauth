@@ -285,3 +285,70 @@ async def test_logout_without_token_adapter_succeeds():
             "/auth/logout", headers={"Authorization": f"Bearer {access}"}
         )
         assert resp.status_code == 200
+
+
+async def test_register_weak_password_returns_400():
+    from fastauth.config import SecurityConfig
+
+    user_adapter = MemoryUserAdapter()
+    token_adapter = MemoryTokenAdapter()
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=user_adapter,
+        token_adapter=token_adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+        security=SecurityConfig(max_login_attempts=5, lockout_duration=300),
+        password=PasswordConfig(
+            min_length=12,
+            require_uppercase=True,
+            require_lowercase=True,
+            require_digit=True,
+            require_special=True,
+        ),
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={"email": "weak@example.com", "password": "short", "name": "T"},
+        )
+        assert resp.status_code == 400
+
+
+async def test_security_config_used_for_lockout():
+    from fastauth.config import SecurityConfig
+
+    user_adapter = MemoryUserAdapter()
+    token_adapter = MemoryTokenAdapter()
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=user_adapter,
+        token_adapter=token_adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+        security=SecurityConfig(max_login_attempts=2, lockout_duration=60),
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        await c.post(
+            "/auth/register",
+            json={"email": "lock@example.com", "password": "Pass123#", "name": "T"},
+        )
+        for _ in range(2):
+            resp = await c.post(
+                "/auth/login",
+                json={"email": "lock@example.com", "password": "wrong"},
+            )
+            assert resp.status_code == 401
+        resp = await c.post(
+            "/auth/login",
+            json={"email": "lock@example.com", "password": "Pass123#"},
+        )
+        assert resp.status_code == 401
