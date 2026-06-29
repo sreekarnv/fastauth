@@ -79,19 +79,24 @@ class GitHubProvider:
             data = resp.json()
 
             email = data.get("email")
+            email_verified = False
             if not email:
-                email = await self._fetch_primary_email(client, access_token)
+                email, email_verified = await self._fetch_primary_email(
+                    client, access_token
+                )
 
             return {
                 "id": str(data["id"]),
                 "email": email,
                 "name": data.get("name") or data.get("login"),
                 "image": data.get("avatar_url"),
-                "email_verified": True,
+                "email_verified": email_verified,
                 "is_active": True,
             }
 
-    async def _fetch_primary_email(self, client: Any, access_token: str) -> str:
+    async def _fetch_primary_email(
+        self, client: Any, access_token: str
+    ) -> tuple[str, bool]:
         resp = await client.get(
             self.EMAILS_URL,
             headers={
@@ -104,12 +109,12 @@ class GitHubProvider:
         emails = resp.json()
         for entry in emails:
             if entry.get("primary") and entry.get("verified"):
-                return entry["email"]
+                return entry["email"], True
         for entry in emails:
             if entry.get("primary"):
-                return entry["email"]
+                return entry["email"], bool(entry.get("verified", False))
         if emails:
-            return emails[0]["email"]
+            return emails[0]["email"], bool(emails[0].get("verified", False))
         raise ProviderError("No email found on GitHub account")
 
     async def refresh_access_token(self, refresh_token: str) -> dict[str, Any] | None:
