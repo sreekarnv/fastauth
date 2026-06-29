@@ -2,10 +2,10 @@ from typing import Any
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from joserfc.errors import JoseError
 
 from fastauth.core.rbac import check_user_permission, check_user_role
 from fastauth.core.tokens import decode_token
+from fastauth.exceptions import InvalidTokenError
 from fastauth.types import UserData
 
 security = HTTPBearer(auto_error=False)
@@ -33,7 +33,7 @@ async def get_current_user(
             return None
         user = await auth.config.adapter.get_user_by_id(claims["sub"])
         return user
-    except (JoseError, ValueError):
+    except InvalidTokenError:
         return None
 
 

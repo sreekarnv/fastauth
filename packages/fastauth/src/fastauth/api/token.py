@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from joserfc.errors import JoseError
 from pydantic import BaseModel
 
 from fastauth.api.deps import require_auth
 from fastauth.core.tokens import decode_token
+from fastauth.exceptions import InvalidTokenError
 
 if TYPE_CHECKING:
     from fastauth.types import UserData
@@ -51,7 +51,7 @@ def create_token_router(auth: object) -> APIRouter:
 
         try:
             claims = decode_token(body.token, fa.config, fa.jwks_manager)
-        except (JoseError, ValueError):
+        except InvalidTokenError:
             return IntrospectResponse(active=False)
 
         # For refresh tokens, verify JTI is still in the allowlist
@@ -97,7 +97,7 @@ def create_token_router(auth: object) -> APIRouter:
 
         try:
             claims = decode_token(body.token, fa.config, fa.jwks_manager)
-        except (JoseError, ValueError) as e:
+        except InvalidTokenError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid token",
