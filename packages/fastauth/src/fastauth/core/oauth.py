@@ -161,24 +161,27 @@ async def complete_oauth_flow(
         if not user:
             raise ProviderError("Linked user account not found")
         email_verified_now = False
-        if not user.get("email_verified"):
+        if provider_user.get("email_verified") and not user.get("email_verified"):
             user = await user_adapter.update_user(user["id"], email_verified=True)
             email_verified_now = True
         return user, False, email_verified_now
 
     user = await user_adapter.get_user_by_email(provider_user["email"])
     is_new = False
+    provider_email_verified = bool(provider_user.get("email_verified", False))
 
     if not user:
         user = await user_adapter.create_user(
             email=provider_user["email"],
             name=provider_user.get("name"),
             image=provider_user.get("image"),
-            email_verified=True,
+            email_verified=provider_email_verified,
         )
         is_new = True
-        email_verified_now = True
+        email_verified_now = provider_email_verified
     else:
+        if not provider_email_verified:
+            raise ProviderError("OAuth provider email is not verified")
         email_verified_now = False
         if not user.get("email_verified"):
             user = await user_adapter.update_user(user["id"], email_verified=True)
