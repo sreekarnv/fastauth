@@ -80,6 +80,7 @@ async def test_get_user_info_with_email(provider):
         assert user["id"] == "12345"
         assert user["email"] == "user@github.com"
         assert user["name"] == "Test User"
+        assert user["email_verified"] is False
 
 
 async def test_get_user_info_email_fallback(provider):
@@ -117,7 +118,41 @@ async def test_get_user_info_email_fallback(provider):
 
         user = await provider.get_user_info("gh-token")
         assert user["email"] == "primary@example.com"
+        assert user["email_verified"] is True
         assert user["name"] == "testuser"
+
+
+async def test_get_user_info_email_fallback_unverified_primary(provider):
+    user_response = MagicMock()
+    user_response.status_code = 200
+    user_response.json.return_value = {
+        "id": 12345,
+        "login": "testuser",
+        "name": None,
+        "email": None,
+        "avatar_url": None,
+    }
+
+    emails_response = MagicMock()
+    emails_response.status_code = 200
+    emails_response.json.return_value = [
+        {
+            "email": "primary@example.com",
+            "primary": True,
+            "verified": False,
+        }
+    ]
+
+    mock_client = AsyncMock()
+    mock_client.get.side_effect = [user_response, emails_response]
+
+    with patch("httpx.AsyncClient") as mock_cls:
+        mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+        user = await provider.get_user_info("gh-token")
+        assert user["email"] == "primary@example.com"
+        assert user["email_verified"] is False
 
 
 async def test_refresh_returns_none(provider):
