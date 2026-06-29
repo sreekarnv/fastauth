@@ -70,6 +70,14 @@ async def test_register_sets_cookies(cookie_client):
     assert "refresh_token" in resp.cookies
 
 
+async def test_register_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
+    resp = await cookie_client.post("/auth/register", json=_REGISTER)
+    assert resp.status_code == 201
+    body = resp.json()
+    assert "access_token" not in body
+    assert "refresh_token" not in body
+
+
 async def test_login_sets_cookies(cookie_client):
     await cookie_client.post("/auth/register", json=_REGISTER)
     resp = await cookie_client.post(
@@ -78,6 +86,17 @@ async def test_login_sets_cookies(cookie_client):
     assert resp.status_code == 200
     assert "access_token" in resp.cookies
     assert "refresh_token" in resp.cookies
+
+
+async def test_login_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post(
+        "/auth/login", json={"email": _EMAIL, "password": _PASSWORD}
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "access_token" not in body
+    assert "refresh_token" not in body
 
 
 async def test_logout_clears_cookies(cookie_client):
@@ -92,6 +111,15 @@ async def test_refresh_reads_from_cookie(cookie_client):
     resp = await cookie_client.post("/auth/refresh")
     assert resp.status_code == 200
     assert "access_token" in resp.cookies
+
+
+async def test_refresh_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post("/auth/refresh")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "access_token" not in body
+    assert "refresh_token" not in body
 
 
 async def test_refresh_no_token_returns_401(cookie_client):

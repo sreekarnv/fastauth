@@ -176,6 +176,37 @@ async def test_strong_password_on_reset_succeeds(capsys):
         assert resp.status_code == 200
 
 
+async def test_reset_password_revokes_existing_refresh_jti(capsys):
+    """Regression: after /auth/reset-password, an old refresh token (and any
+    other outstanding refresh_jti) must be rejected."""
+    app, _, _ = _build_app()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={
+                "email": "reset-revoke@example.com",
+                "password": "InitialPass123!@#",
+                "name": "T",
+            },
+        )
+        assert resp.status_code == 201
+        old_refresh = resp.json()["refresh_token"]
+
+        await c.post(
+            "/auth/forgot-password", json={"email": "reset-revoke@example.com"}
+        )
+        reset_token = _extract_token(capsys)
+        resp = await c.post(
+            "/auth/reset-password",
+            json={"token": reset_token, "new_password": "BrandNewPass456!@#"},
+        )
+        assert resp.status_code == 200
+
+        resp = await c.post("/auth/refresh", json={"refresh_token": old_refresh})
+        assert resp.status_code == 401
+
+
 async def test_credentials_login_blocked_by_allow_signin():
     from fastauth.core.protocols import EventHooks
     from fastauth.types import UserData
@@ -256,6 +287,64 @@ async def test_logout_revokes_refresh_jti():
 
         resp = await c.post("/auth/refresh", json={"refresh_token": refresh})
         assert resp.status_code == 401
+
+
+async def test_refresh_replay_revokes_token_family():
+    """Replay an already-used refresh token — the whole refresh-token family
+    for the user must be revoked (a re-use of the rotated refresh token
+    must also be rejected, since the first rotation already consumed the
+    original JTI)."""
+
+    app, _, _ = _build_app()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={"email": "replay@example.com", "password": "Pass123#", "name": "T"},
+        )
+        assert resp.status_code == 201
+        first_refresh = resp.json()["refresh_token"]
+
+        # First rotation succeeds
+        resp = await c.post("/auth/refresh", json={"refresh_token": first_refresh})
+        assert resp.status_code == 200
+        second_refresh = resp.json()["refresh_token"]
+        assert second_refresh != first_refresh
+
+        # Replaying the first (consumed) refresh token must fail AND
+        # revoke the family so even the freshly issued token is invalidated.
+        resp = await c.post("/auth/refresh", json={"refresh_token": first_refresh})
+        assert resp.status_code == 401
+
+        resp = await c.post("/auth/refresh", json={"refresh_token": second_refresh})
+        assert resp.status_code == 401
+
+
+async def test_refresh_concurrent_only_one_wins():
+    """Two concurrent refresh requests for the same token — only one
+    consumer should succeed, the other should be treated as a replay and
+    rejected."""
+    import asyncio
+
+    app, _, _ = _build_app()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={"email": "race@example.com", "password": "Pass123#", "name": "T"},
+        )
+        assert resp.status_code == 201
+        refresh = resp.json()["refresh_token"]
+
+        async def attempt():
+            return await c.post("/auth/refresh", json={"refresh_token": refresh})
+
+        results = await asyncio.gather(attempt(), attempt(), attempt())
+        statuses = sorted(r.status_code for r in results)
+        # Exactly one rotation must succeed; the others are rejected as
+        # either invalid-replay or already-revoked.
+        assert statuses[0] == 200
+        assert all(s == 401 for s in statuses[1:])
 
 
 async def test_logout_without_token_adapter_succeeds():

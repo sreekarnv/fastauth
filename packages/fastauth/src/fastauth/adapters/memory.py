@@ -119,6 +119,19 @@ class MemoryTokenAdapter:
     async def delete_token(self, token: str) -> None:
         self._tokens.pop(token, None)
 
+    async def consume_token(self, token: str, token_type: str) -> TokenData | None:
+        stored = self._tokens.get(token)
+        if stored is None:
+            return None
+        if stored["token_type"] != token_type:
+            return None
+        if stored["expires_at"] < datetime.now(timezone.utc):
+            self._tokens.pop(token, None)
+            return None
+        # Type and expiry match — atomically remove and return the row.
+        self._tokens.pop(token, None)
+        return stored
+
     async def delete_user_tokens(
         self, user_id: str, token_type: str | None = None
     ) -> None:

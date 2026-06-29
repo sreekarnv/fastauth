@@ -55,10 +55,12 @@ jwt = JWTConfig(
 
 ## Token delivery
 
-| Mode | How tokens are returned | When to use |
-|------|------------------------|-------------|
-| `"json"` (default) | Response body `{ access_token, refresh_token }` | SPAs, mobile apps, API clients |
-| `"cookie"` | HttpOnly, Secure cookies | Traditional web apps, same-origin frontends |
+| Mode | Response body | Where the tokens go | When to use |
+|------|---------------|--------------------|-------------|
+| `"json"` (default) | `{ access_token, refresh_token, ... }` | Body | SPAs, mobile apps, API clients |
+| `"cookie"` | `{"message": "Authentication successful"}` — **no tokens** | `HttpOnly` cookies | Traditional web apps, same-origin frontends |
+
+In cookie mode the response body intentionally never contains token material — see [Cookie Delivery](../features/cookies.md) for details.
 
 ```python
 config = FastAuthConfig(
@@ -81,7 +83,13 @@ Authorization: Bearer <refresh_token>
 { "access_token": "...", "refresh_token": "..." }
 ```
 
-FastAuth validates the refresh token, checks it's still live in the `token_adapter`, rotates it (issues a new pair), and returns the new tokens.
+FastAuth validates the refresh token and **atomically consumes** its JTI from the `token_adapter` allowlist. The consume is a single read-and-delete operation (or, on row-locking databases, a `SELECT ... FOR UPDATE` followed by a rowcount-checked `DELETE`) so concurrent requests for the same refresh token can never both succeed.
+
+A new pair is then issued and the new refresh JTI is recorded in the allowlist. The old refresh token is no longer valid.
+
+### Replay detection
+
+If `consume_token` returns `None` — meaning the JTI is missing or has already been consumed — FastAuth treats it as a replay attempt and revokes the entire refresh-token family for that user. All subsequent `/auth/refresh` calls for that user fail with `401` until the user signs in again.
 
 ## Signing algorithms
 

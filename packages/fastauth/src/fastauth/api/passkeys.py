@@ -22,7 +22,7 @@ from webauthn.helpers.structs import (
 )
 
 from fastauth._compat import require
-from fastauth.api.auth import _issue_tracked_tokens
+from fastauth.api.auth import MessageResponse, _issue_tracked_tokens
 from fastauth.api.deps import require_auth
 from fastauth.api.schemas import ErrorDetail
 
@@ -253,7 +253,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
     async def complete_authentication(
         request: Request,
         response: Response,
-    ) -> dict[str, Any]:
+    ):
         from fastauth.api.auth import _set_auth_cookies
 
         provider = _get_provider()
@@ -323,6 +323,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
+            return MessageResponse(message="Authentication successful")
 
         if fa.config.hooks:
             await fa.config.hooks.on_signin(user, "passkey")

@@ -203,3 +203,56 @@ async def test_delete_user_tokens(memory_token_adapter):
     assert (await memory_token_adapter.get_token("tok_abc", "refresh")) is None
     assert (await memory_token_adapter.get_token("tok_efg", "refresh")) is None
     assert (await memory_token_adapter.get_token("tok_xyz", "verification")) is None
+
+
+async def test_consume_token_returns_and_deletes(memory_token_adapter):
+    await memory_token_adapter.create_token(
+        {
+            "token": "tok_consume",
+            "user_id": "u1",
+            "token_type": "refresh_jti",
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+        }
+    )
+
+    consumed = await memory_token_adapter.consume_token("tok_consume", "refresh_jti")
+    assert consumed is not None
+    assert consumed["user_id"] == "u1"
+
+    # Second consume returns None — the token was atomically deleted.
+    assert (
+        await memory_token_adapter.consume_token("tok_consume", "refresh_jti") is None
+    )
+
+
+async def test_consume_token_wrong_type_returns_none(memory_token_adapter):
+    await memory_token_adapter.create_token(
+        {
+            "token": "tok_wrong_type",
+            "user_id": "u1",
+            "token_type": "verification",
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+        }
+    )
+
+    consumed = await memory_token_adapter.consume_token("tok_wrong_type", "refresh_jti")
+    assert consumed is None
+    # The mismatched token must NOT be deleted on a wrong-type consume.
+    assert (
+        await memory_token_adapter.get_token("tok_wrong_type", "verification")
+        is not None
+    )
+
+
+async def test_consume_token_expired_returns_none(memory_token_adapter):
+    await memory_token_adapter.create_token(
+        {
+            "token": "tok_expired",
+            "user_id": "u1",
+            "token_type": "refresh_jti",
+            "expires_at": datetime.now(timezone.utc) - timedelta(hours=1),
+        }
+    )
+
+    consumed = await memory_token_adapter.consume_token("tok_expired", "refresh_jti")
+    assert consumed is None

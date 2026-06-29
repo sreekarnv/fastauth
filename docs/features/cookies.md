@@ -2,6 +2,11 @@
 
 By default FastAuth returns tokens in the JSON response body. Switching to `"cookie"` delivery sets them as HttpOnly cookies instead — the browser sends them automatically on every request.
 
+!!! danger "Tokenless response bodies in cookie mode"
+    When `token_delivery="cookie"`, FastAuth **never returns tokens in the JSON body**. Every sign-in / refresh / OAuth-callback / magic-link-callback / passkey-authenticate response is a small `{"message": "Authentication successful"}` payload — the tokens are attached only as `HttpOnly` cookies. This prevents accidental leaks through logs, browser dev tools, or JavaScript that happens to read the response.
+
+    If a client needs the access token in JavaScript, use the default `"json"` delivery (or read it from your own server-side session).
+
 ## Enable cookie delivery
 
 ```python
@@ -20,9 +25,10 @@ config = FastAuthConfig(
 
 When `token_delivery="cookie"`:
 
-1. **Sign-in / sign-up / refresh** — FastAuth sets two cookies on the response:
+1. **Sign-in / sign-up / refresh / OAuth callback / magic-link callback / passkey auth completion** — FastAuth sets two cookies on the response:
    - `access_token` (15 min, `HttpOnly`)
    - `refresh_token` (30 days, `HttpOnly`)
+   The response body is `{"message": "Authentication successful"}` and intentionally contains no token material.
 2. **Protected routes** — `require_auth` reads the access token from the cookie first, then falls back to the `Authorization: Bearer` header.
 3. **Sign-out** — FastAuth clears both cookies.
 

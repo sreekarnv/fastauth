@@ -30,7 +30,11 @@ async def initiate_oauth_flow(
 
     await state_store.write(
         f"oauth_state:{state}",
-        {"code_verifier": code_verifier, "provider": provider.id},
+        {
+            "code_verifier": code_verifier,
+            "provider": provider.id,
+            "redirect_uri": redirect_uri,
+        },
         ttl=600,
     )
 
@@ -62,6 +66,7 @@ async def initiate_link_flow(
             "provider": provider.id,
             "flow": "link",
             "user_id": user_id,
+            "redirect_uri": redirect_uri,
         },
         ttl=600,
     )
@@ -75,6 +80,38 @@ async def initiate_link_flow(
     return url, state
 
 
+def _validate_oauth_state(
+    stored: dict[str, Any] | None,
+    *,
+    provider: OAuthProvider,
+    expected_flow: str,
+) -> dict[str, Any]:
+    """Validate a stored OAuth state payload.
+
+    Ensures the state is present, bound to *expected_flow* (either ``"signin"``
+    or ``"link"``), and bound to the same provider that the callback is
+    being processed for. Returns the validated stored state so the caller
+    can use it to retrieve the PKCE verifier and redirect URI.
+    """
+    if not stored:
+        raise ProviderError("Invalid or expired OAuth state")
+    stored_flow = stored.get("flow")
+    # ``initiate_oauth_flow`` doesn't tag the state with a flow value;
+    # ``initiate_link_flow`` writes ``flow="link"``. Treat absent as
+    # "signin" so existing state payloads remain valid.
+    effective_flow = stored_flow if stored_flow is not None else "signin"
+    if effective_flow != expected_flow:
+        if expected_flow == "link":
+            raise ProviderError("Invalid or expired link state")
+        raise ProviderError("Invalid or expired OAuth state")
+    if stored.get("provider") != provider.id:
+        raise ProviderError("OAuth state provider mismatch")
+    redirect_uri = stored.get("redirect_uri")
+    if not redirect_uri or not isinstance(redirect_uri, str):
+        raise ProviderError("OAuth state is missing redirect_uri")
+    return stored
+
+
 async def link_oauth_account(
     provider: OAuthProvider,
     code: str,
@@ -86,16 +123,16 @@ async def link_oauth_account(
     store_provider_tokens: bool = False,
 ) -> tuple[Any, UserData]:
     stored = await state_store.read(f"oauth_state:{state}")
-    if not stored or stored.get("flow") != "link":
-        raise ProviderError("Invalid or expired link state")
+    validated = _validate_oauth_state(stored, provider=provider, expected_flow="link")
     await state_store.delete(f"oauth_state:{state}")
 
-    user_id: str = stored["user_id"]
+    user_id: str = validated["user_id"]
+    bound_redirect_uri = validated["redirect_uri"]
 
     tokens: dict[str, Any] = await provider.exchange_code(
         code=code,
-        redirect_uri=redirect_uri,
-        code_verifier=stored.get("code_verifier"),
+        redirect_uri=bound_redirect_uri,
+        code_verifier=validated.get("code_verifier"),
     )
     provider_user = await provider.get_user_info(tokens["access_token"])
 
@@ -145,14 +182,15 @@ async def complete_oauth_flow(
         ``on_email_verify`` hook in the caller).
     """
     stored = await state_store.read(f"oauth_state:{state}")
-    if not stored:
-        raise ProviderError("Invalid or expired OAuth state")
+    validated = _validate_oauth_state(stored, provider=provider, expected_flow="signin")
     await state_store.delete(f"oauth_state:{state}")
+
+    bound_redirect_uri = validated["redirect_uri"]
 
     tokens: dict[str, Any] = await provider.exchange_code(
         code=code,
-        redirect_uri=redirect_uri,
-        code_verifier=stored.get("code_verifier"),
+        redirect_uri=bound_redirect_uri,
+        code_verifier=validated.get("code_verifier"),
     )
 
     provider_user = await provider.get_user_info(tokens["access_token"])

@@ -69,7 +69,7 @@ auth.mount(app)
 | `GitHubProvider(...)` | Adds GitHub OAuth 2.0 |
 | `oauth_adapter=adapter.oauth` | Persists the link between a provider account and a local user |
 | `oauth_state_store=MemorySessionBackend()` | Stores the CSRF state token during the OAuth dance |
-| `oauth_redirect_url="..."` | Where to redirect after a successful OAuth callback (with tokens in query params) |
+| `oauth_redirect_url="..."` | Where to redirect after a successful OAuth callback (tokens are set as `HttpOnly` cookies — never appended to the URL) |
 
 ## Register the redirect URL with providers
 

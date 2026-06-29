@@ -72,6 +72,9 @@ curl -X POST http://localhost:8000/auth/reset-password \
 
 Note: the field name is `new_password`, not `password`.
 
+!!! info "Existing refresh tokens are revoked"
+    A successful password reset invalidates **all** outstanding refresh tokens (the JTI allowlist is cleared for that user) so that any browser or device that knew the old password is forced to re-authenticate. The previously issued `refresh_token` values return `401` on `/auth/refresh` even though they're cryptographically valid.
+
 ## Hook
 
 ```python

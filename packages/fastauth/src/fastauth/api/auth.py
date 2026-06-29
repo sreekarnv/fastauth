@@ -60,6 +60,20 @@ async def _issue_tracked_tokens(
     return tokens
 
 
+def _token_response_payload(
+    fa: FastAuth, tokens: TokenPair
+) -> TokenResponse | MessageResponse:
+    """Return the appropriate response model for the configured token delivery.
+
+    In ``"json"`` mode the full token pair is returned. In ``"cookie"`` mode
+    the response body intentionally contains no token material — the tokens
+    were set on the response as ``HttpOnly`` cookies by the caller.
+    """
+    if fa.config.token_delivery == "cookie":
+        return MessageResponse(message="Authentication successful")
+    return TokenResponse(**tokens)
+
+
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
@@ -166,15 +180,21 @@ def create_auth_router(auth: object) -> APIRouter:
 
     @router.post(
         "/register",
-        response_model=TokenResponse,
+        response_model=None,
         status_code=status.HTTP_201_CREATED,
         responses={
-            409: {"model": ErrorDetail, "description": "Email already registered"}
+            201: {
+                "model": TokenResponse,
+                "description": "Created with token pair (JSON mode)",
+            },
+            409: {"model": ErrorDetail, "description": "Email already registered"},
         },
     )
     async def register(
-        request: Request, body: RegisterRequest, response: Response
-    ) -> TokenResponse:
+        request: Request,
+        body: RegisterRequest,
+        response: Response,
+    ) -> TokenResponse | MessageResponse:
 
         fa: FastAuth = request.app.state.fastauth
         provider = _get_credentials_provider()
@@ -221,12 +241,23 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
 
-        return TokenResponse(**tokens)
+        return _token_response_payload(fa, tokens)
 
-    @router.post("/login", response_model=TokenResponse)
+    @router.post(
+        "/login",
+        response_model=None,
+        responses={
+            200: {
+                "model": TokenResponse,
+                "description": "Token pair issued (JSON mode)",
+            },
+        },
+    )
     async def login(
-        request: Request, body: LoginRequest, response: Response
-    ) -> TokenResponse:
+        request: Request,
+        body: LoginRequest,
+        response: Response,
+    ) -> TokenResponse | MessageResponse:
 
         fa: FastAuth = request.app.state.fastauth
         provider = _get_credentials_provider()
@@ -264,7 +295,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
 
-        return TokenResponse(**tokens)
+        return _token_response_payload(fa, tokens)
 
     @router.post("/logout", response_model=MessageResponse)
     async def logout(
@@ -286,12 +317,21 @@ def create_auth_router(auth: object) -> APIRouter:
 
         return MessageResponse(message="Logged out")
 
-    @router.post("/refresh", response_model=TokenResponse)
+    @router.post(
+        "/refresh",
+        response_model=None,
+        responses={
+            200: {
+                "model": TokenResponse,
+                "description": "Rotated token pair (JSON mode)",
+            },
+        },
+    )
     async def refresh(
         request: Request,
         response: Response,
         body: RefreshRequest | None = None,
-    ) -> TokenResponse:
+    ) -> TokenResponse | MessageResponse:
 
         fa: FastAuth = request.app.state.fastauth
 
@@ -327,9 +367,13 @@ def create_auth_router(auth: object) -> APIRouter:
 
         old_jti = claims.get("jti")
         if fa.config.token_adapter and old_jti:
-            stored = await fa.config.token_adapter.get_token(old_jti, "refresh_jti")
-            if not stored:
-                # Replay detected — revoke the entire token family for this user
+            # Atomically consume the JTI. If `consume_token` returns None the
+            # token is either already used (replay) or never existed — either
+            # way, revoke the entire refresh-token family for this user.
+            consumed = await fa.config.token_adapter.consume_token(
+                old_jti, "refresh_jti"
+            )
+            if consumed is None:
                 await fa.config.token_adapter.delete_user_tokens(
                     user["id"], "refresh_jti"
                 )
@@ -337,7 +381,6 @@ def create_auth_router(auth: object) -> APIRouter:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Refresh token has already been used",
                 )
-            await fa.config.token_adapter.delete_token(old_jti)
 
         if fa.config.hooks:
             await fa.config.hooks.on_token_refresh(user)
@@ -347,7 +390,7 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
 
-        return TokenResponse(**tokens)
+        return _token_response_payload(fa, tokens)
 
     @router.post("/request-verify-email", response_model=MessageResponse)
     async def request_verify_email(
@@ -484,6 +527,12 @@ def create_auth_router(auth: object) -> APIRouter:
         await fa.config.token_adapter.delete_token(token_hash)
         await fa.config.token_adapter.delete_user_tokens(
             stored["user_id"], "password_reset"
+        )
+        # Revoke all outstanding refresh-token JTIs so any existing
+        # browser/app session that knows the old password is forced to
+        # re-authenticate.
+        await fa.config.token_adapter.delete_user_tokens(
+            stored["user_id"], "refresh_jti"
         )
 
         user = await fa.config.adapter.get_user_by_id(stored["user_id"])

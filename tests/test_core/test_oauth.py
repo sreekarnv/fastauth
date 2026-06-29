@@ -379,6 +379,7 @@ async def test_link_oauth_account_does_not_store_provider_tokens_by_default(
             "provider": "fake",
             "flow": "link",
             "user_id": user["id"],
+            "redirect_uri": "http://localhost/callback",
         },
         ttl=600,
     )
@@ -397,3 +398,171 @@ async def test_link_oauth_account_does_not_store_provider_tokens_by_default(
     assert len(accounts) == 1
     assert accounts[0]["access_token"] is None
     assert accounts[0]["refresh_token"] is None
+
+
+async def test_complete_oauth_state_provider_mismatch(
+    state_store, user_adapter, oauth_adapter
+):
+    provider_b = FakeOAuthProvider()
+
+    await state_store.write(
+        "oauth_state:s1",
+        {
+            "code_verifier": "v",
+            "provider": "provider_a",
+            "redirect_uri": "http://localhost/callback",
+        },
+        ttl=600,
+    )
+
+    with pytest.raises(ProviderError, match="provider mismatch"):
+        await complete_oauth_flow(
+            provider=provider_b,
+            code="code",
+            state="s1",
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=oauth_adapter,
+        )
+
+
+async def test_complete_oauth_state_missing_redirect_uri(
+    state_store, user_adapter, oauth_adapter
+):
+    provider = FakeOAuthProvider()
+
+    await state_store.write(
+        "oauth_state:s1",
+        {"code_verifier": "v", "provider": "fake"},
+        ttl=600,
+    )
+
+    with pytest.raises(ProviderError, match="missing redirect_uri"):
+        await complete_oauth_flow(
+            provider=provider,
+            code="code",
+            state="s1",
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=oauth_adapter,
+        )
+
+
+async def test_link_oauth_state_provider_mismatch(
+    state_store, user_adapter, oauth_adapter
+):
+    user = await user_adapter.create_user(email="link-mismatch@example.com")
+    provider_b = FakeOAuthProvider()
+
+    await state_store.write(
+        "oauth_state:link-state",
+        {
+            "code_verifier": "v",
+            "provider": "provider_a",
+            "flow": "link",
+            "user_id": user["id"],
+            "redirect_uri": "http://localhost/callback",
+        },
+        ttl=600,
+    )
+
+    with pytest.raises(ProviderError, match="provider mismatch"):
+        await link_oauth_account(
+            provider=provider_b,
+            code="code",
+            state="link-state",
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=oauth_adapter,
+        )
+
+
+async def test_complete_oauth_uses_redirect_uri_from_state(
+    state_store, user_adapter, oauth_adapter
+):
+    """The callback must pass the originally stored redirect_uri to
+    provider.exchange_code, even if the caller passed a different one."""
+
+    class CapturingProvider(FakeOAuthProvider):
+        def __init__(self) -> None:
+            super().__init__()
+            self.last_exchange_redirect_uri: str | None = None
+
+        async def exchange_code(self, code: str, redirect_uri: str, **kwargs):
+            self.last_exchange_redirect_uri = redirect_uri
+            return await super().exchange_code(code, redirect_uri, **kwargs)
+
+    provider = CapturingProvider()
+
+    await state_store.write(
+        "oauth_state:s1",
+        {
+            "code_verifier": "v",
+            "provider": "fake",
+            "redirect_uri": "https://app.example.com/auth/callback",
+        },
+        ttl=600,
+    )
+
+    # Caller passes a *different* redirect_uri — the stored one must win.
+    await complete_oauth_flow(
+        provider=provider,
+        code="code",
+        state="s1",
+        redirect_uri="https://attacker.example.com/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    assert (
+        provider.last_exchange_redirect_uri == "https://app.example.com/auth/callback"
+    )
+
+
+async def test_link_oauth_uses_redirect_uri_from_state(
+    state_store, user_adapter, oauth_adapter
+):
+    """Same redirect_uri-from-state guarantee for the link flow."""
+
+    class CapturingProvider(FakeOAuthProvider):
+        def __init__(self) -> None:
+            super().__init__()
+            self.last_exchange_redirect_uri: str | None = None
+
+        async def exchange_code(self, code: str, redirect_uri: str, **kwargs):
+            self.last_exchange_redirect_uri = redirect_uri
+            return await super().exchange_code(code, redirect_uri, **kwargs)
+
+    provider = CapturingProvider()
+    user = await user_adapter.create_user(email="link-redir@example.com")
+
+    await state_store.write(
+        "oauth_state:link-state",
+        {
+            "code_verifier": "v",
+            "provider": "fake",
+            "flow": "link",
+            "user_id": user["id"],
+            "redirect_uri": "https://app.example.com/auth/link/callback",
+        },
+        ttl=600,
+    )
+
+    await link_oauth_account(
+        provider=provider,
+        code="code",
+        state="link-state",
+        redirect_uri="https://attacker.example.com/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    assert (
+        provider.last_exchange_redirect_uri
+        == "https://app.example.com/auth/link/callback"
+    )
