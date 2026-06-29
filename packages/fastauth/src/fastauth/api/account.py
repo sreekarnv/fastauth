@@ -104,6 +104,16 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Current password is incorrect",
             )
 
+        from fastauth.core.credentials import validate_password
+
+        try:
+            validate_password(body.new_password, fa.config.password)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e),
+            ) from e
+
         hashed = hash_password(body.new_password)
         await fa.config.adapter.set_hashed_password(user["id"], hashed)
 
