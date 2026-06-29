@@ -76,7 +76,7 @@ config = FastAuthConfig(
 
 - [ ] **Short access token TTL** — 15 minutes (default) is a good baseline
 - [ ] **Consider shorter TTLs** for high-security applications (5 minutes)
-- [ ] **Rotate refresh tokens** on every refresh (FastAuth does this automatically)
+- [ ] **Rotate refresh tokens** on every refresh — FastAuth records each refresh token JTI in `token_adapter` and rejects reused JTIs. Configure `token_adapter` for refresh-token rotation; without it, refresh tokens are stateless and remain valid until expiry.
 
 ## CORS
 
