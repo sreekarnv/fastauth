@@ -1,6 +1,17 @@
 from fastauth.app import FastAuth
 from fastauth.config import FastAuthConfig, JWTConfig, PasswordConfig, SecurityConfig
-from fastauth.core.protocols import EventHooks
+from fastauth.core.protocols import (
+    AuthProvider,
+    EmailTransport,
+    EventHooks,
+    OAuthAccountAdapter,
+    PasskeyAdapter,
+    RoleAdapter,
+    SessionAdapter,
+    SessionBackend,
+    TokenAdapter,
+    UserAdapter,
+)
 from fastauth.exceptions import (
     AccountLockedError,
     AuthenticationError,
@@ -12,23 +23,50 @@ from fastauth.exceptions import (
     UserAlreadyExistsError,
     UserNotFoundError,
 )
+from fastauth.types import (
+    LoginAttemptData,
+    OAuthAccountData,
+    PasskeyData,
+    RoleData,
+    SessionData,
+    TokenData,
+    TokenPair,
+    UserData,
+)
 
 __version__ = "0.5.5"
 __all__ = [
     "AccountLockedError",
+    "AuthProvider",
     "AuthenticationError",
     "ConfigError",
+    "EmailTransport",
     "EventHooks",
     "FastAuth",
     "FastAuthConfig",
     "FastAuthError",
     "InvalidTokenError",
     "JWTConfig",
+    "LoginAttemptData",
     "MissingDependencyError",
+    "OAuthAccountAdapter",
+    "OAuthAccountData",
     "PasswordConfig",
+    "PasskeyAdapter",
+    "PasskeyData",
     "ProviderError",
+    "RoleAdapter",
+    "RoleData",
     "SecurityConfig",
+    "SessionAdapter",
+    "SessionBackend",
+    "SessionData",
+    "TokenAdapter",
+    "TokenData",
+    "TokenPair",
+    "UserAdapter",
     "UserAlreadyExistsError",
+    "UserData",
     "UserNotFoundError",
     "__version__",
 ]
