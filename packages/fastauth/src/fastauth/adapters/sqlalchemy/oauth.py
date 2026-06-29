@@ -5,6 +5,7 @@ from typing import Any
 
 from cuid2 import cuid_wrapper
 from sqlalchemy import delete, select
+from sqlalchemy.exc import IntegrityError
 
 from fastauth.adapters.sqlalchemy.models import OAuthAccountModel
 from fastauth.types import OAuthAccountData
@@ -29,6 +30,21 @@ class SQLAlchemyOAuthAccountAdapter:
 
     async def create_oauth_account(self, account: OAuthAccountData) -> OAuthAccountData:
         async with self._session_factory() as session:
+            existing = await session.execute(
+                select(OAuthAccountModel).where(
+                    OAuthAccountModel.provider == account["provider"],
+                    OAuthAccountModel.provider_account_id
+                    == account["provider_account_id"],
+                )
+            )
+            existing_model = existing.scalar_one_or_none()
+            if existing_model is not None:
+                # Detach the row from this session so it survives the
+                # rollback / context manager exit and its attributes
+                # remain accessible to the caller.
+                session.expunge(existing_model)
+                return _to_oauth_data(existing_model)
+
             model = OAuthAccountModel(
                 id=generate_id(),
                 provider=account["provider"],
@@ -40,7 +56,26 @@ class SQLAlchemyOAuthAccountAdapter:
                 created_at=datetime.now(timezone.utc),
             )
             session.add(model)
-            await session.commit()
+            try:
+                await session.commit()
+            except IntegrityError:
+                # Another caller raced and created the same (provider,
+                # provider_account_id) pair. Fall back to the existing
+                # row so the caller observes a clean "already linked"
+                # outcome rather than a 500.
+                await session.rollback()
+                existing = await session.execute(
+                    select(OAuthAccountModel).where(
+                        OAuthAccountModel.provider == account["provider"],
+                        OAuthAccountModel.provider_account_id
+                        == account["provider_account_id"],
+                    )
+                )
+                existing_model = existing.scalar_one_or_none()
+                if existing_model is None:
+                    raise
+                session.expunge(existing_model)
+                return _to_oauth_data(existing_model)
             await session.refresh(model)
             return _to_oauth_data(model)
 

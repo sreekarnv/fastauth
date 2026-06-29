@@ -6,7 +6,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-from fastauth.api.auth import _issue_tracked_tokens, _set_auth_cookies
+from fastauth.api.auth import (
+    MessageResponse,
+    _issue_tracked_tokens,
+    _set_auth_cookies,
+)
 from fastauth.api.deps import require_auth
 from fastauth.api.schemas import ErrorDetail
 from fastauth.core.oauth import (
@@ -18,7 +22,7 @@ from fastauth.core.oauth import (
 from fastauth.exceptions import ProviderError
 
 if TYPE_CHECKING:
-    from fastauth.types import UserData
+    from fastauth.types import TokenPair, UserData
 
 
 class AuthorizeResponse(BaseModel):
@@ -37,10 +41,6 @@ class OAuthAccountResponse(BaseModel):
     provider_account_id: str
 
 
-class MessageResponse(BaseModel):
-    message: str
-
-
 def _get_oauth_provider(fa: object, provider_id: str):
     from fastauth.app import FastAuth
 
@@ -52,6 +52,35 @@ def _get_oauth_provider(fa: object, provider_id: str):
         ):
             return p
     return None
+
+
+def _oauth_signin_response(
+    fa: object,
+    tokens: "TokenPair",
+    response: Response,
+):
+    """Return the appropriate OAuth sign-in response.
+
+    In ``"cookie"`` mode the tokens are attached to *response* as
+    ``HttpOnly`` cookies and the body intentionally contains no token
+    material. In ``"json"`` mode the tokens are returned in the body.
+    When ``oauth_redirect_url`` is configured the response is a 302 to
+    that URL with the tokens as cookies.
+    """
+    from fastauth.app import FastAuth
+
+    assert isinstance(fa, FastAuth)
+    if fa.config.oauth_redirect_url:
+        redirect = RedirectResponse(
+            url=fa.config.oauth_redirect_url,
+            status_code=status.HTTP_302_FOUND,
+        )
+        _set_auth_cookies(redirect, tokens, fa)
+        return redirect
+    if fa.config.token_delivery == "cookie":
+        _set_auth_cookies(response, tokens, fa)
+        return MessageResponse(message="Authentication successful")
+    return TokenResponse(**tokens)
 
 
 def create_oauth_router(auth: object) -> APIRouter:
@@ -100,7 +129,7 @@ def create_oauth_router(auth: object) -> APIRouter:
         )
         return AuthorizeResponse(url=url)
 
-    @router.get("/{provider}/callback")
+    @router.get("/{provider}/callback", response_model=None)
     async def callback(
         request: Request,
         response: Response,
@@ -128,14 +157,12 @@ def create_oauth_router(auth: object) -> APIRouter:
                 detail="oauth_adapter is not configured",
             )
 
-        callback_uri = str(request.url_for("callback", provider=provider))
-
         try:
             user, is_new, email_verified_now = await complete_oauth_flow(
                 provider=oauth_provider,
                 code=code,
                 state=state,
-                redirect_uri=callback_uri,
+                redirect_uri=str(request.url_for("callback", provider=provider)),
                 state_store=fa.config.oauth_state_store,
                 user_adapter=fa.config.adapter,
                 oauth_adapter=fa.config.oauth_adapter,
@@ -159,6 +186,11 @@ def create_oauth_router(auth: object) -> APIRouter:
                 await fa.config.hooks.on_signup(user)
             if email_verified_now and not is_new:
                 await fa.config.hooks.on_email_verify(user)
+            # `allow_signin` is evaluated *before* tokens are issued so a
+            # denied sign-in produces no tokens and triggers no
+            # `on_token_refresh` / `on_signin` callbacks. `on_oauth_link`
+            # intentionally only fires for explicit link flows — see
+            # `/auth/oauth/{provider}/link/callback`.
             allowed = await fa.config.hooks.allow_signin(user, provider)
             if not allowed:
                 raise HTTPException(
@@ -166,22 +198,9 @@ def create_oauth_router(auth: object) -> APIRouter:
                     detail="Sign-in not allowed",
                 )
             await fa.config.hooks.on_signin(user, provider)
-            await fa.config.hooks.on_oauth_link(user, provider)
 
         tokens = await _issue_tracked_tokens(fa, user)
-
-        if fa.config.oauth_redirect_url:
-            redirect = RedirectResponse(
-                url=fa.config.oauth_redirect_url,
-                status_code=status.HTTP_302_FOUND,
-            )
-            _set_auth_cookies(redirect, tokens, fa)
-            return redirect
-
-        if fa.config.token_delivery == "cookie":
-            _set_auth_cookies(response, tokens, fa)
-
-        return TokenResponse(**tokens)
+        return _oauth_signin_response(fa, tokens, response)
 
     @router.get("/accounts", response_model=list[OAuthAccountResponse])
     async def list_accounts(
@@ -301,13 +320,12 @@ def create_oauth_router(auth: object) -> APIRouter:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="oauth_adapter is not configured",
             )
-        redirect_uri = str(request.url_for("link_callback", provider=provider))
         try:
             _, user = await link_oauth_account(
                 provider=oauth_provider,
                 code=code,
                 state=state,
-                redirect_uri=redirect_uri,
+                redirect_uri=str(request.url_for("link_callback", provider=provider)),
                 state_store=fa.config.oauth_state_store,
                 user_adapter=fa.config.adapter,
                 oauth_adapter=fa.config.oauth_adapter,

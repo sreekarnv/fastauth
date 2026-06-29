@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship
 from sqlalchemy.orm.base import Mapped
@@ -109,6 +110,13 @@ class TokenModel(Base):
 
 class OAuthAccountModel(Base):
     __tablename__ = "fastauth_oauth_accounts"
+    __table_args__ = (
+        UniqueConstraint(
+            "provider",
+            "provider_account_id",
+            name="uq_fastauth_oauth_provider_account",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     provider: Mapped[str] = mapped_column(String)

@@ -67,7 +67,7 @@ def create_magic_links_router(auth: object) -> APIRouter:
         return MessageResponse(message="Magic link sent — check your email")
 
     @router.get("/callback")
-    async def magic_link_callback(response: Response, token: str) -> dict:
+    async def magic_link_callback(response: Response, token: str):
         provider = _get_provider()
 
         try:
@@ -101,6 +101,7 @@ def create_magic_links_router(auth: object) -> APIRouter:
 
         if fa.config.token_delivery == "cookie":
             _set_auth_cookies(response, tokens, fa)
+            return MessageResponse(message="Authentication successful")
 
         if fa.config.hooks:
             await fa.config.hooks.on_signin(user, "magic_link")

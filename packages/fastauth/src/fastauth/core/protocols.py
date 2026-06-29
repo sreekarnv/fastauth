@@ -57,7 +57,8 @@ class SessionAdapter(Protocol):
 
 
 class TokenAdapter(Protocol):
-    """Protocol for persisting one-time tokens (email verification, password reset)."""
+    """Protocol for persisting one-time tokens (email verification, password reset,
+    refresh-token JTI allowlist)."""
 
     async def create_token(self, token: TokenData) -> TokenData: ...
 
@@ -68,6 +69,18 @@ class TokenAdapter(Protocol):
     async def delete_user_tokens(
         self, user_id: str, token_type: str | None = None
     ) -> None: ...
+
+    async def consume_token(self, token: str, token_type: str) -> TokenData | None:
+        """Atomically read and delete a token.
+
+        Returns the :class:`~fastauth.types.TokenData` if the token exists, has
+        not expired, and matches *token_type*. Returns ``None`` otherwise.
+        If multiple callers race, only one will receive the token — the
+        others will see ``None``. Implementations must ensure the read and
+        delete happen as a single atomic operation so the token can never
+        be returned twice.
+        """
+        ...
 
 
 class OAuthAccountAdapter(Protocol):

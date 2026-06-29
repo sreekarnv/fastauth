@@ -139,16 +139,50 @@ Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
 Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 ```
 
-If `oauth_redirect_url` is not set, the tokens are returned as a JSON body instead.
+If `oauth_redirect_url` is not set, the tokens are returned as a JSON body — unless `token_delivery="cookie"`, in which case the response body intentionally contains no token material and the tokens live entirely in the `HttpOnly` cookies.
 
 !!! warning "Avoid reading tokens from the URL"
     Tokens must not be placed in redirect query parameters because they can be exposed through browser history, logs, screenshots, and `Referer` headers. Always rely on `HttpOnly` cookies (or a server-side exchange) when using `oauth_redirect_url`.
+
+## `redirect_uri` vs `oauth_redirect_url`
+
+These two settings are different and easy to confuse:
+
+| Setting | Where it lives | Purpose |
+|---------|---------------|---------|
+| `redirect_uri` (query param) | `/auth/oauth/{provider}/authorize?redirect_uri=...` | The **OAuth provider callback URL** registered with the provider (e.g. `https://api.example.com/auth/oauth/google/callback`). This is the URL the provider redirects to with `code` + `state`. |
+| `oauth_redirect_url` (config) | `FastAuthConfig(..., oauth_redirect_url="...")` | The **frontend URL** FastAuth redirects to *after* a successful callback, with tokens as `HttpOnly` cookies. Optional. |
+
+When the OAuth flow starts, FastAuth binds the `redirect_uri` to the CSRF state. On the callback, FastAuth uses the **bound** value when calling `provider.exchange_code` — a different value passed in the request URL is ignored. This prevents an attacker from tricking the application into exchanging a code at an attacker-controlled URL.
+
+## State validation
+
+The CSRF state is validated against three things on every callback:
+
+1. **Presence** — state must exist in `oauth_state_store` and not be expired.
+2. **Provider match** — the stored `provider` must equal `provider.id` of the configured OAuth provider handling the callback. A state created for one provider cannot be redeemed by another.
+3. **Redirect URI** — the stored `redirect_uri` must be present; otherwise the callback is rejected.
+
+A failed match returns HTTP `400`.
 
 ## Account linking
 
 When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.
 
 If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's `email_verified` field remains `False`. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local `email_verified` flag.
+
+The `OAuthAccountAdapter` stores `provider` + `provider_account_id` and the SQLAlchemy adapter enforces a database-level unique constraint on that pair. A duplicate `create_oauth_account(...)` call is treated as "already linked" and returns the existing record instead of raising a constraint error.
+
+### `on_oauth_link` hook
+
+`on_oauth_link` is fired **only** for explicit link flows — i.e. after `/auth/oauth/{provider}/link/callback` succeeds. Normal OAuth sign-in via `/auth/oauth/{provider}/callback` does **not** fire `on_oauth_link`; it fires `on_signin` (and `on_signup` for new users). This avoids the misleading semantics of treating a fresh sign-in as an "account linked" event.
+
+If `allow_signin` denies a sign-in, FastAuth responds with `403` and:
+
+- No tokens are issued
+- `on_signin` is **not** fired
+- `on_oauth_link` is **not** fired
+- No refresh-token JTI is recorded
 
 ## Provider token storage
 

@@ -369,6 +369,96 @@ async def test_get_oauth_account_not_found(adapter):
     assert result is None
 
 
+async def test_create_oauth_account_duplicate_returns_existing(adapter):
+    user1 = await adapter.user.create_user("alice@example.com")
+    user2 = await adapter.user.create_user("bob@example.com")
+    await adapter.oauth.create_oauth_account(_oauth_data(user1["id"]))
+
+    # Same (provider, provider_account_id) for a different user is treated
+    # as "already linked" and returns the existing account instead of
+    # raising a constraint error.
+    result = await adapter.oauth.create_oauth_account(_oauth_data(user2["id"]))
+    assert result["user_id"] == user1["id"]
+    # And the database has only one row for that pair.
+    found = await adapter.oauth.get_oauth_account("google", "goog123")
+    assert found is not None
+    assert found["user_id"] == user1["id"]
+
+
+async def test_oauth_accounts_unique_constraint_exists(adapter):
+    """The model declares a DB-level unique constraint on
+    (provider, provider_account_id) — verify it is actually present on
+    the table metadata."""
+    from fastauth.adapters.sqlalchemy.models import OAuthAccountModel
+    from sqlalchemy import UniqueConstraint
+
+    table = OAuthAccountModel.__table__
+    unique_cols = {
+        tuple(c.name for c in uc.columns)
+        for uc in table.constraints
+        if isinstance(uc, UniqueConstraint)
+    }
+    assert ("provider", "provider_account_id") in unique_cols
+
+
+async def test_consume_token_returns_and_deletes(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.token.create_token(_token_data(user["id"], "refresh_jti", "jti1"))
+
+    consumed = await adapter.token.consume_token("jti1", "refresh_jti")
+    assert consumed is not None
+    assert consumed["user_id"] == user["id"]
+
+    # Subsequent consume returns None — the row was atomically deleted.
+    assert await adapter.token.consume_token("jti1", "refresh_jti") is None
+
+
+async def test_consume_token_wrong_type_returns_none(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.token.create_token(
+        _token_data(user["id"], "verification", "tok_type")
+    )
+
+    consumed = await adapter.token.consume_token("tok_type", "refresh_jti")
+    assert consumed is None
+    # Token with mismatched type must not be deleted.
+    assert await adapter.token.get_token("tok_type", "verification") is not None
+
+
+async def test_consume_token_expired_returns_none(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    expired = {
+        "token": "jti_expired",
+        "user_id": user["id"],
+        "token_type": "refresh_jti",
+        "expires_at": datetime.now(timezone.utc) - timedelta(hours=1),
+    }
+    await adapter.token.create_token(expired)
+
+    assert await adapter.token.consume_token("jti_expired", "refresh_jti") is None
+
+
+async def test_concurrent_consume_token_only_one_wins(adapter):
+    """The SQLAlchemy adapter must use atomic semantics (FOR UPDATE +
+    delete in a single transaction) so that concurrent consumers of the
+    same JTI see exactly one winner."""
+    import asyncio
+
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.token.create_token(_token_data(user["id"], "refresh_jti", "jti_race"))
+
+    results = await asyncio.gather(
+        adapter.token.consume_token("jti_race", "refresh_jti"),
+        adapter.token.consume_token("jti_race", "refresh_jti"),
+        adapter.token.consume_token("jti_race", "refresh_jti"),
+    )
+    winners = [r for r in results if r is not None]
+    losers = [r for r in results if r is None]
+    assert len(winners) == 1
+    assert len(losers) == 2
+    assert winners[0]["user_id"] == user["id"]
+
+
 async def test_get_user_oauth_accounts(adapter):
     user = await adapter.user.create_user("alice@example.com")
     await adapter.oauth.create_oauth_account(_oauth_data(user["id"], "google", "g1"))
