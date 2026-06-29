@@ -47,8 +47,8 @@ class SQLAlchemyUserAdapter:
                 hashed_password=hashed_password,
                 name=kwargs.get("name"),
                 image=kwargs.get("image"),
-                email_verified=False,
-                is_active=True,
+                email_verified=bool(kwargs.get("email_verified", False)),
+                is_active=kwargs.get("is_active", True),
                 created_at=now,
                 updated_at=now,
             )
