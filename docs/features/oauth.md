@@ -149,3 +149,16 @@ If `oauth_redirect_url` is not set, the tokens are returned as a JSON body inste
 When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.
 
 If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's `email_verified` field remains `False`. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local `email_verified` flag.
+
+## Provider token storage
+
+By default FastAuth does **not** persist the OAuth provider's access or refresh token. Stored provider tokens expand the blast radius of a database compromise and are not currently used by FastAuth itself.
+
+To opt in to storing provider tokens (for example, if you build custom logic that calls provider APIs on behalf of the user), set:
+
+```python
+config = FastAuthConfig(
+    ...,
+    store_oauth_provider_tokens=True,
+)
+```
