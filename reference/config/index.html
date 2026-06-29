@@ -2382,8 +2382,10 @@ access tokens.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>"jwt"</code> for stateless JWT sessions (default) or
-<code>"database"</code> for server-side sessions stored in <em>session_backend</em>.</p>
+                <p>Currently informational only. FastAuth always issues
+JWT token pairs on register/login/refresh. The <code>"database"</code> value
+is reserved for a future server-side session model and is not
+currently wired through to auth routes; do not rely on it yet.</p>
               </div>
             </td>
           </tr>
@@ -2405,9 +2407,10 @@ access tokens.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Required when <em>session_strategy</em> is <code>"database"</code>.
-Provide a :class:<code>~fastauth.core.protocols.SessionBackend</code> such as
-:class:<code>~fastauth.session_backends.redis.RedisSessionBackend</code>.</p>
+                <p>Reserved for the future <code>"database"</code> session strategy.
+Auth routes do not use it today; assign a <code>session_adapter</code> on the
+:class:<code>~fastauth.app.FastAuth</code> instance to manage user sessions
+through <code>/auth/sessions</code> endpoints.</p>
               </div>
             </td>
           </tr>

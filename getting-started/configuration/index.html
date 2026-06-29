@@ -2563,16 +2563,17 @@
 <td><code>session_strategy</code></td>
 <td><code>"jwt"</code> | <code>"database"</code></td>
 <td><code>"jwt"</code></td>
-<td>Stateless JWTs or server-side sessions.</td>
+<td>Currently informational only. Auth routes always issue JWT token pairs. <code>"database"</code> is reserved for a future server-side session model and is not yet wired through.</td>
 </tr>
 <tr>
 <td><code>session_backend</code></td>
 <td><code>SessionBackend \| None</code></td>
 <td><code>None</code></td>
-<td>Required when <code>session_strategy="database"</code>.</td>
+<td>Reserved for the future <code>"database"</code> session strategy. Not used by auth routes today.</td>
 </tr>
 </tbody>
 </table>
+<p>User session management for the <code>/auth/sessions</code> endpoints is provided by a <code>SessionAdapter</code> assigned to the <code>FastAuth</code> instance (<code>auth.session_adapter = ...</code>), independent of <code>session_strategy</code>.</p>
 <h3 id="oauth">OAuth<a class="headerlink" href="#oauth" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
