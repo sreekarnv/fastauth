@@ -29,7 +29,7 @@ def _build_app(
     state_store = state_store or MemorySessionBackend()
 
     config = FastAuthConfig(
-        secret="test-secret-passkeys",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[
             CredentialsProvider(),
             PasskeyProvider(rp_id=RP_ID, rp_name="Test App", origin=ORIGIN),
@@ -716,7 +716,7 @@ async def test_complete_authentication_cookie_delivery(passkey_client):
     passkey_adapter2 = MemoryPasskeyAdapter()
     state_store2 = MemorySessionBackend()
     config = FastAuthConfig(
-        secret="test-secret-cookie",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[
             CredentialsProvider(),
             PasskeyProvider(rp_id=RP_ID, rp_name="Test", origin=ORIGIN),

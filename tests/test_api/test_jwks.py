@@ -33,7 +33,7 @@ async def rs256_client(rs256_app):
 @pytest.fixture
 def hs256_app():
     config = FastAuthConfig(
-        secret="test-secret-hs256",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=MemoryUserAdapter(),
         jwt=JWTConfig(algorithm="HS256"),

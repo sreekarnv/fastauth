@@ -22,7 +22,7 @@ def _build_app(
     providers = providers if providers is not None else [MagicLinksProvider()]
 
     config = FastAuthConfig(
-        secret="test-magic-links-secret",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=providers,
         adapter=user_adapter,
         token_adapter=token_adapter,
