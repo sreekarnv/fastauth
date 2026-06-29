@@ -83,6 +83,7 @@ async def link_oauth_account(
     state_store: SessionBackend,
     user_adapter: UserAdapter,
     oauth_adapter: OAuthAccountAdapter,
+    store_provider_tokens: bool = False,
 ) -> tuple[Any, UserData]:
     stored = await state_store.read(f"oauth_state:{state}")
     if not stored or stored.get("flow") != "link":
@@ -107,8 +108,12 @@ async def link_oauth_account(
             "provider": provider.id,
             "provider_account_id": provider_user["id"],
             "user_id": user_id,
-            "access_token": tokens.get("access_token"),
-            "refresh_token": tokens.get("refresh_token"),
+            "access_token": tokens.get("access_token")
+            if store_provider_tokens
+            else None,
+            "refresh_token": (
+                tokens.get("refresh_token") if store_provider_tokens else None
+            ),
             "expires_at": None,
         }
     )
@@ -128,6 +133,7 @@ async def complete_oauth_flow(
     state_store: SessionBackend,
     user_adapter: UserAdapter,
     oauth_adapter: OAuthAccountAdapter,
+    store_provider_tokens: bool = False,
 ) -> tuple[UserData, bool, bool]:
     """Complete an OAuth sign-in flow.
 
@@ -192,8 +198,12 @@ async def complete_oauth_flow(
             "provider": provider.id,
             "provider_account_id": provider_user["id"],
             "user_id": user["id"],
-            "access_token": tokens.get("access_token"),
-            "refresh_token": tokens.get("refresh_token"),
+            "access_token": tokens.get("access_token")
+            if store_provider_tokens
+            else None,
+            "refresh_token": (
+                tokens.get("refresh_token") if store_provider_tokens else None
+            ),
             "expires_at": None,
         }
     )
