@@ -16,7 +16,7 @@ def rbac_app():
     adapter = MemoryUserAdapter()
     role_adapter = MemoryRoleAdapter()
     config = FastAuthConfig(
-        secret="test-secret-for-rbac",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=adapter,
         jwt=JWTConfig(algorithm="HS256"),
@@ -244,7 +244,7 @@ def permission_app():
     adapter = MemoryUserAdapter()
     role_adapter = MemoryRoleAdapter()
     config = FastAuthConfig(
-        secret="test-secret-perm",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=adapter,
         jwt=JWTConfig(algorithm="HS256"),
@@ -313,7 +313,7 @@ def no_rbac_app():
     """App without RBAC configured but using require_role."""
     adapter = MemoryUserAdapter()
     config = FastAuthConfig(
-        secret="test-secret-norbac",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=adapter,
         jwt=JWTConfig(algorithm="HS256"),

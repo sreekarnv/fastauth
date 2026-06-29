@@ -29,7 +29,7 @@ def adapter():
 @pytest.fixture
 def config():
     return FastAuthConfig(
-        secret="test-secret-key-for-sessions",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=MemoryUserAdapter(),
         jwt=JWTConfig(algorithm="HS256"),

@@ -12,7 +12,7 @@ def token_app():
     user_adapter = MemoryUserAdapter()
     token_adapter = MemoryTokenAdapter()
     config = FastAuthConfig(
-        secret="test-secret-for-tokens",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=user_adapter,
         token_adapter=token_adapter,
@@ -27,7 +27,7 @@ def token_app():
 @pytest.fixture
 def no_token_adapter_app():
     config = FastAuthConfig(
-        secret="test-secret-for-tokens",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=MemoryUserAdapter(),
         jwt=JWTConfig(algorithm="HS256"),

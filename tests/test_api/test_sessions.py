@@ -13,7 +13,7 @@ from httpx import ASGITransport, AsyncClient
 def _make_app_without_session_adapter():
     adapter = MemoryUserAdapter()
     config = FastAuthConfig(
-        secret="test-secret-for-sessions",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=adapter,
         jwt=JWTConfig(algorithm="HS256"),
@@ -29,7 +29,7 @@ def session_app():
     adapter = MemoryUserAdapter()
     session_adapter = MemorySessionAdapter()
     config = FastAuthConfig(
-        secret="test-secret-for-sessions",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=adapter,
         jwt=JWTConfig(algorithm="HS256"),

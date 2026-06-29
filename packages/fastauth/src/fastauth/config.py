@@ -188,6 +188,15 @@ class FastAuthConfig:
         if not self.secret:
             raise ConfigError("'secret' must be set and non-empty")
 
+        if self.jwt.algorithm.startswith("HS"):
+            secret_bytes = len(self.secret.encode("utf-8"))
+            if secret_bytes < 32:
+                raise ConfigError(
+                    "JWT HS-family algorithms require a secret of at least "
+                    f"32 bytes. Got {secret_bytes} bytes. Use a strong "
+                    "random secret."
+                )
+
         if not self.providers:
             raise ConfigError("At least one provider must be configured")
 
