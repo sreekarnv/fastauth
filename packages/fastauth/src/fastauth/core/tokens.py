@@ -122,6 +122,34 @@ def create_token_pair(
     }
 
 
+def _build_claims_registry(config: FastAuthConfig) -> jwt.JWTClaimsRegistry:
+    options: dict[str, Any] = {
+        "exp": {"essential": True},
+        "sub": {"essential": True},
+    }
+    if config.jwt.issuer is not None:
+        options["iss"] = {"essential": True, "value": config.jwt.issuer}
+    if config.jwt.audience is not None:
+        options["aud"] = {"essential": True}
+    return jwt.JWTClaimsRegistry(**options)
+
+
+def _validate_iss_aud(claims: dict[str, Any], config: FastAuthConfig) -> None:
+    if config.jwt.issuer is not None:
+        if claims.get("iss") != config.jwt.issuer:
+            from joserfc.errors import InvalidClaimError
+
+            raise InvalidClaimError("iss")
+    if config.jwt.audience is not None:
+        expected = config.jwt.audience
+        actual = claims.get("aud")
+        actual_list = actual if isinstance(actual, list) else [actual]
+        if not any(v in actual_list for v in expected):
+            from joserfc.errors import InvalidClaimError
+
+            raise InvalidClaimError("aud")
+
+
 def decode_token(
     token: str,
     config: FastAuthConfig,
@@ -135,11 +163,8 @@ def decode_token(
         for key in decode_key:
             try:
                 data = jwt.decode(token, key, algorithms=[config.jwt.algorithm])
-                claims_requests = jwt.JWTClaimsRegistry(
-                    exp={"essential": True},
-                    sub={"essential": True},
-                )
-                claims_requests.validate(data.claims)
+                _build_claims_registry(config).validate(data.claims)
+                _validate_iss_aud(data.claims, config)
                 return data.claims
             except Exception as e:
                 last_err = e
@@ -148,9 +173,6 @@ def decode_token(
         raise ValueError("No verification keys available")
 
     data = jwt.decode(token, decode_key, algorithms=[config.jwt.algorithm])
-    claims_requests = jwt.JWTClaimsRegistry(
-        exp={"essential": True},
-        sub={"essential": True},
-    )
-    claims_requests.validate(data.claims)
+    _build_claims_registry(config).validate(data.claims)
+    _validate_iss_aud(data.claims, config)
     return data.claims
