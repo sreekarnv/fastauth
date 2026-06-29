@@ -113,6 +113,40 @@ async def test_complete_new_user(provider, state_store, user_adapter, oauth_adap
     assert accounts[0]["provider"] == "fake"
 
 
+async def test_complete_new_user_with_unverified_email(
+    state_store, user_adapter, oauth_adapter
+):
+    provider = FakeOAuthProvider(
+        {
+            "id": "provider-uid-1",
+            "email": "oauth@example.com",
+            "name": "OAuth User",
+            "image": None,
+            "email_verified": False,
+            "is_active": True,
+        }
+    )
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    user, is_new, email_verified_now = await complete_oauth_flow(
+        provider=provider,
+        code="auth-code",
+        state=state,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    assert is_new is True
+    assert email_verified_now is False
+    assert user["email_verified"] is False
+
+
 async def test_complete_existing_oauth_account(
     provider, state_store, user_adapter, oauth_adapter
 ):
@@ -150,6 +184,51 @@ async def test_complete_existing_oauth_account(
     assert user2["id"] == user1["id"]
 
 
+async def test_complete_existing_oauth_account_does_not_verify_unverified_email(
+    state_store, user_adapter, oauth_adapter
+):
+    provider = FakeOAuthProvider(
+        {
+            "id": "provider-uid-1",
+            "email": "oauth@example.com",
+            "name": "OAuth User",
+            "image": None,
+            "email_verified": False,
+            "is_active": True,
+        }
+    )
+    user = await user_adapter.create_user(email="oauth@example.com")
+    await oauth_adapter.create_oauth_account(
+        {
+            "provider": "fake",
+            "provider_account_id": "provider-uid-1",
+            "user_id": user["id"],
+            "access_token": None,
+            "refresh_token": None,
+            "expires_at": None,
+        }
+    )
+
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+    user, is_new, email_verified_now = await complete_oauth_flow(
+        provider=provider,
+        code="auth-code",
+        state=state,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    assert is_new is False
+    assert email_verified_now is False
+    assert user["email_verified"] is False
+
+
 async def test_complete_links_to_existing_email_user(
     provider, state_store, user_adapter, oauth_adapter
 ):
@@ -179,6 +258,44 @@ async def test_complete_links_to_existing_email_user(
 
     accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])
     assert len(accounts) == 1
+
+
+async def test_complete_rejects_unverified_email_link_to_existing_user(
+    state_store, user_adapter, oauth_adapter
+):
+    provider = FakeOAuthProvider(
+        {
+            "id": "provider-uid-1",
+            "email": "oauth@example.com",
+            "name": "OAuth User",
+            "image": None,
+            "email_verified": False,
+            "is_active": True,
+        }
+    )
+    existing = await user_adapter.create_user(
+        email="oauth@example.com", hashed_password="hashed", email_verified=True
+    )
+
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    with pytest.raises(ProviderError, match="email is not verified"):
+        await complete_oauth_flow(
+            provider=provider,
+            code="auth-code",
+            state=state,
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=oauth_adapter,
+        )
+
+    accounts = await oauth_adapter.get_user_oauth_accounts(existing["id"])
+    assert accounts == []
 
 
 async def test_complete_invalid_state(

@@ -141,4 +141,6 @@ Your frontend can extract these tokens and store them. If `oauth_redirect_url` i
 
 ## Account linking
 
-When a user logs in via OAuth and a local user with the same email already exists, FastAuth links the OAuth account to the existing user and calls `hooks.on_oauth_link`. No duplicate user is created.
+When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.
+
+If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's `email_verified` field remains `False`. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local `email_verified` flag.
