@@ -171,6 +171,13 @@ class CredentialsProvider(AuthProvider, Protocol):
 
 
 class SessionStrategy(Protocol):
+    """Experimental session strategy protocol.
+
+    Not yet wired through the public API. Auth routes always issue JWT
+    token pairs regardless of this protocol. Reserved for a future
+    server-side session model.
+    """
+
     async def create(self, user: UserData, **kwargs: Any) -> str: ...
 
     async def validate(self, token: str) -> UserData | None: ...

@@ -101,12 +101,15 @@ class FastAuthConfig:
             that reads and writes user records in your database.
         jwt: JWT signing and TTL configuration; defaults to HS256 with 15-minute
             access tokens.
-        session_strategy: ``"jwt"`` for stateless JWT sessions (default) or
-            ``"database"`` for server-side sessions stored in *session_backend*.
+        session_strategy: Currently informational only. FastAuth always issues
+            JWT token pairs on register/login/refresh. The ``"database"`` value
+            is reserved for a future server-side session model and is not
+            currently wired through to auth routes; do not rely on it yet.
         route_prefix: URL prefix for all FastAuth endpoints (default: ``"/auth"``).
-        session_backend: Required when *session_strategy* is ``"database"``.
-            Provide a :class:`~fastauth.core.protocols.SessionBackend` such as
-            :class:`~fastauth.session_backends.redis.RedisSessionBackend`.
+        session_backend: Reserved for the future ``"database"`` session strategy.
+            Auth routes do not use it today; assign a ``session_adapter`` on the
+            :class:`~fastauth.app.FastAuth` instance to manage user sessions
+            through ``/auth/sessions`` endpoints.
         email_transport: Transport used to deliver verification and password-reset
             emails. Omit to disable email flows entirely.
         email_template_dir: Directory containing custom Jinja2 email templates.

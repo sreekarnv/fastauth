@@ -5,6 +5,7 @@ from fastauth.adapters.memory import MemoryUserAdapter
 from fastauth.config import FastAuthConfig, JWTConfig
 from fastauth.exceptions import ConfigError
 from fastauth.providers.credentials import CredentialsProvider
+from fastauth.session_backends.memory import MemorySessionBackend
 
 
 def _make(**kwargs: Any) -> FastAuthConfig:
@@ -48,6 +49,14 @@ def test_no_providers_raises():
 def test_database_session_without_backend_raises():
     with pytest.raises(ConfigError, match="session_backend"):
         _make(session_strategy="database")
+
+
+def test_database_session_with_backend_is_accepted_but_reserved():
+    config = _make(
+        session_strategy="database",
+        session_backend=MemorySessionBackend(),
+    )
+    assert config.session_strategy == "database"
 
 
 def test_rs256_without_keys_and_jwks_raises():
