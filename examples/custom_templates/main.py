@@ -24,7 +24,7 @@ email_transport = SMTPTransport(
 )
 
 config = FastAuthConfig(
-    secret="dev-secret-change-me",
+    secret="dev-secret-change-me-min-32-bytes!!",
     providers=[
         CredentialsProvider(),
         MagicLinksProvider(),

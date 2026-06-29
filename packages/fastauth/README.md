@@ -60,7 +60,7 @@ from fastauth.providers.credentials import CredentialsProvider
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 auth = FastAuth(FastAuthConfig(
-    secret="change-me",           # fastauth generate-secret
+    secret="change-me-in-production-min-32-bytes!!",           # fastauth generate-secret
     providers=[CredentialsProvider()],
     adapter=adapter.user,
     token_adapter=adapter.token,
@@ -106,7 +106,7 @@ auth = FastAuth(FastAuthConfig(
 pip install "sreekarnv-fastauth[standard,email]"
 ```
 
-See the [Magic Links guide](https://sreekarnv.github.io/fastauth/guides/magic-links/) and [example app](./examples/magic_link/).
+See the [Magic Links guide](https://sreekarnv.github.io/fastauth/guides/magic-links/) and [example app](https://github.com/sreekarnv/fastauth/tree/main/examples/magic_link).
 
 ---
 
@@ -133,7 +133,7 @@ auth = FastAuth(FastAuthConfig(
 pip install "sreekarnv-fastauth[standard,webauthn]"
 ```
 
-See the [Passkeys guide](https://sreekarnv.github.io/fastauth/guides/passkeys/) and [example app](./examples/passkeys/).
+See the [Passkeys guide](https://sreekarnv.github.io/fastauth/guides/passkeys/) and [example app](https://github.com/sreekarnv/fastauth/tree/main/examples/passkeys).
 
 ---
 
@@ -181,7 +181,7 @@ auth = FastAuth(FastAuthConfig(
 | `email_change.jinja2` | Email change | `name`, `new_email`, `url`, `expires_in_minutes` |
 | `magic_link_login.jinja2` | Magic link sign-in | `name`, `url` |
 
-See the [example app](./examples/custom_templates/).
+See the [example app](https://github.com/sreekarnv/fastauth/tree/main/examples/custom_templates).
 
 ---
 

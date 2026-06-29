@@ -99,12 +99,12 @@ config = FastAuthConfig(
 from fastauth.email_transports.smtp import SMTPTransport
 
 transport = SMTPTransport(
-    hostname=os.environ["SMTP_HOST"],
+    host=os.environ["SMTP_HOST"],
     port=587,
     username=os.environ["SMTP_USER"],
     password=os.environ["SMTP_PASS"],
     use_tls=True,
-    sender="noreply@example.com",
+    from_email="noreply@example.com",
 )
 ```
 

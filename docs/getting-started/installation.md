@@ -61,7 +61,7 @@ fastauth check
 Example output:
 
 ```
-FastAuth v0.3.0 — Dependency Status
+FastAuth v0.5.5 — Dependency Status
 ┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Extra      ┃ Package        ┃ Status                                ┃
 ┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
