@@ -1,15 +1,59 @@
 # Account Management
 
-FastAuth exposes account management endpoints under `/auth/account` for changing passwords, changing email addresses, and deleting accounts. All endpoints require authentication.
+FastAuth exposes account management endpoints under `/auth/account` for reading and updating the current profile, changing passwords, changing email addresses, and deleting accounts. All endpoints require authentication.
 
 ## Endpoints
 
 | Method | Path | Auth required | Description |
 |--------|------|:---:|-------------|
+| `GET`  | `/auth/account/profile` | Yes | Read the current user's profile |
+| `PUT`  | `/auth/account/profile` | Yes | Update the current user's `name` and/or `image` |
 | `POST` | `/auth/account/change-password` | Yes | Change password |
 | `POST` | `/auth/account/change-email` | Yes | Request an email address change |
 | `GET`  | `/auth/account/confirm-email-change?token=<token>` | No | Confirm the new email |
 | `DELETE` | `/auth/account` | Yes | Delete the account |
+
+---
+
+## Read the profile
+
+Returns the `id`, `email`, `name`, and `image` of the currently authenticated user.
+
+```bash
+curl http://localhost:8000/auth/account/profile \
+  -H "Authorization: Bearer <access_token>"
+```
+
+Response:
+
+```json
+{
+  "id": "ckl9...user-id",
+  "email": "alice@example.com",
+  "name": "Alice",
+  "image": "https://example.com/avatars/alice.png"
+}
+```
+
+`name` and `image` may be `null` if they have never been set (e.g. for an account created via credentials without a `name` field).
+
+---
+
+## Update the profile
+
+Updates one or more mutable profile fields. Send only the fields you want to change — anything omitted (or sent as `null`) is left untouched. Empty bodies return `400`.
+
+```bash
+curl -X PUT http://localhost:8000/auth/account/profile \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice Liddell", "image": "https://example.com/avatars/alice.png"}'
+```
+
+Response: the updated profile, in the same shape as the `GET` response above.
+
+!!! note "Mutable fields"
+    Only `name` and `image` are mutable through this endpoint. Email and verification status are managed via `/auth/account/change-email` and the email-verification flow.
 
 ---
 

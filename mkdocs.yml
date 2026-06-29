@@ -95,6 +95,7 @@ nav:
       - Email Verification: features/email-verification.md
       - Password Reset: features/password-reset.md
       - Account Management: features/account.md
+      - Token Introspection & Revocation: features/tokens.md
       - OAuth Flow: features/oauth.md
       - Passkeys (WebAuthn): features/passkeys.md
       - Magic Links: features/magic-links.md

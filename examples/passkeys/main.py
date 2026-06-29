@@ -15,7 +15,8 @@ adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 auth = FastAuth(
     FastAuthConfig(
-        secret="dev-secret-change-me",
+        # Run `fastauth generate-secret` and paste the output here.
+        secret="REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret",
         providers=[
             CredentialsProvider(),
             PasskeyProvider(

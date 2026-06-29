@@ -11,7 +11,8 @@ from fastauth.types import UserData
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 config = FastAuthConfig(
-    secret="super-secret-change-me-in-production",
+    # Run `fastauth generate-secret` and paste the output here.
+    secret="REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret",
     providers=[CredentialsProvider()],
     adapter=adapter.user,
     token_adapter=adapter.token,

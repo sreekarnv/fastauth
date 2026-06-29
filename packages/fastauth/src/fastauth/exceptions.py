@@ -24,7 +24,7 @@ class MissingDependencyError(FastAuthError):
     def __init__(self, package: str, extra: str):
         super().__init__(
             f"'{package}' is required for this feature. "
-            f"Install it with: pip install fastauth[{extra}]"
+            f"Install it with: pip install sreekarnv-fastauth[{extra}]"
         )
 
 

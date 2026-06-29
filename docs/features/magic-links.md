@@ -15,7 +15,8 @@ from fastauth.providers.magic_links import MagicLinksProvider
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 auth = FastAuth(FastAuthConfig(
-    secret="change-me-in-production",
+    # Run `fastauth generate-secret` and paste the output here.
+    secret="REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret",
     providers=[MagicLinksProvider()],
     adapter=adapter.user,
     token_adapter=adapter.token,      # required
