@@ -77,6 +77,12 @@ def create_session_router(auth: object) -> APIRouter:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Session management is not configured",
             )
+        existing = await fa.session_adapter.get_session(session_id)
+        if not existing or existing["user_id"] != user["id"]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Session not found",
+            )
         await fa.session_adapter.delete_session(session_id)
         return MessageResponse(message="Session revoked")
 

@@ -272,6 +272,9 @@ def create_auth_router(auth: object) -> APIRouter:
         if fa.config.hooks:
             await fa.config.hooks.on_signout(user)
 
+        if fa.config.token_adapter:
+            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh_jti")
+
         if fa.config.token_delivery == "cookie":
             _clear_auth_cookies(response, fa)
 
