@@ -48,7 +48,14 @@ jobs:
               - 'packages/fastauth/**'
               - 'tests/**'
               - 'pyproject.toml'
+              - 'packages/fastauth/pyproject.toml'
               - 'uv.lock'
+              - 'examples/**'
+              - 'docs/**'
+              - 'mkdocs.yml'
+              - 'scripts/**'
+              - '.github/**'
+              - '.pre-commit-config.yaml'
 
       - name: Install uv
         if: steps.changes.outputs.code == 'true'
@@ -82,7 +89,14 @@ jobs:
               - 'packages/fastauth/**'
               - 'tests/**'
               - 'pyproject.toml'
+              - 'packages/fastauth/pyproject.toml'
               - 'uv.lock'
+              - 'examples/**'
+              - 'docs/**'
+              - 'mkdocs.yml'
+              - 'scripts/**'
+              - '.github/**'
+              - '.pre-commit-config.yaml'
 
       - name: Install uv
         if: steps.changes.outputs.code == 'true'

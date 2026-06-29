@@ -50,8 +50,8 @@ uvicorn main:app --reload
 | `POST` | `/auth/login` | Login (credentials or OAuth) |
 | `POST` | `/auth/logout` | Invalidate session |
 | `POST` | `/auth/refresh` | Exchange refresh token |
-| `GET` | `/auth/oauth/{provider}` | Start OAuth flow |
-| `GET` | `/auth/oauth/callback` | OAuth redirect callback |
+| `GET` | `/auth/oauth/{provider}/authorize` | Start OAuth flow |
+| `GET` | `/auth/oauth/{provider}/callback` | OAuth redirect callback |
 | `GET` | `/auth/verify-email` | Verify email |
 | `POST` | `/auth/forgot-password` | Request password reset |
 | `POST` | `/auth/reset-password` | Reset password |

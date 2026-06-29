@@ -60,7 +60,7 @@ from fastauth.providers.credentials import CredentialsProvider
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 auth = FastAuth(FastAuthConfig(
-    secret="change-me",           # fastauth generate-secret
+    secret="change-me-in-production-min-32-bytes!!",           # fastauth generate-secret
     providers=[CredentialsProvider()],
     adapter=adapter.user,
     token_adapter=adapter.token,

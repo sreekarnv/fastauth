@@ -26,7 +26,7 @@ adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 # 2. Configure FastAuth
 auth = FastAuth(FastAuthConfig(
-    secret="change-me-in-production",  # generate with: fastauth generate-secret
+    secret="change-me-in-production-min-32-bytes!!",  # generate with: fastauth generate-secret
     providers=[CredentialsProvider()],
     adapter=adapter.user,
     token_adapter=adapter.token,       # needed for email verification tokens
