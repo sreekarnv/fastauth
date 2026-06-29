@@ -1447,6 +1447,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#provider-token-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider token storage
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2386,6 +2397,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#provider-token-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider token storage
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2591,6 +2613,14 @@
 <h2 id="account-linking">Account linking<a class="headerlink" href="#account-linking" title="Permanent link">&para;</a></h2>
 <p>When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.</p>
 <p>If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's <code>email_verified</code> field remains <code>False</code>. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local <code>email_verified</code> flag.</p>
+<h2 id="provider-token-storage">Provider token storage<a class="headerlink" href="#provider-token-storage" title="Permanent link">&para;</a></h2>
+<p>By default FastAuth does <strong>not</strong> persist the OAuth provider's access or refresh token. Stored provider tokens expand the blast radius of a database compromise and are not currently used by FastAuth itself.</p>
+<p>To opt in to storing provider tokens (for example, if you build custom logic that calls provider APIs on behalf of the user), set:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="o">...</span><span class="p">,</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">store_oauth_provider_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">)</span>
+</code></pre></div>
 
 
 
