@@ -1283,6 +1283,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../oauth/" class="md-nav__link">
         
   
@@ -2690,18 +2718,19 @@
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">FastAuthConfig</span><span class="p">(</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;change-me-in-production&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="n">PasskeyProvider</span><span class="p">(</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>            <span class="n">rp_id</span><span class="o">=</span><span class="s2">&quot;example.com&quot;</span><span class="p">,</span>          <span class="c1"># domain only, no scheme</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>            <span class="n">rp_name</span><span class="o">=</span><span class="s2">&quot;My App&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>            <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;https://example.com&quot;</span><span class="p">,</span> <span class="c1"># full origin (scheme + host)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="p">),</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="p">],</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="n">passkey_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">passkey</span><span class="p">,</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">passkey_state_store</span><span class="o">=</span><span class="n">MemorySessionBackend</span><span class="p">(),</span>  <span class="c1"># or RedisSessionBackend</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="p">))</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="c1"># Run `fastauth generate-secret` and paste the output here.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="n">PasskeyProvider</span><span class="p">(</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>            <span class="n">rp_id</span><span class="o">=</span><span class="s2">&quot;example.com&quot;</span><span class="p">,</span>          <span class="c1"># domain only, no scheme</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>            <span class="n">rp_name</span><span class="o">=</span><span class="s2">&quot;My App&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>            <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;https://example.com&quot;</span><span class="p">,</span> <span class="c1"># full origin (scheme + host)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="p">),</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="p">],</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">passkey_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">passkey</span><span class="p">,</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="n">passkey_state_store</span><span class="o">=</span><span class="n">MemorySessionBackend</span><span class="p">(),</span>  <span class="c1"># or RedisSessionBackend</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="p">))</span>
 </code></pre></div>
 <p><code>rp_id</code> must match the domain of the page performing the ceremony. <code>origin</code> must match the full origin (<code>scheme://host[:port]</code>).</p>
 <p>Multiple origins (e.g. dev + prod):</p>

@@ -1278,6 +1278,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../features/tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../features/oauth/" class="md-nav__link">
         
   
@@ -2446,7 +2474,7 @@
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.providers.credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">CredentialsProvider</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.adapters.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAdapter</span>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">SECRET</span> <span class="o">=</span> <span class="s2">&quot;change-me-in-production&quot;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">SECRET</span> <span class="o">=</span> <span class="s2">&quot;REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret&quot;</span>
 <a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
 <a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
@@ -2460,6 +2488,12 @@
 <a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
 <a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Use the CLI to generate your secret</p>
+<p>The placeholder above is intentionally short and <strong>will fail</strong> the
+32-byte minimum required for HS-family algorithms. Replace it with the
+output of <code>fastauth generate-secret</code> before running the app.</p>
+</div>
 <p><strong><code>main.py</code></strong> — a minimal FastAPI app that mounts FastAuth:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>

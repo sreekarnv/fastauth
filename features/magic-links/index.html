@@ -1283,6 +1283,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../oauth/" class="md-nav__link">
         
   
@@ -2498,19 +2526,20 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">FastAuthConfig</span><span class="p">(</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;change-me-in-production&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="n">MagicLinksProvider</span><span class="p">()],</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">token_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>      <span class="c1"># required</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">email_transport</span><span class="o">=</span><span class="n">SMTPTransport</span><span class="p">(</span>    <span class="c1"># required</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="n">port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;apikey&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">from_email</span><span class="o">=</span><span class="s2">&quot;no-reply@example.com&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="p">),</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-app.com&quot;</span><span class="p">,</span>  <span class="c1"># used to build the callback URL in the email</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="p">))</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="c1"># Run `fastauth generate-secret` and paste the output here.</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">secret</span><span class="o">=</span><span class="s2">&quot;REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="n">MagicLinksProvider</span><span class="p">()],</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">token_adapter</span><span class="o">=</span><span class="n">adapter</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>      <span class="c1"># required</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">email_transport</span><span class="o">=</span><span class="n">SMTPTransport</span><span class="p">(</span>    <span class="c1"># required</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="n">port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;apikey&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">from_email</span><span class="o">=</span><span class="s2">&quot;no-reply@example.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="p">),</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-app.com&quot;</span><span class="p">,</span>  <span class="c1"># used to build the callback URL in the email</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="p">))</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Development</p>

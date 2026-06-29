@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://sreekarnv.github.io/fastauth/features/hooks/">
+        <link rel="canonical" href="https://sreekarnv.github.io/fastauth/features/tokens/">
       
       
-        <link rel="prev" href="../jwt/">
+        <link rel="prev" href="../account/">
       
       
-        <link rel="next" href="../../guides/basic/">
+        <link rel="next" href="../oauth/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Event Hooks - FastAuth</title>
+        <title>Token Introspection & Revocation - FastAuth</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#event-hooks" class="md-skip">
+        <a href="#token-introspection-revocation" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Event Hooks
+              Token Introspection & Revocation
             
           </span>
         </div>
@@ -1280,10 +1280,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../tokens/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1299,6 +1326,98 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introspect-a-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introspect a token
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introspect a token">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#response-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revoke-a-refresh-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revoke a refresh token
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-jti-allowlist-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the JTI allowlist works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1448,37 +1567,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Event Hooks
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../hooks/" class="md-nav__link">
         
   
   
@@ -1494,148 +1586,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available hooks
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Available hooks">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lifecycle-events" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle events
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gate-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Gate hooks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mutation-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mutation hooks
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#block-banned-users-oauth-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Block banned users (OAuth only)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#add-roles-to-jwt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Add roles to JWT
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#send-a-slack-notification-on-sign-up" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Send a Slack notification on sign-up
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#assign-a-default-subscription-tier" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Assign a default subscription tier
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2327,10 +2277,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
+  <a href="#endpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setup
+        Endpoints
       
     </span>
   </a>
@@ -2338,44 +2288,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#available-hooks" class="md-nav__link">
+  <a href="#introspect-a-token" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Available hooks
+        Introspect a token
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Available hooks">
+    <nav class="md-nav" aria-label="Introspect a token">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lifecycle-events" class="md-nav__link">
+  <a href="#response-fields" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lifecycle events
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gate-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Gate hooks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mutation-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mutation hooks
+        Response fields
       
     </span>
   </a>
@@ -2388,63 +2316,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
+  <a href="#revoke-a-refresh-token" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Examples
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#block-banned-users-oauth-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Block banned users (OAuth only)
+        Revoke a refresh token
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#add-roles-to-jwt" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#how-the-jti-allowlist-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Add roles to JWT
+        How the JTI allowlist works
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#send-a-slack-notification-on-sign-up" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Send a Slack notification on sign-up
+        See also
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#assign-a-default-subscription-tier" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Assign a default subscription tier
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2516,150 +2416,163 @@
   
 
 
-<h1 id="event-hooks">Event Hooks<a class="headerlink" href="#event-hooks" title="Permanent link">&para;</a></h1>
-<p>Event hooks let you plug custom logic into FastAuth's lifecycle — run side effects, block sign-ins, or add custom claims to JWTs.</p>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<p>Subclass <code>EventHooks</code> and pass an instance to <code>FastAuthConfig.hooks</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.core.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventHooks</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserData</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_signup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="k">await</span> <span class="n">send_welcome_email</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_signin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="k">await</span> <span class="n">log_signin</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">provider</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">hooks</span><span class="o">=</span><span class="n">MyHooks</span><span class="p">())</span>
+<h1 id="token-introspection-revocation">Token Introspection &amp; Revocation<a class="headerlink" href="#token-introspection-revocation" title="Permanent link">&para;</a></h1>
+<p>FastAuth exposes the standard <a href="https://datatracker.ietf.org/doc/html/rfc7662">RFC 7662 (introspection)</a> and <a href="https://datatracker.ietf.org/doc/html/rfc7009">RFC 7009 (revocation)</a> endpoints under <code>/auth/token</code>. Both require a valid access token on the request itself — they are not anonymous.</p>
+<h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th style="text-align: center;">Auth required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST</code></td>
+<td><code>/auth/token/introspect</code></td>
+<td style="text-align: center;">Yes</td>
+<td>Check whether a token is active and return its claims</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/auth/token/revoke</code></td>
+<td style="text-align: center;">Yes</td>
+<td>Revoke a refresh token (removes its JTI from the allowlist)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="introspect-a-token">Introspect a token<a class="headerlink" href="#introspect-a-token" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/token/introspect<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;access_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;token&quot;: &quot;&lt;token-to-check&gt;&quot;}&#39;</span>
 </code></pre></div>
-<p>Only override the methods you need. All default implementations are no-ops (except <code>allow_signin</code> which returns <code>True</code> by default).</p>
-<h2 id="available-hooks">Available hooks<a class="headerlink" href="#available-hooks" title="Permanent link">&para;</a></h2>
-<h3 id="lifecycle-events">Lifecycle events<a class="headerlink" href="#lifecycle-events" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>When it's called</th>
-<th>Can modify return?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>on_signup(user)</code></td>
-<td>After a new user is created</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_signin(user, provider)</code></td>
-<td>After successful sign-in</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_signout(user)</code></td>
-<td>After sign-out</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_token_refresh(user)</code></td>
-<td>After token pair is refreshed</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_email_verify(user)</code></td>
-<td>After email verification</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_password_reset(user)</code></td>
-<td>After password reset</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>on_oauth_link(user, provider)</code></td>
-<td>After OAuth account linked</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-<h3 id="gate-hooks">Gate hooks<a class="headerlink" href="#gate-hooks" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Returns</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>allow_signin(user, provider)</code></td>
-<td><code>bool</code></td>
-<td>Return <code>False</code> → HTTP 403</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>allow_signin</code> is only called during <strong>OAuth</strong> sign-ins. Credentials (<code>/auth/login</code>) do not invoke this hook — use <code>on_signin</code> for side effects or query the user's state in your adapter before returning.</p>
+<p>Response (<code>200 OK</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ckl9...user-id&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;exp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1700000900</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;jti&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ckl9...jti&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&quot;token_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;refresh&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice@example.com&quot;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>active</code> is <code>true</code> only when:</p>
+<ul>
+<li>The token's signature, <code>iss</code>, <code>aud</code>, and <code>exp</code> are all valid</li>
+<li>For <strong>refresh tokens</strong>: the token's <code>jti</code> is still present in the <code>token_adapter</code> allowlist (only checked when <code>token_adapter</code> is configured). Revoked or already-consumed refresh tokens return <code>active: false</code>.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Always 200 — even for bad tokens</p>
+<p>Introspection never returns <code>4xx</code> for an invalid or expired token. It always responds <code>200 OK</code> with <code>active: false</code>, mirroring RFC 7662. The endpoint only returns <code>401</code> if the <strong>caller's</strong> own access token (the one passed in <code>Authorization</code>) is missing or invalid.</p>
 </div>
-<h3 id="mutation-hooks">Mutation hooks<a class="headerlink" href="#mutation-hooks" title="Permanent link">&para;</a></h3>
+<h3 id="response-fields">Response fields<a class="headerlink" href="#response-fields" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Method</th>
-<th>Returns</th>
-<th>Effect</th>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>modify_jwt(token, user)</code></td>
-<td><code>dict</code></td>
-<td>Returned dict is signed as the JWT payload</td>
+<td><code>active</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> if the token is valid and (for refresh tokens) still allowlisted</td>
 </tr>
 <tr>
-<td><code>modify_session(session, user)</code></td>
-<td><code>dict</code></td>
-<td>Returned dict is stored in the session backend</td>
+<td><code>sub</code></td>
+<td><code>str \| null</code></td>
+<td>The user id encoded in the token</td>
+</tr>
+<tr>
+<td><code>exp</code></td>
+<td><code>int \| null</code></td>
+<td>Expiration timestamp (seconds since epoch)</td>
+</tr>
+<tr>
+<td><code>jti</code></td>
+<td><code>str \| null</code></td>
+<td>Token id (used for refresh-token revocation)</td>
+</tr>
+<tr>
+<td><code>token_type</code></td>
+<td><code>str \| null</code></td>
+<td><code>"access"</code> or <code>"refresh"</code></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td><code>str \| null</code></td>
+<td>The email claim, if the token carries one</td>
 </tr>
 </tbody>
 </table>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="block-banned-users-oauth-only">Block banned users (OAuth only)<a class="headerlink" href="#block-banned-users-oauth-only" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">allow_signin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="k">return</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_banned&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<h2 id="revoke-a-refresh-token">Revoke a refresh token<a class="headerlink" href="#revoke-a-refresh-token" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/auth/token/revoke<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer &lt;access_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;token&quot;: &quot;&lt;refresh_token&gt;&quot;}&#39;</span>
 </code></pre></div>
-<h3 id="add-roles-to-jwt">Add roles to JWT<a class="headerlink" href="#add-roles-to-jwt" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role_adapter</span><span class="p">):</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">role_adapter</span> <span class="o">=</span> <span class="n">role_adapter</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">modify_jwt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="n">token</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_adapter</span><span class="o">.</span><span class="n">get_user_roles</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="k">return</span> <span class="n">token</span>
+<p>Response (<code>200 OK</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token revoked&quot;</span><span class="p">}</span>
 </code></pre></div>
-<h3 id="send-a-slack-notification-on-sign-up">Send a Slack notification on sign-up<a class="headerlink" href="#send-a-slack-notification-on-sign-up" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_signup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>            <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                <span class="s2">&quot;https://hooks.slack.com/...&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;New user: </span><span class="si">{</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>            <span class="p">)</span>
-</code></pre></div>
-<h3 id="assign-a-default-subscription-tier">Assign a default subscription tier<a class="headerlink" href="#assign-a-default-subscription-tier" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_signup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">plan</span><span class="o">=</span><span class="s2">&quot;free&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">modify_jwt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="n">sub</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="n">token</span><span class="p">[</span><span class="s2">&quot;plan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">plan</span> <span class="k">if</span> <span class="n">sub</span> <span class="k">else</span> <span class="s2">&quot;free&quot;</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="k">return</span> <span class="n">token</span>
-</code></pre></div>
+<p>Revocation rules:</p>
+<ul>
+<li><strong>Only refresh tokens</strong> can be revoked. Sending an access token returns <code>400</code>.</li>
+<li><strong>Only the owner</strong> can revoke their own token. The endpoint compares the token's <code>sub</code> claim with the caller's user id and returns <code>403</code> if they don't match.</li>
+<li><strong>Token adapter required.</strong> When <code>token_adapter</code> is configured, the JTI is removed from the allowlist. The endpoint returns <code>400</code> if <code>token_adapter</code> is not configured.</li>
+<li>An invalid or expired token returns <code>400</code>.</li>
+</ul>
+<p>After revocation, calling <code>/auth/token/introspect</code> with the same refresh token returns <code>active: false</code>, and <code>/auth/refresh</code> with that token fails with <code>401</code> ("Refresh token has already been used"). The token is also no longer usable for rotation; FastAuth treats any further use as a replay and revokes the <strong>entire</strong> refresh-token family for that user.</p>
+<h2 id="how-the-jti-allowlist-works">How the JTI allowlist works<a class="headerlink" href="#how-the-jti-allowlist-works" title="Permanent link">&para;</a></h2>
+<p>When <code>token_adapter</code> is configured, FastAuth records the JTI of every issued refresh token in the <code>refresh_jti</code> allowlist (one row per active refresh token). The allowlist is consulted in three places:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Effect on the JTI allowlist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /auth/login</code> or <code>/auth/register</code> with <code>token_adapter</code></td>
+<td>New JTI appended</td>
+</tr>
+<tr>
+<td><code>POST /auth/refresh</code> (success)</td>
+<td>Old JTI atomically consumed; new JTI appended</td>
+</tr>
+<tr>
+<td><code>POST /auth/token/revoke</code></td>
+<td>Matching JTI deleted</td>
+</tr>
+<tr>
+<td><code>POST /auth/logout</code></td>
+<td><strong>All</strong> JTIs for the user deleted</td>
+</tr>
+<tr>
+<td><code>POST /auth/account/change-password</code></td>
+<td><strong>All</strong> JTIs for the user deleted</td>
+</tr>
+<tr>
+<td><code>POST /auth/reset-password</code></td>
+<td><strong>All</strong> JTIs for the user deleted</td>
+</tr>
+</tbody>
+</table>
+<p>If a refresh attempt arrives with a JTI that is no longer in the allowlist (already used, revoked, or never existed), FastAuth treats it as a replay attack and revokes the entire refresh-token family for that user, forcing them to sign in again. This is what <code>/auth/token/introspect</code> reports as <code>active: false</code> for refresh tokens.</p>
+<div class="admonition info">
+<p class="admonition-title">Disabling the allowlist</p>
+<p>If you do not configure <code>token_adapter</code>, refresh tokens are still issued but no allowlist is maintained. In that mode <code>introspect</code> cannot determine whether a refresh token is still valid (the JTI check is skipped), and <code>/auth/token/revoke</code> returns <code>400</code>.</p>
+</div>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../concepts/tokens/">Tokens &amp; Sessions</a> — refresh rotation, replay detection, and the refresh flow in general</li>
+<li><a href="../jwt/">JWT</a> — token structure, claims, and signing algorithms</li>
+</ul>
 
 
 

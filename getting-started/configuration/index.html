@@ -1435,6 +1435,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -2601,7 +2629,7 @@
 <td><code>oauth_redirect_url</code></td>
 <td><code>str \| None</code></td>
 <td><code>None</code></td>
-<td>Callback URL registered with providers.</td>
+<td>Frontend URL FastAuth 302s to after a successful OAuth callback. Tokens are set as <code>HttpOnly</code> cookies on the response — they are never placed in the URL. This is <strong>not</strong> the provider callback URL; see <a href="../../features/oauth/#redirect_uri-vs-oauth_redirect_url">OAuth → redirect_uri vs oauth_redirect_url</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -2739,6 +2767,12 @@
 <td><code>int</code></td>
 <td><code>2_592_000</code></td>
 <td>Refresh token lifetime in seconds (30 days).</td>
+</tr>
+<tr>
+<td><code>remember_me_ttl</code></td>
+<td><code>int</code></td>
+<td><code>7_776_000</code></td>
+<td>Refresh token lifetime in seconds (90 days) when <code>POST /auth/login</code> is called with <code>remember: true</code>.</td>
 </tr>
 <tr>
 <td><code>issuer</code></td>

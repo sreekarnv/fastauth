@@ -1280,6 +1280,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../features/tokens/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token Introspection & Revocation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../features/oauth/" class="md-nav__link">
         
   
@@ -2482,8 +2510,13 @@ lifecycle callbacks (<code>on_signup</code>, <code>modify_jwt</code>, etc.).</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Full callback URL registered with OAuth providers
-(e.g. <code>"https://example.com/auth/oauth/callback"</code>).</p>
+                <p>Frontend URL FastAuth 302s to after a successful
+OAuth callback (e.g. <code>"https://app.example.com/auth/callback"</code>).
+Tokens are set as <code>HttpOnly</code> cookies on the response — never
+appended to the URL. This is <strong>not</strong> the OAuth provider callback URL;
+the provider callback is the <code>/auth/oauth/{provider}/callback</code>
+route and is identified by the <code>redirect_uri</code> query parameter on
+the authorize endpoint.</p>
               </div>
             </td>
           </tr>
