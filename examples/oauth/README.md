@@ -23,11 +23,11 @@ uvicorn main:app --reload
 **Google**
 1. Open [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
 2. Create an OAuth 2.0 Client ID (Web application)
-3. Add `http://localhost:8000/auth/oauth/callback` as an authorised redirect URI
+3. Add `http://localhost:8000/auth/oauth/google/callback` as an authorised redirect URI
 
 **GitHub**
 1. Open [GitHub Developer Settings](https://github.com/settings/developers) → OAuth Apps → New OAuth App
-2. Set the callback URL to `http://localhost:8000/auth/oauth/callback`
+2. Set the callback URL to `http://localhost:8000/auth/oauth/github/callback`
 
 ## Endpoints
 
@@ -37,5 +37,5 @@ uvicorn main:app --reload
 | `POST` | `/auth/login` | Credentials login |
 | `POST` | `/auth/logout` | Invalidate session |
 | `POST` | `/auth/refresh` | Exchange refresh token |
-| `GET` | `/auth/oauth/{provider}` | Start OAuth flow (`google` or `github`) |
-| `GET` | `/auth/oauth/callback` | OAuth redirect callback |
+| `GET` | `/auth/oauth/{provider}/authorize` | Start OAuth flow (`google` or `github`) |
+| `GET` | `/auth/oauth/{provider}/callback` | OAuth redirect callback |
