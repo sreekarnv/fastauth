@@ -160,6 +160,26 @@ async def test_delete_token(adapter):
     assert await adapter.token.get_token("tok1", "verification") is None
 
 
+async def test_create_token_upsert(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    initial = _token_data(user["id"], token="fixed-key")
+    initial["raw_data"] = {"attempts": 1}
+    await adapter.token.create_token(initial)
+
+    updated = _token_data(user["id"], token="fixed-key")
+    updated["raw_data"] = {"attempts": 2}
+    await adapter.token.create_token(updated)
+
+    stored = await adapter.token.get_token("fixed-key", "verification")
+    assert stored is not None
+    assert stored["raw_data"] == {"attempts": 2}
+
+
+async def test_create_user_honors_email_verified(adapter):
+    user = await adapter.user.create_user("verified@example.com", email_verified=True)
+    assert user["email_verified"] is True
+
+
 async def test_delete_user_tokens(adapter):
     user = await adapter.user.create_user("alice@example.com")
     await adapter.token.create_token(_token_data(user["id"], token="t1"))

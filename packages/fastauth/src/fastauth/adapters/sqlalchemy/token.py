@@ -34,7 +34,7 @@ class SQLAlchemyTokenAdapter:
                 created_at=datetime.now(timezone.utc),
                 raw_data=raw_data,
             )
-            session.add(model)
+            await session.merge(model)
             await session.commit()
             return token
 
