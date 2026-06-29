@@ -37,10 +37,9 @@ config = FastAuthConfig(
 
 ## Email policy
 
-GitHub accounts may have a private email address. FastAuth fetches the user's primary, verified email from the GitHub API. If no public email is available it falls back to the verified primary email from the `/user/emails` endpoint.
+GitHub accounts may have a private email address. FastAuth fetches the user's profile email when it is public, or falls back to the `/user/emails` endpoint when no public email is available.
 
-!!! note
-    Users without a verified email on GitHub cannot sign in until they add and verify one.
+FastAuth records GitHub email verification status separately. An unverified GitHub email can create a new unverified FastAuth user, but it will not be used to link to an existing local account or mark a local email as verified.
 
 ## Flow
 
