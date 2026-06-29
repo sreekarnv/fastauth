@@ -116,6 +116,80 @@ async def test_jwks_route_not_registered_when_disabled():
         assert resp.status_code == 404
 
 
+async def test_cors_preflight_returns_cors_headers_when_origins_configured():
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=MemoryUserAdapter(),
+        cors_origins=["https://frontend.example.com"],
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.options(
+            "/auth/register",
+            headers={
+                "Origin": "https://frontend.example.com",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        assert "access-control-allow-origin" in {k.lower() for k in resp.headers}
+        assert (
+            resp.headers.get("access-control-allow-origin")
+            == "https://frontend.example.com"
+        )
+
+
+async def test_cors_not_applied_when_origins_not_set():
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=MemoryUserAdapter(),
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.options(
+            "/auth/register",
+            headers={
+                "Origin": "https://frontend.example.com",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+        assert "access-control-allow-origin" not in {k.lower() for k in resp.headers}
+
+
+async def test_cors_does_not_allow_unconfigured_origin():
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=MemoryUserAdapter(),
+        cors_origins=["https://allowed.example.com"],
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.options(
+            "/auth/register",
+            headers={
+                "Origin": "https://evil.example.com",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+        allow_origin = resp.headers.get("access-control-allow-origin")
+        assert allow_origin != "https://evil.example.com"
+
+
 async def test_register_assigns_default_role():
     user_adapter = MemoryUserAdapter()
     role_adapter = MemoryRoleAdapter()
