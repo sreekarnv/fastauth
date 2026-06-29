@@ -3,18 +3,19 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from cuid2 import cuid_wrapper
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.deps import require_auth
 from fastauth.app import FastAuth
 from fastauth.core.credentials import hash_password, verify_password
+from fastauth.core.one_time_tokens import (
+    generate_one_time_token,
+    hash_one_time_token,
+)
 
 if TYPE_CHECKING:
     from fastauth.types import UserData
-
-generate_token = cuid_wrapper()
 
 
 class ChangePasswordRequest(BaseModel):
@@ -100,11 +101,21 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Current password is incorrect",
             )
 
+        from fastauth.core.credentials import validate_password
+
+        try:
+            validate_password(body.new_password, fa.config.password)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e),
+            ) from e
+
         hashed = hash_password(body.new_password)
         await fa.config.adapter.set_hashed_password(user["id"], hashed)
 
         if fa.config.token_adapter:
-            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh")
+            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh_jti")
 
         return MessageResponse(message="Password changed successfully")
 
@@ -136,10 +147,10 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        token = generate_token()
+        token = generate_one_time_token()
         await fa.config.token_adapter.create_token(
             {
-                "token": token,
+                "token": hash_one_time_token(token),
                 "user_id": user["id"],
                 "token_type": "email_change",
                 "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
@@ -164,7 +175,9 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(token, "email_change")
+        stored = await fa.config.token_adapter.get_token(
+            hash_one_time_token(token), "email_change"
+        )
         if (
             not stored
             or "raw_data" not in stored
@@ -180,7 +193,7 @@ def create_account_router(auth: object) -> APIRouter:
             stored["user_id"], email=stored["raw_data"]["email"]
         )
 
-        await fa.config.token_adapter.delete_token(token)
+        await fa.config.token_adapter.delete_token(hash_one_time_token(token))
 
         return MessageResponse(message="Email changed successfully")
 

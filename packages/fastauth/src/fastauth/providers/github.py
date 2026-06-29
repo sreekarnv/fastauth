@@ -47,7 +47,7 @@ class GitHubProvider:
     ) -> dict[str, Any]:
         import httpx
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.post(
                 self.TOKEN_URL,
                 data={
@@ -72,7 +72,7 @@ class GitHubProvider:
             "Authorization": f"Bearer {access_token}",
             "Accept": "application/json",
         }
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.get(self.USER_URL, headers=headers)
             if resp.status_code != 200:
                 raise ProviderError(f"GitHub user info failed: {resp.text}")

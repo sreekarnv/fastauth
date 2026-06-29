@@ -101,10 +101,11 @@ async def test_send_login_request_skips_email_when_no_dispatcher(
 
 async def test_authenticate_returns_user(provider, user_adapter, token_adapter):
     user = await user_adapter.create_user("valid@example.com")
-    fa = _make_fa(user_adapter, token_adapter)
+    dispatcher = AsyncMock()
+    fa = _make_fa(user_adapter, token_adapter, email_dispatcher=dispatcher)
     await provider.send_login_request(fa, user)
 
-    raw_token = next(iter(token_adapter._tokens))
+    raw_token = dispatcher.send_magic_link_login_request.call_args.kwargs["token"]
     result = await provider.authenticate(fa, raw_token)
 
     assert result["id"] == user["id"]
@@ -115,23 +116,25 @@ async def test_authenticate_deletes_token_after_use(
     provider, user_adapter, token_adapter
 ):
     user = await user_adapter.create_user("oneuse@example.com")
-    fa = _make_fa(user_adapter, token_adapter)
+    dispatcher = AsyncMock()
+    fa = _make_fa(user_adapter, token_adapter, email_dispatcher=dispatcher)
     await provider.send_login_request(fa, user)
 
-    raw_token = next(iter(token_adapter._tokens))
+    raw_token = dispatcher.send_magic_link_login_request.call_args.kwargs["token"]
     await provider.authenticate(fa, raw_token)
 
-    assert raw_token not in token_adapter._tokens
+    assert token_adapter._tokens == {}
 
 
 async def test_authenticate_token_is_one_time_use(
     provider, user_adapter, token_adapter
 ):
     user = await user_adapter.create_user("otp@example.com")
-    fa = _make_fa(user_adapter, token_adapter)
+    dispatcher = AsyncMock()
+    fa = _make_fa(user_adapter, token_adapter, email_dispatcher=dispatcher)
     await provider.send_login_request(fa, user)
 
-    raw_token = next(iter(token_adapter._tokens))
+    raw_token = dispatcher.send_magic_link_login_request.call_args.kwargs["token"]
     await provider.authenticate(fa, raw_token)
 
     with pytest.raises(AuthenticationError):
