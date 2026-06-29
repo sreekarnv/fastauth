@@ -104,9 +104,7 @@ async def test_verify_email_post(client, capsys):
 
     verify_token = _extract_token_from_capsys(capsys)
 
-    resp = await client.post(
-        "/auth/verify-email", json={"token": verify_token}
-    )
+    resp = await client.post("/auth/verify-email", json={"token": verify_token})
     assert resp.status_code == 200
     assert resp.json()["message"] == "Email verified successfully"
 

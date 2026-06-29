@@ -1,4 +1,3 @@
-import pytest
 from fastapi import FastAPI
 from fastauth import FastAuth
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
@@ -75,9 +74,7 @@ async def test_change_password_revokes_old_refresh_jti():
         )
         assert resp.status_code == 200
 
-        resp = await c.post(
-            "/auth/refresh", json={"refresh_token": refresh}
-        )
+        resp = await c.post("/auth/refresh", json={"refresh_token": refresh})
         assert resp.status_code == 401
 
 
@@ -225,4 +222,3 @@ async def test_credentials_login_proceeds_when_allow_signin_allows():
         )
         assert resp.status_code == 200
         assert "access_token" in resp.json()
-

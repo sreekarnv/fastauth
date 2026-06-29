@@ -35,9 +35,7 @@ email_transport = SMTPTransport(
 
 secret = os.environ.get("SECRET")
 if not secret:
-    raise RuntimeError(
-        "SECRET environment variable is required and must not be empty."
-    )
+    raise RuntimeError("SECRET environment variable is required and must not be empty.")
 
 config = FastAuthConfig(
     secret=secret,

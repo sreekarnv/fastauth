@@ -1,8 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
-import pytest
-
 from fastauth.email_transports.webhook import WebhookTransport
 from fastauth.providers.github import GitHubProvider
 from fastauth.providers.google import GoogleProvider
@@ -31,9 +29,7 @@ async def test_google_exchange_code_uses_timeout():
         mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
         mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-        await provider.exchange_code(
-            code="c", redirect_uri="http://localhost/cb"
-        )
+        await provider.exchange_code(code="c", redirect_uri="http://localhost/cb")
         timeout = _timeout_seconds(mock_cls.call_args.kwargs)
         assert timeout is not None
         assert float(timeout) > 0
@@ -97,9 +93,7 @@ async def test_github_exchange_code_uses_timeout():
         mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
         mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-        await provider.exchange_code(
-            code="c", redirect_uri="http://localhost/cb"
-        )
+        await provider.exchange_code(code="c", redirect_uri="http://localhost/cb")
         timeout = _timeout_seconds(mock_cls.call_args.kwargs)
         assert timeout is not None
         assert float(timeout) > 0

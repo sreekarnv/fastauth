@@ -208,7 +208,9 @@ def _extract_token(capsys) -> str:
     raise AssertionError(f"Could not find token= in console output:\n{out}")
 
 
-async def test_verify_email_calls_hook(hooks_email_client, hooks_with_email_app, hooks, capsys):
+async def test_verify_email_calls_hook(
+    hooks_email_client, hooks_with_email_app, hooks, capsys
+):
     _, token_adapter = hooks_with_email_app
     resp = await hooks_email_client.post("/auth/register", json=_REGISTER)
     token = resp.json()["access_token"]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Awaitable
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from cuid2 import cuid_wrapper
 from joserfc import jwt
@@ -167,7 +167,8 @@ async def async_create_access_token(
     user: UserData,
     config: FastAuthConfig,
     jwks_manager: "JWKSManager | None" = None,
-    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]]
+    | None = None,
 ) -> str:
     key, header = _get_signing_key_and_header(config, jwks_manager)
     claims = _build_access_claims(user, config)
@@ -186,7 +187,8 @@ async def async_create_refresh_token(
     config: FastAuthConfig,
     jwks_manager: "JWKSManager | None" = None,
     refresh_ttl_override: int | None = None,
-    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]]
+    | None = None,
 ) -> str:
     key, header = _get_signing_key_and_header(config, jwks_manager)
     claims = _build_refresh_claims(user, config, refresh_ttl_override)
@@ -205,11 +207,10 @@ async def async_create_token_pair(
     config: FastAuthConfig,
     jwks_manager: "JWKSManager | None" = None,
     refresh_ttl_override: int | None = None,
-    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]]
+    | None = None,
 ) -> TokenPair:
-    access = await async_create_access_token(
-        user, config, jwks_manager, modify_jwt
-    )
+    access = await async_create_access_token(user, config, jwks_manager, modify_jwt)
     refresh = await async_create_refresh_token(
         user, config, jwks_manager, refresh_ttl_override, modify_jwt
     )
@@ -234,18 +235,20 @@ def _build_claims_registry(config: FastAuthConfig) -> jwt.JWTClaimsRegistry:
 
 
 def _validate_iss_aud(claims: dict[str, Any], config: FastAuthConfig) -> None:
+    from joserfc.errors import InvalidClaimError, MissingClaimError
+
     if config.jwt.issuer is not None:
         if claims.get("iss") != config.jwt.issuer:
-            from joserfc.errors import InvalidClaimError
-
+            if claims.get("iss") is None:
+                raise MissingClaimError("iss")
             raise InvalidClaimError("iss")
     if config.jwt.audience is not None:
-        expected = config.jwt.audience
         actual = claims.get("aud")
+        if actual is None:
+            raise MissingClaimError("aud")
+        expected = config.jwt.audience
         actual_list = actual if isinstance(actual, list) else [actual]
         if not any(v in actual_list for v in expected):
-            from joserfc.errors import InvalidClaimError
-
             raise InvalidClaimError("aud")
 
 

@@ -1,8 +1,6 @@
 import asyncio
-import re
 from datetime import datetime, timedelta, timezone
 
-import pytest
 from fastapi import FastAPI
 from fastauth import FastAuth, FastAuthConfig
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
@@ -39,7 +37,6 @@ def test_two_distinct_tokens_hash_differently():
 
 
 def test_hash_storage_directly_with_token_adapter():
-    user_adapter = MemoryUserAdapter()
     token_adapter = MemoryTokenAdapter()
     raw = generate_one_time_token()
     asyncio.get_event_loop().run_until_complete(
@@ -104,9 +101,7 @@ def test_magic_link_verify_succeeds_with_raw_token(capsys):
         ) as c:
             await c.post("/auth/magic-links/login", json={"email": "ok@example.com"})
             raw = _extract_token_from_capsys(capsys)
-            resp = await c.get(
-                f"/auth/magic-links/callback?token={raw}"
-            )
+            resp = await c.get(f"/auth/magic-links/callback?token={raw}")
             assert resp.status_code == 200
             assert "access_token" in resp.json()
 
@@ -139,14 +134,10 @@ def test_magic_link_hash_replay_fails(capsys):
             raw = _extract_token_from_capsys(capsys)
             hashed = hash_one_time_token(raw)
 
-            resp_legit = await c.get(
-                f"/auth/magic-links/callback?token={raw}"
-            )
+            resp_legit = await c.get(f"/auth/magic-links/callback?token={raw}")
             assert resp_legit.status_code == 200
 
-            resp_hash = await c.get(
-                f"/auth/magic-links/callback?token={hashed}"
-            )
+            resp_hash = await c.get(f"/auth/magic-links/callback?token={hashed}")
             assert resp_hash.status_code == 401
 
     asyncio.get_event_loop().run_until_complete(run())

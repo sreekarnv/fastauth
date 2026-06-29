@@ -455,9 +455,7 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         token_hash = hash_one_time_token(body.token)
-        stored = await fa.config.token_adapter.get_token(
-            token_hash, "password_reset"
-        )
+        stored = await fa.config.token_adapter.get_token(token_hash, "password_reset")
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
