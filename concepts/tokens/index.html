@@ -893,6 +893,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Refresh flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#replay-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replay detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2329,6 +2346,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Refresh flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#replay-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replay detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2469,23 +2503,27 @@
 <thead>
 <tr>
 <th>Mode</th>
-<th>How tokens are returned</th>
+<th>Response body</th>
+<th>Where the tokens go</th>
 <th>When to use</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>"json"</code> (default)</td>
-<td>Response body <code>{ access_token, refresh_token }</code></td>
+<td><code>{ access_token, refresh_token, ... }</code></td>
+<td>Body</td>
 <td>SPAs, mobile apps, API clients</td>
 </tr>
 <tr>
 <td><code>"cookie"</code></td>
-<td>HttpOnly, Secure cookies</td>
+<td><code>{"message": "Authentication successful"}</code> — <strong>no tokens</strong></td>
+<td><code>HttpOnly</code> cookies</td>
 <td>Traditional web apps, same-origin frontends</td>
 </tr>
 </tbody>
 </table>
+<p>In cookie mode the response body intentionally never contains token material — see <a href="../../features/cookies/">Cookie Delivery</a> for details.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="o">...</span><span class="p">,</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">token_delivery</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
@@ -2501,7 +2539,10 @@
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>→ 200 OK
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>{ &quot;access_token&quot;: &quot;...&quot;, &quot;refresh_token&quot;: &quot;...&quot; }
 </code></pre></div>
-<p>FastAuth validates the refresh token, checks it's still live in the <code>token_adapter</code>, rotates it (issues a new pair), and returns the new tokens.</p>
+<p>FastAuth validates the refresh token and <strong>atomically consumes</strong> its JTI from the <code>token_adapter</code> allowlist. The consume is a single read-and-delete operation (or, on row-locking databases, a <code>SELECT ... FOR UPDATE</code> followed by a rowcount-checked <code>DELETE</code>) so concurrent requests for the same refresh token can never both succeed.</p>
+<p>A new pair is then issued and the new refresh JTI is recorded in the allowlist. The old refresh token is no longer valid.</p>
+<h3 id="replay-detection">Replay detection<a class="headerlink" href="#replay-detection" title="Permanent link">&para;</a></h3>
+<p>If <code>consume_token</code> returns <code>None</code> — meaning the JTI is missing or has already been consumed — FastAuth treats it as a replay attempt and revokes the entire refresh-token family for that user. All subsequent <code>/auth/refresh</code> calls for that user fail with <code>401</code> until the user signs in again.</p>
 <h2 id="signing-algorithms">Signing algorithms<a class="headerlink" href="#signing-algorithms" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

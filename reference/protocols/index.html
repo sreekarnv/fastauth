@@ -1998,6 +1998,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label=" TokenAdapter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastauth.core.protocols.TokenAdapter.consume_token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;consume_token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2422,6 +2439,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label=" TokenAdapter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastauth.core.protocols.TokenAdapter.consume_token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;consume_token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2793,7 +2827,8 @@ ready-made implementation; for testing use
 
 
 
-        <p>Protocol for persisting one-time tokens (email verification, password reset).</p>
+        <p>Protocol for persisting one-time tokens (email verification, password reset,
+refresh-token JTI allowlist).</p>
 
 
 
@@ -2815,6 +2850,38 @@ ready-made implementation; for testing use
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="fastauth.core.protocols.TokenAdapter.consume_token" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">consume_token</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#fastauth.core.protocols.TokenAdapter.consume_token" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">consume_token</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token_type</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenData</span> <span class="o">|</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Atomically read and delete a token.</p>
+<p>Returns the :class:<code>~fastauth.types.TokenData</code> if the token exists, has
+not expired, and matches <em>token_type</em>. Returns <code>None</code> otherwise.
+If multiple callers race, only one will receive the token — the
+others will see <code>None</code>. Implementations must ensure the read and
+delete happen as a single atomic operation so the token can never
+be returned twice.</p>
+
+
+    </div>
+
+</div>
 
 
 

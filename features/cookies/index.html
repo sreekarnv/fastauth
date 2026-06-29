@@ -2356,6 +2356,11 @@
 
 <h1 id="cookie-delivery">Cookie Delivery<a class="headerlink" href="#cookie-delivery" title="Permanent link">&para;</a></h1>
 <p>By default FastAuth returns tokens in the JSON response body. Switching to <code>"cookie"</code> delivery sets them as HttpOnly cookies instead — the browser sends them automatically on every request.</p>
+<div class="admonition danger">
+<p class="admonition-title">Tokenless response bodies in cookie mode</p>
+<p>When <code>token_delivery="cookie"</code>, FastAuth <strong>never returns tokens in the JSON body</strong>. Every sign-in / refresh / OAuth-callback / magic-link-callback / passkey-authenticate response is a small <code>{"message": "Authentication successful"}</code> payload — the tokens are attached only as <code>HttpOnly</code> cookies. This prevents accidental leaks through logs, browser dev tools, or JavaScript that happens to read the response.</p>
+<p>If a client needs the access token in JavaScript, use the default <code>"json"</code> delivery (or read it from your own server-side session).</p>
+</div>
 <h2 id="enable-cookie-delivery">Enable cookie delivery<a class="headerlink" href="#enable-cookie-delivery" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="o">...</span><span class="p">,</span>
@@ -2370,9 +2375,10 @@
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>When <code>token_delivery="cookie"</code>:</p>
 <ol>
-<li><strong>Sign-in / sign-up / refresh</strong> — FastAuth sets two cookies on the response:</li>
+<li><strong>Sign-in / sign-up / refresh / OAuth callback / magic-link callback / passkey auth completion</strong> — FastAuth sets two cookies on the response:</li>
 <li><code>access_token</code> (15 min, <code>HttpOnly</code>)</li>
-<li><code>refresh_token</code> (30 days, <code>HttpOnly</code>)</li>
+<li><code>refresh_token</code> (30 days, <code>HttpOnly</code>)
+   The response body is <code>{"message": "Authentication successful"}</code> and intentionally contains no token material.</li>
 <li><strong>Protected routes</strong> — <code>require_auth</code> reads the access token from the cookie first, then falls back to the <code>Authorization: Bearer</code> header.</li>
 <li><strong>Sign-out</strong> — FastAuth clears both cookies.</li>
 </ol>

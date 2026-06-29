@@ -2465,6 +2465,10 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;token&quot;: &quot;&lt;token-from-email&gt;&quot;, &quot;new_password&quot;: &quot;newS3cur3P@ss!&quot;}&#39;</span>
 </code></pre></div>
 <p>Note: the field name is <code>new_password</code>, not <code>password</code>.</p>
+<div class="admonition info">
+<p class="admonition-title">Existing refresh tokens are revoked</p>
+<p>A successful password reset invalidates <strong>all</strong> outstanding refresh tokens (the JTI allowlist is cleared for that user) so that any browser or device that knew the old password is forced to re-authenticate. The previously issued <code>refresh_token</code> values return <code>401</code> on <code>/auth/refresh</code> even though they're cryptographically valid.</p>
+</div>
 <h2 id="hook">Hook<a class="headerlink" href="#hook" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyHooks</span><span class="p">(</span><span class="n">EventHooks</span><span class="p">):</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_password_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

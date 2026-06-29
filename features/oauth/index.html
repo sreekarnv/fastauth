@@ -1437,6 +1437,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redirect_uri-vs-oauth_redirect_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        redirect_uri vs oauth_redirect_url
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#account-linking" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1444,6 +1466,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Account linking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_oauth_link-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_oauth_link hook
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2387,6 +2426,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redirect_uri-vs-oauth_redirect_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        redirect_uri vs oauth_redirect_url
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#account-linking" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2394,6 +2455,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Account linking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_oauth_link-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_oauth_link hook
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2605,14 +2683,56 @@
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 </code></pre></div>
-<p>If <code>oauth_redirect_url</code> is not set, the tokens are returned as a JSON body instead.</p>
+<p>If <code>oauth_redirect_url</code> is not set, the tokens are returned as a JSON body — unless <code>token_delivery="cookie"</code>, in which case the response body intentionally contains no token material and the tokens live entirely in the <code>HttpOnly</code> cookies.</p>
 <div class="admonition warning">
 <p class="admonition-title">Avoid reading tokens from the URL</p>
 <p>Tokens must not be placed in redirect query parameters because they can be exposed through browser history, logs, screenshots, and <code>Referer</code> headers. Always rely on <code>HttpOnly</code> cookies (or a server-side exchange) when using <code>oauth_redirect_url</code>.</p>
 </div>
+<h2 id="redirect_uri-vs-oauth_redirect_url"><code>redirect_uri</code> vs <code>oauth_redirect_url</code><a class="headerlink" href="#redirect_uri-vs-oauth_redirect_url" title="Permanent link">&para;</a></h2>
+<p>These two settings are different and easy to confuse:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Where it lives</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>redirect_uri</code> (query param)</td>
+<td><code>/auth/oauth/{provider}/authorize?redirect_uri=...</code></td>
+<td>The <strong>OAuth provider callback URL</strong> registered with the provider (e.g. <code>https://api.example.com/auth/oauth/google/callback</code>). This is the URL the provider redirects to with <code>code</code> + <code>state</code>.</td>
+</tr>
+<tr>
+<td><code>oauth_redirect_url</code> (config)</td>
+<td><code>FastAuthConfig(..., oauth_redirect_url="...")</code></td>
+<td>The <strong>frontend URL</strong> FastAuth redirects to <em>after</em> a successful callback, with tokens as <code>HttpOnly</code> cookies. Optional.</td>
+</tr>
+</tbody>
+</table>
+<p>When the OAuth flow starts, FastAuth binds the <code>redirect_uri</code> to the CSRF state. On the callback, FastAuth uses the <strong>bound</strong> value when calling <code>provider.exchange_code</code> — a different value passed in the request URL is ignored. This prevents an attacker from tricking the application into exchanging a code at an attacker-controlled URL.</p>
+<h2 id="state-validation">State validation<a class="headerlink" href="#state-validation" title="Permanent link">&para;</a></h2>
+<p>The CSRF state is validated against three things on every callback:</p>
+<ol>
+<li><strong>Presence</strong> — state must exist in <code>oauth_state_store</code> and not be expired.</li>
+<li><strong>Provider match</strong> — the stored <code>provider</code> must equal <code>provider.id</code> of the configured OAuth provider handling the callback. A state created for one provider cannot be redeemed by another.</li>
+<li><strong>Redirect URI</strong> — the stored <code>redirect_uri</code> must be present; otherwise the callback is rejected.</li>
+</ol>
+<p>A failed match returns HTTP <code>400</code>.</p>
 <h2 id="account-linking">Account linking<a class="headerlink" href="#account-linking" title="Permanent link">&para;</a></h2>
 <p>When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.</p>
 <p>If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's <code>email_verified</code> field remains <code>False</code>. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local <code>email_verified</code> flag.</p>
+<p>The <code>OAuthAccountAdapter</code> stores <code>provider</code> + <code>provider_account_id</code> and the SQLAlchemy adapter enforces a database-level unique constraint on that pair. A duplicate <code>create_oauth_account(...)</code> call is treated as "already linked" and returns the existing record instead of raising a constraint error.</p>
+<h3 id="on_oauth_link-hook"><code>on_oauth_link</code> hook<a class="headerlink" href="#on_oauth_link-hook" title="Permanent link">&para;</a></h3>
+<p><code>on_oauth_link</code> is fired <strong>only</strong> for explicit link flows — i.e. after <code>/auth/oauth/{provider}/link/callback</code> succeeds. Normal OAuth sign-in via <code>/auth/oauth/{provider}/callback</code> does <strong>not</strong> fire <code>on_oauth_link</code>; it fires <code>on_signin</code> (and <code>on_signup</code> for new users). This avoids the misleading semantics of treating a fresh sign-in as an "account linked" event.</p>
+<p>If <code>allow_signin</code> denies a sign-in, FastAuth responds with <code>403</code> and:</p>
+<ul>
+<li>No tokens are issued</li>
+<li><code>on_signin</code> is <strong>not</strong> fired</li>
+<li><code>on_oauth_link</code> is <strong>not</strong> fired</li>
+<li>No refresh-token JTI is recorded</li>
+</ul>
 <h2 id="provider-token-storage">Provider token storage<a class="headerlink" href="#provider-token-storage" title="Permanent link">&para;</a></h2>
 <p>By default FastAuth does <strong>not</strong> persist the OAuth provider's access or refresh token. Stored provider tokens expand the blast radius of a database compromise and are not currently used by FastAuth itself.</p>
 <p>To opt in to storing provider tokens (for example, if you build custom logic that calls provider APIs on behalf of the user), set:</p>
