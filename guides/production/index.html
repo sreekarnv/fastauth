@@ -2532,7 +2532,7 @@
 <ul>
 <li>[ ] <strong>Short access token TTL</strong> — 15 minutes (default) is a good baseline</li>
 <li>[ ] <strong>Consider shorter TTLs</strong> for high-security applications (5 minutes)</li>
-<li>[ ] <strong>Rotate refresh tokens</strong> on every refresh (FastAuth does this automatically)</li>
+<li>[ ] <strong>Rotate refresh tokens</strong> on every refresh — FastAuth records each refresh token JTI in <code>token_adapter</code> and rejects reused JTIs. Configure <code>token_adapter</code> for refresh-token rotation; without it, refresh tokens are stateless and remain valid until expiry.</li>
 </ul>
 <h2 id="cors">CORS<a class="headerlink" href="#cors" title="Permanent link">&para;</a></h2>
 <ul>
