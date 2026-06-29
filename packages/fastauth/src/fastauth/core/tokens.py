@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from cuid2 import cuid_wrapper
 from joserfc import jwt
@@ -11,6 +11,8 @@ from fastauth.config import FastAuthConfig
 from fastauth.types import TokenPair, UserData
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
+
     from fastauth.core.jwks import JWKSManager
 
 cuid_generator: Callable[[], str] = cuid_wrapper()

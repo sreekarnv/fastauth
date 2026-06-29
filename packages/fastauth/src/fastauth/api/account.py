@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from cuid2 import cuid_wrapper
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 
@@ -17,8 +16,6 @@ from fastauth.core.one_time_tokens import (
 
 if TYPE_CHECKING:
     from fastauth.types import UserData
-
-generate_token = cuid_wrapper()
 
 
 class ChangePasswordRequest(BaseModel):

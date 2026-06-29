@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from cuid2 import cuid_wrapper
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
 
@@ -24,8 +23,6 @@ from fastauth.providers.credentials import CredentialsProvider
 if TYPE_CHECKING:
     from fastauth.app import FastAuth
     from fastauth.types import TokenPair, UserData
-
-generate_token = cuid_wrapper()
 
 
 async def _issue_tracked_tokens(
