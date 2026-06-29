@@ -219,7 +219,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
         try:
             body = await request.json()
             email = body.get("email")
-        except (json.JSONDecodeError, ValueError):
+        except json.JSONDecodeError:
             pass
 
         allow_credentials: list[PublicKeyCredentialDescriptor] = []
