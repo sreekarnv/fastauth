@@ -14,7 +14,7 @@ from fastauth.core.one_time_tokens import (
     generate_one_time_token,
     hash_one_time_token,
 )
-from fastauth.core.tokens import create_token_pair, decode_token
+from fastauth.core.tokens import async_create_token_pair, decode_token
 from fastauth.exceptions import (
     AuthenticationError,
     UserAlreadyExistsError,
@@ -36,8 +36,13 @@ async def _issue_tracked_tokens(
     refresh_ttl = (
         fa.config.jwt.remember_me_ttl if remember else fa.config.jwt.refresh_token_ttl
     )
-    tokens = create_token_pair(
-        user, fa.config, fa.jwks_manager, refresh_ttl_override=refresh_ttl
+    modify_jwt = fa.config.hooks.modify_jwt if fa.config.hooks else None
+    tokens = await async_create_token_pair(
+        user,
+        fa.config,
+        fa.jwks_manager,
+        refresh_ttl_override=refresh_ttl,
+        modify_jwt=modify_jwt,
     )
     if fa.config.token_adapter:
         refresh_claims = decode_token(

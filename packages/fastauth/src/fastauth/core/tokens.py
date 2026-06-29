@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Awaitable
 
 from cuid2 import cuid_wrapper
 from joserfc import jwt
@@ -114,6 +114,105 @@ def create_token_pair(
     access = create_access_token(user, config, jwks_manager)
     refresh = create_refresh_token(user, config, jwks_manager, refresh_ttl_override)
 
+    return {
+        "access_token": access,
+        "refresh_token": refresh,
+        "token_type": "bearer",
+        "expires_in": config.jwt.access_token_ttl,
+    }
+
+
+def _build_access_claims(user: UserData, config: FastAuthConfig) -> jwt.Claims:
+    now = datetime.now(timezone.utc)
+    return {
+        "sub": user["id"],
+        "jti": cuid_generator(),
+        "iss": config.jwt.issuer,
+        "aud": config.jwt.audience,
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(seconds=config.jwt.access_token_ttl)).timestamp()),
+        "type": "access",
+        "email": user["email"],
+        "name": user["name"],
+        "email_verified": user["email_verified"],
+    }
+
+
+def _build_refresh_claims(
+    user: UserData,
+    config: FastAuthConfig,
+    refresh_ttl_override: int | None = None,
+) -> jwt.Claims:
+    now = datetime.now(timezone.utc)
+    ttl = (
+        refresh_ttl_override
+        if refresh_ttl_override is not None
+        else config.jwt.refresh_token_ttl
+    )
+    return {
+        "sub": user["id"],
+        "jti": cuid_generator(),
+        "iss": config.jwt.issuer,
+        "aud": config.jwt.audience,
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(seconds=ttl)).timestamp()),
+        "type": "refresh",
+        "email": user["email"],
+        "name": user["name"],
+        "email_verified": user["email_verified"],
+    }
+
+
+async def async_create_access_token(
+    user: UserData,
+    config: FastAuthConfig,
+    jwks_manager: "JWKSManager | None" = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+) -> str:
+    key, header = _get_signing_key_and_header(config, jwks_manager)
+    claims = _build_access_claims(user, config)
+    if modify_jwt is not None:
+        claims = await modify_jwt(claims, user)
+    return jwt.encode(
+        header=header,
+        claims=claims,
+        key=key,
+        algorithms=[config.jwt.algorithm],
+    )
+
+
+async def async_create_refresh_token(
+    user: UserData,
+    config: FastAuthConfig,
+    jwks_manager: "JWKSManager | None" = None,
+    refresh_ttl_override: int | None = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+) -> str:
+    key, header = _get_signing_key_and_header(config, jwks_manager)
+    claims = _build_refresh_claims(user, config, refresh_ttl_override)
+    if modify_jwt is not None:
+        claims = await modify_jwt(claims, user)
+    return jwt.encode(
+        header=header,
+        claims=claims,
+        key=key,
+        algorithms=[config.jwt.algorithm],
+    )
+
+
+async def async_create_token_pair(
+    user: UserData,
+    config: FastAuthConfig,
+    jwks_manager: "JWKSManager | None" = None,
+    refresh_ttl_override: int | None = None,
+    modify_jwt: Callable[[dict[str, Any], UserData], Awaitable[dict[str, Any]]] | None = None,
+) -> TokenPair:
+    access = await async_create_access_token(
+        user, config, jwks_manager, modify_jwt
+    )
+    refresh = await async_create_refresh_token(
+        user, config, jwks_manager, refresh_ttl_override, modify_jwt
+    )
     return {
         "access_token": access,
         "refresh_token": refresh,

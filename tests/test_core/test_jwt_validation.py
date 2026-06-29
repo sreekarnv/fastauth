@@ -70,3 +70,32 @@ def test_decode_with_no_issuer_config_passes_regardless_of_iss(user):
     token = create_access_token(user, config)
     claims = decode_token(token, config)
     assert claims["sub"] == "u1"
+
+
+async def test_modify_jwt_hook_adds_custom_claim(user):
+    from fastauth.core.tokens import async_create_token_pair
+
+    custom_claims: list[dict] = []
+
+    async def hook(claims, _user):
+        custom_claims.append(claims)
+        claims["plan"] = "pro"
+        return claims
+
+    config = _config()
+    pair = await async_create_token_pair(user, config, modify_jwt=hook)
+    claims = decode_token(pair["access_token"], config)
+    assert claims["plan"] == "pro"
+    assert custom_claims  # hook was invoked at least once
+
+
+async def test_modify_jwt_hook_noop_does_not_break_creation(user):
+    from fastauth.core.tokens import async_create_token_pair
+
+    async def hook(claims, _user):
+        return claims
+
+    config = _config()
+    pair = await async_create_token_pair(user, config, modify_jwt=hook)
+    assert "access_token" in pair
+    assert "refresh_token" in pair
