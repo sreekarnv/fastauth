@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from cuid2 import cuid_wrapper
 from joserfc import jwt
+from joserfc.errors import JoseError
 from joserfc.jwk import OctKey
 
 from fastauth.config import FastAuthConfig
+from fastauth.exceptions import InvalidTokenError
 from fastauth.types import TokenPair, UserData
 
 if TYPE_CHECKING:
@@ -263,22 +265,23 @@ def decode_token(
 
     # For RS* with multiple keys, try each one
     if isinstance(decode_key, list):
-        from joserfc.errors import JoseError
-
-        last_err: Exception | None = None
+        last_err: JoseError | None = None
         for key in decode_key:
             try:
                 data = jwt.decode(token, key, algorithms=[config.jwt.algorithm])
                 _build_claims_registry(config).validate(data.claims)
                 _validate_iss_aud(data.claims, config)
                 return data.claims
-            except (JoseError, ValueError) as e:
+            except JoseError as e:
                 last_err = e
         if last_err:
-            raise last_err
-        raise ValueError("No verification keys available")
+            raise InvalidTokenError("Invalid token") from last_err
+        raise InvalidTokenError("No verification keys available")
 
-    data = jwt.decode(token, decode_key, algorithms=[config.jwt.algorithm])
-    _build_claims_registry(config).validate(data.claims)
-    _validate_iss_aud(data.claims, config)
-    return data.claims
+    try:
+        data = jwt.decode(token, decode_key, algorithms=[config.jwt.algorithm])
+        _build_claims_registry(config).validate(data.claims)
+        _validate_iss_aud(data.claims, config)
+        return data.claims
+    except JoseError as e:
+        raise InvalidTokenError("Invalid token") from e

@@ -9,6 +9,10 @@ def test_credentials_provider_exposes_auth_type():
     assert CredentialsProvider.auth_type == "credentials"
 
 
+def test_credentials_provider_does_not_expose_legacy_type_alias():
+    assert not hasattr(CredentialsProvider, "type")
+
+
 def test_google_provider_exposes_auth_type():
     assert GoogleProvider.auth_type == "oauth"
 

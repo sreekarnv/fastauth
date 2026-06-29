@@ -434,6 +434,17 @@ async def test_begin_authentication_empty_body(passkey_client):
     assert resp.status_code == 200
 
 
+async def test_begin_authentication_malformed_json_body(passkey_client):
+    client, *_ = passkey_client
+    resp = await client.post(
+        "/auth/passkeys/authenticate/begin",
+        content=b"{",
+        headers={"Content-Type": "application/json"},
+    )
+    assert resp.status_code == 200
+    assert "challenge" in resp.json()
+
+
 async def test_begin_authentication_with_email(passkey_client):
     client, user_adapter, passkey_adapter, _ = passkey_client
     user = await user_adapter.create_user("authpk@example.com")

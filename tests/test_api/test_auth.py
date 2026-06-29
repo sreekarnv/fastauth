@@ -135,6 +135,11 @@ async def test_protected_route_with_token(client):
     assert "message" in data and data["message"] == "protected_router loaded"
 
 
+async def test_protected_route_with_invalid_token_returns_401(client):
+    resp = await __protected(client, headers={"Authorization": "Bearer garbage"})
+    assert resp.status_code == 401
+
+
 async def test_login_remember_me_extends_refresh_ttl(client):
 
     await __register_user(client)

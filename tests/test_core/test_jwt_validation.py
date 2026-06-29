@@ -31,13 +31,13 @@ def _config(secret: str = "this-is-a-test-secret-32-bytes!!", **jwt_kwargs):
 
 
 def test_decode_with_issuer_configured_wrong_issuer_raises(user):
-    from joserfc.errors import InvalidClaimError, MissingClaimError
+    from fastauth.exceptions import InvalidTokenError
 
     config = _config(issuer="my-issuer")
     config_no_iss = _config()
 
     token = create_access_token(user, config_no_iss)
-    with pytest.raises((InvalidClaimError, MissingClaimError)):
+    with pytest.raises(InvalidTokenError):
         decode_token(token, config)
 
 
@@ -50,13 +50,13 @@ def test_decode_with_issuer_configured_correct_issuer_passes(user):
 
 
 def test_decode_with_audience_configured_wrong_audience_raises(user):
-    from joserfc.errors import InvalidClaimError, MissingClaimError
+    from fastauth.exceptions import InvalidTokenError
 
     config = _config(audience=["expected-aud"])
     config_no_aud = _config()
 
     token = create_access_token(user, config_no_aud)
-    with pytest.raises((InvalidClaimError, MissingClaimError)):
+    with pytest.raises(InvalidTokenError):
         decode_token(token, config)
 
 
