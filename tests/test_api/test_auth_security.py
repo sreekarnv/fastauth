@@ -222,3 +222,66 @@ async def test_credentials_login_proceeds_when_allow_signin_allows():
         )
         assert resp.status_code == 200
         assert "access_token" in resp.json()
+
+
+async def test_logout_revokes_refresh_jti():
+    from fastauth.core.tokens import decode_token
+
+    app, _, _ = _build_app()
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={"email": "lo@example.com", "password": "Pass123#", "name": "T"},
+        )
+        assert resp.status_code == 201
+        refresh = resp.json()["refresh_token"]
+        access = resp.json()["access_token"]
+
+        resp = await c.post(
+            "/auth/logout", headers={"Authorization": f"Bearer {access}"}
+        )
+        assert resp.status_code == 200
+
+        claims = decode_token(
+            refresh,
+            app.state.fastauth.config,
+            app.state.fastauth.jwks_manager,
+        )
+        jti = claims["jti"]
+        stored = await app.state.fastauth.config.token_adapter.get_token(
+            jti, "refresh_jti"
+        )
+        assert stored is None
+
+        resp = await c.post("/auth/refresh", json={"refresh_token": refresh})
+        assert resp.status_code == 401
+
+
+async def test_logout_without_token_adapter_succeeds():
+    from fastapi import FastAPI as _FastAPI
+    from fastauth import FastAuth as _FastAuth
+    from fastauth.adapters.memory import MemoryUserAdapter
+
+    user_adapter = MemoryUserAdapter()
+    config = FastAuthConfig(
+        secret="this-is-a-test-secret-32-bytes!!",
+        providers=[CredentialsProvider()],
+        adapter=user_adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+    )
+    auth = _FastAuth(config)
+    app = _FastAPI()
+    auth.mount(app)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post(
+            "/auth/register",
+            json={"email": "nta@example.com", "password": "Pass123#", "name": "T"},
+        )
+        assert resp.status_code == 201
+        access = resp.json()["access_token"]
+        resp = await c.post(
+            "/auth/logout", headers={"Authorization": f"Bearer {access}"}
+        )
+        assert resp.status_code == 200
