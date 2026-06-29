@@ -16,7 +16,7 @@ _STRICT = PasswordConfig(
 )
 
 
-def _build_app(password: PasswordConfig | None = None):
+def _build_app(password: PasswordConfig | None = None, hooks=None):
     user_adapter = MemoryUserAdapter()
     token_adapter = MemoryTokenAdapter()
     config = FastAuthConfig(
@@ -28,6 +28,7 @@ def _build_app(password: PasswordConfig | None = None):
         password=password or PasswordConfig(),
         email_transport=ConsoleTransport(),
         base_url="http://localhost:8000",
+        hooks=hooks,
     )
     auth = FastAuth(config)
     app = FastAPI()
@@ -176,4 +177,52 @@ async def test_strong_password_on_reset_succeeds(capsys):
             json={"token": token, "new_password": "SuperSafe123!@#"},
         )
         assert resp.status_code == 200
+
+
+async def test_credentials_login_blocked_by_allow_signin():
+    from fastauth.core.protocols import EventHooks
+    from fastauth.types import UserData
+
+    class BlockingHooks(EventHooks):
+        async def allow_signin(self, user: UserData, provider: str) -> bool:
+            return False
+
+    app, _, _ = _build_app(hooks=BlockingHooks())
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        await c.post(
+            "/auth/register",
+            json={"email": "cred@example.com", "password": "Pass123#", "name": "T"},
+        )
+        resp = await c.post(
+            "/auth/login",
+            json={"email": "cred@example.com", "password": "Pass123#"},
+        )
+        assert resp.status_code == 403
+        assert "access_token" not in resp.cookies
+        body = resp.json()
+        assert "access_token" not in body
+
+
+async def test_credentials_login_proceeds_when_allow_signin_allows():
+    from fastauth.core.protocols import EventHooks
+    from fastauth.types import UserData
+
+    class AllowHooks(EventHooks):
+        async def allow_signin(self, user: UserData, provider: str) -> bool:
+            return True
+
+    app, _, _ = _build_app(hooks=AllowHooks())
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        await c.post(
+            "/auth/register",
+            json={"email": "cred2@example.com", "password": "Pass123#", "name": "T"},
+        )
+        resp = await c.post(
+            "/auth/login",
+            json={"email": "cred2@example.com", "password": "Pass123#"},
+        )
+        assert resp.status_code == 200
+        assert "access_token" in resp.json()
 

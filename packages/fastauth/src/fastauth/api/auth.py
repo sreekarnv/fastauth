@@ -242,6 +242,12 @@ def create_auth_router(auth: object) -> APIRouter:
             ) from e
 
         if fa.config.hooks:
+            allowed = await fa.config.hooks.allow_signin(user, "credentials")
+            if not allowed:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Sign in not allowed",
+                )
             await fa.config.hooks.on_signin(user, "credentials")
 
         tokens = await _issue_tracked_tokens(fa, user, remember=body.remember)
