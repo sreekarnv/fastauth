@@ -14,6 +14,7 @@ from webauthn import (
     verify_registration_response,
 )
 from webauthn.helpers import base64url_to_bytes
+from webauthn.helpers.exceptions import WebAuthnException
 from webauthn.helpers.structs import (
     AuthenticatorSelectionCriteria,
     PublicKeyCredentialDescriptor,
@@ -146,7 +147,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
                 expected_rp_id=provider.rp_id,
                 expected_origin=provider.origins,
             )
-        except Exception as exc:
+        except WebAuthnException as exc:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Registration verification failed: {exc}",
@@ -218,7 +219,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
         try:
             body = await request.json()
             email = body.get("email")
-        except Exception:
+        except (json.JSONDecodeError, ValueError):
             pass
 
         allow_credentials: list[PublicKeyCredentialDescriptor] = []
@@ -287,7 +288,7 @@ def create_passkeys_router(auth: object) -> APIRouter:
                 credential_public_key=passkey["public_key"],
                 credential_current_sign_count=passkey["sign_count"],
             )
-        except Exception as exc:
+        except WebAuthnException as exc:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Authentication verification failed: {exc}",

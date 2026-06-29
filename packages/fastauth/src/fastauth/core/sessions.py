@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from cuid2 import cuid_wrapper
+from joserfc.errors import JoseError
 
 from fastauth.config import FastAuthConfig
 from fastauth.core.protocols import SessionBackend, UserAdapter
@@ -27,7 +28,7 @@ class JWTSessionStrategy:
     async def validate(self, token: str) -> UserData | None:
         try:
             claims = decode_token(token, self._config)
-        except Exception:
+        except (JoseError, ValueError):
             return None
         if claims.get("type") != "access":
             return None
@@ -40,7 +41,7 @@ class JWTSessionStrategy:
     async def refresh(self, token: str) -> str | None:
         try:
             claims = decode_token(token, self._config)
-        except Exception:
+        except (JoseError, ValueError):
             return None
         if claims.get("type") != "refresh":
             return None

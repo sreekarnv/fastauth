@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from joserfc.errors import JoseError
 from pydantic import BaseModel, EmailStr
 
 from fastauth.api.deps import require_auth
@@ -296,7 +297,7 @@ def create_auth_router(auth: object) -> APIRouter:
 
         try:
             claims = decode_token(token_str, fa.config, fa.jwks_manager)
-        except Exception as e:
+        except (JoseError, ValueError) as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid refresh token",
