@@ -2563,8 +2563,10 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://accounts.google.com/o/oauth2/v2/auth?client_id=...&amp;state=...&quot;</span><span class="p">}</span>
 </code></pre></div></p>
 <p>Redirect the user's browser to that URL. FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.</p>
-<p>After the OAuth flow completes, if <code>oauth_redirect_url</code> is set, FastAuth redirects to it with tokens as query parameters:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>http://localhost:3000/auth/callback?access_token=eyJ...&amp;refresh_token=eyJ...&amp;token_type=bearer&amp;expires_in=900
+<p>After the OAuth flow completes, if <code>oauth_redirect_url</code> is set, FastAuth redirects to it and sets the access and refresh tokens as <code>HttpOnly</code> cookies on the response. Tokens are <strong>not</strong> placed in the redirect URL.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>GET http://localhost:3000/auth/callback
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 </code></pre></div>
 <h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SECRET</span><span class="o">=</span><span class="k">$(</span>fastauth<span class="w"> </span>generate-secret<span class="k">)</span>

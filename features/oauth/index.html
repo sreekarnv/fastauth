@@ -2492,7 +2492,7 @@
     FA-&gt;&gt;FA: issue access + refresh tokens
 
     alt oauth_redirect_url configured
-        FA--&gt;&gt;C: 302 → oauth_redirect_url?access_token=...&amp;refresh_token=...
+        FA--&gt;&gt;C: 302 → oauth_redirect_url (tokens set as HttpOnly cookies)
     else
         FA--&gt;&gt;C: {"access_token": "...", "refresh_token": "..."}
     end</code></pre>
@@ -2578,10 +2578,16 @@
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="handling-the-callback-response">Handling the callback response<a class="headerlink" href="#handling-the-callback-response" title="Permanent link">&para;</a></h2>
-<p>If <code>oauth_redirect_url</code> is set in your config, FastAuth redirects to it after a successful OAuth callback, appending tokens as query parameters:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>GET https://your-app.com/auth/callback?access_token=eyJ...&amp;refresh_token=eyJ...&amp;token_type=bearer&amp;expires_in=900
+<p>If <code>oauth_redirect_url</code> is set in your config, FastAuth redirects to it after a successful OAuth callback. Tokens are set as <code>HttpOnly</code> cookies on the redirect response instead of being appended to the URL:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>GET https://your-app.com/auth/callback
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 </code></pre></div>
-<p>Your frontend can extract these tokens and store them. If <code>oauth_redirect_url</code> is not set, the tokens are returned as a JSON body instead.</p>
+<p>If <code>oauth_redirect_url</code> is not set, the tokens are returned as a JSON body instead.</p>
+<div class="admonition warning">
+<p class="admonition-title">Avoid reading tokens from the URL</p>
+<p>Tokens must not be placed in redirect query parameters because they can be exposed through browser history, logs, screenshots, and <code>Referer</code> headers. Always rely on <code>HttpOnly</code> cookies (or a server-side exchange) when using <code>oauth_redirect_url</code>.</p>
+</div>
 <h2 id="account-linking">Account linking<a class="headerlink" href="#account-linking" title="Permanent link">&para;</a></h2>
 <p>When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.</p>
 <p>If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's <code>email_verified</code> field remains <code>False</code>. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local <code>email_verified</code> flag.</p>
