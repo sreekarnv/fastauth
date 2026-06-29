@@ -13,6 +13,10 @@ from fastauth.providers.passkey import PasskeyProvider
 from fastauth.session_backends.memory import MemorySessionBackend
 from fastauth.types import PasskeyData, UserData
 from httpx import ASGITransport, AsyncClient
+from webauthn.helpers.exceptions import (
+    InvalidAuthenticationResponse,
+    InvalidRegistrationResponse,
+)
 
 RP_ID = "testserver"
 ORIGIN = "http://testserver"
@@ -235,7 +239,7 @@ async def test_complete_registration_verification_fails(passkey_client):
 
     with patch(
         "fastauth.api.passkeys.verify_registration_response",
-        side_effect=ValueError("invalid signature"),
+        side_effect=InvalidRegistrationResponse("invalid signature"),
     ):
         resp = await client.post(
             "/auth/passkeys/register/complete",
@@ -611,7 +615,7 @@ async def test_complete_authentication_verification_fails(passkey_client):
 
     with patch(
         "fastauth.api.passkeys.verify_authentication_response",
-        side_effect=ValueError("bad signature"),
+        side_effect=InvalidAuthenticationResponse("bad signature"),
     ):
         resp = await client.post(
             "/auth/passkeys/authenticate/complete",

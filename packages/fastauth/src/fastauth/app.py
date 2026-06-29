@@ -90,6 +90,17 @@ class FastAuth:
             jwks_router = create_jwks_router(self)
             app.include_router(jwks_router)
 
+        if self.config.cors_origins:
+            from starlette.middleware.cors import CORSMiddleware
+
+            app.add_middleware(
+                CORSMiddleware,
+                allow_origins=self.config.cors_origins,
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+
     async def initialize_roles(self) -> None:
         """Seed roles defined in ``config.roles`` into the role adapter.
 

@@ -263,6 +263,8 @@ def decode_token(
 
     # For RS* with multiple keys, try each one
     if isinstance(decode_key, list):
+        from joserfc.errors import JoseError
+
         last_err: Exception | None = None
         for key in decode_key:
             try:
@@ -270,7 +272,7 @@ def decode_token(
                 _build_claims_registry(config).validate(data.claims)
                 _validate_iss_aud(data.claims, config)
                 return data.claims
-            except Exception as e:
+            except (JoseError, ValueError) as e:
                 last_err = e
         if last_err:
             raise last_err
