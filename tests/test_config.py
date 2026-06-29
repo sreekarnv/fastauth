@@ -9,7 +9,7 @@ from fastauth.providers.credentials import CredentialsProvider
 
 def _make(**kwargs: Any) -> FastAuthConfig:
     defaults: dict[str, Any] = {
-        "secret": "test-secret",
+        "secret": "this-is-a-test-secret-32-bytes!!",
         "providers": [CredentialsProvider()],
         "adapter": MemoryUserAdapter(),
     }
@@ -20,6 +20,24 @@ def _make(**kwargs: Any) -> FastAuthConfig:
 def test_empty_secret_raises():
     with pytest.raises(ConfigError, match="secret"):
         _make(secret="")
+
+
+def test_short_hs256_secret_raises():
+    with pytest.raises(ConfigError, match="at least 32 bytes"):
+        _make(secret="short", jwt=JWTConfig(algorithm="HS256"))
+
+
+def test_32_byte_hs256_secret_passes():
+    config = _make(
+        secret="this-is-a-test-secret-32-bytes!!",
+        jwt=JWTConfig(algorithm="HS256"),
+    )
+    assert config.secret == "this-is-a-test-secret-32-bytes!!"
+
+
+def test_rs256_short_secret_unaffected():
+    config = _make(secret="short", jwt=JWTConfig(algorithm="RS256", jwks_enabled=True))
+    assert config.secret == "short"
 
 
 def test_no_providers_raises():
@@ -88,5 +106,5 @@ def test_cookie_defaults():
 
 def test_valid_config_ok():
     config = _make()
-    assert config.secret == "test-secret"
+    assert config.secret == "this-is-a-test-secret-32-bytes!!"
     assert len(config.providers) == 1

@@ -13,7 +13,7 @@ from httpx import ASGITransport, AsyncClient
 
 def _make_config(**kwargs):
     return FastAuthConfig(
-        secret="test-secret",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=MemoryUserAdapter(),
         **kwargs,
@@ -101,7 +101,7 @@ async def test_jwks_route_registered_when_mount_called_before_initialize_jwks():
 
 async def test_jwks_route_not_registered_when_disabled():
     config = FastAuthConfig(
-        secret="test-secret",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider()],
         adapter=MemoryUserAdapter(),
         jwt=JWTConfig(algorithm="HS256", jwks_enabled=False),
@@ -123,7 +123,7 @@ async def test_register_assigns_default_role():
 
     auth = FastAuth(
         FastAuthConfig(
-            secret="test-secret",
+            secret="this-is-a-test-secret-32-bytes!!",
             providers=[CredentialsProvider()],
             adapter=user_adapter,
             default_role="member",
@@ -154,7 +154,7 @@ async def test_register_no_role_assigned_without_default_role():
 
     auth = FastAuth(
         FastAuthConfig(
-            secret="test-secret",
+            secret="this-is-a-test-secret-32-bytes!!",
             providers=[CredentialsProvider()],
             adapter=user_adapter,
             # default_role not set
@@ -184,7 +184,7 @@ async def test_register_no_role_assigned_without_role_adapter():
 
     auth = FastAuth(
         FastAuthConfig(
-            secret="test-secret",
+            secret="this-is-a-test-secret-32-bytes!!",
             providers=[CredentialsProvider()],
             adapter=user_adapter,
             default_role="member",
@@ -212,7 +212,7 @@ async def test_magic_link_signup_assigns_default_role():
     await role_adapter.create_role(name="member", permissions=[])
 
     config = FastAuthConfig(
-        secret="test-secret",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[MagicLinksProvider()],
         adapter=user_adapter,
         token_adapter=token_adapter,

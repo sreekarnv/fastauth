@@ -47,7 +47,7 @@ def oauth_app():
     state_store = MemorySessionBackend()
 
     config = FastAuthConfig(
-        secret="test-secret-for-oauth",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider(), FakeOAuthProvider()],
         adapter=user_adapter,
         jwt=JWTConfig(algorithm="HS256"),
@@ -63,7 +63,7 @@ def oauth_app():
 @pytest.fixture
 def oauth_redirect_app():
     config = FastAuthConfig(
-        secret="test-secret-for-oauth",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[CredentialsProvider(), FakeOAuthProvider()],
         adapter=MemoryUserAdapter(),
         jwt=JWTConfig(algorithm="HS256"),
@@ -297,7 +297,7 @@ async def test_oauth_callback_assigns_default_role_to_new_user():
     await role_adapter.create_role(name="member", permissions=[])
 
     config = FastAuthConfig(
-        secret="test-secret-for-oauth",
+        secret="this-is-a-test-secret-32-bytes!!",
         providers=[FakeOAuthProvider()],
         adapter=user_adapter,
         jwt=JWTConfig(algorithm="HS256"),
