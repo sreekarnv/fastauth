@@ -105,6 +105,20 @@ async def test_decode_with_no_verification_keys_raises_invalid_token(rs256_confi
         decode_token("token", rs256_config, EmptyJWKSManager())
 
 
+async def test_decode_with_multiple_keys_all_fail_raises_invalid_token(rs256_config):
+    from joserfc.jwk import OctKey
+
+    class MultiKeyJWKSManager:
+        def get_verification_keys(self):
+            return [
+                OctKey.import_key("invalid-key-1-32-bytes-padding!!"),
+                OctKey.import_key("invalid-key-2-32-bytes-padding!!"),
+            ]
+
+    with pytest.raises(InvalidTokenError):
+        decode_token("not-a-valid-jwt-token", rs256_config, MultiKeyJWKSManager())
+
+
 def test_token_has_cuid2_jti(user, config):
     access_token = create_access_token(user, config)
     claims = decode_token(access_token, config)
