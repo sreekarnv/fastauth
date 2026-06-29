@@ -25,6 +25,7 @@ def test_missing_dependency_error_message():
         require("some_missing_pkg", "myextra")
     assert "some_missing_pkg" in str(exc.value)
     assert "myextra" in str(exc.value)
+    assert "pip install sreekarnv-fastauth[myextra]" in str(exc.value)
 
 
 def test_has_fastapi_flag():

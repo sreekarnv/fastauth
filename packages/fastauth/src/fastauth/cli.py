@@ -131,7 +131,7 @@ from fastauth.providers.credentials import CredentialsProvider
 from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
 
 # Replace with the output of: fastauth generate-secret
-SECRET = "change-me-in-production"
+SECRET = "REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret"
 
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 

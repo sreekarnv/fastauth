@@ -50,7 +50,7 @@ User session management for the `/auth/sessions` endpoints is provided by a `Ses
 |-------|------|---------|-------------|
 | `oauth_adapter` | `OAuthAccountAdapter \| None` | `None` | Persists linked OAuth accounts. |
 | `oauth_state_store` | `SessionBackend \| None` | `None` | Stores OAuth CSRF state. |
-| `oauth_redirect_url` | `str \| None` | `None` | Callback URL registered with providers. |
+| `oauth_redirect_url` | `str \| None` | `None` | Frontend URL FastAuth 302s to after a successful OAuth callback. Tokens are set as `HttpOnly` cookies on the response — they are never placed in the URL. This is **not** the provider callback URL; see [OAuth → redirect_uri vs oauth_redirect_url](../features/oauth.md#redirect_uri-vs-oauth_redirect_url). |
 
 ### Email & tokens
 
@@ -100,6 +100,7 @@ config = FastAuthConfig(
 | `algorithm` | `str` | `"HS256"` | Signing algorithm: `"HS256"`, `"RS256"`, `"RS512"`. |
 | `access_token_ttl` | `int` | `900` | Access token lifetime in seconds. |
 | `refresh_token_ttl` | `int` | `2_592_000` | Refresh token lifetime in seconds (30 days). |
+| `remember_me_ttl` | `int` | `7_776_000` | Refresh token lifetime in seconds (90 days) when `POST /auth/login` is called with `remember: true`. |
 | `issuer` | `str \| None` | `None` | `iss` claim added to every token. |
 | `audience` | `list[str] \| None` | `None` | `aud` claim; validated on decode. |
 | `jwks_enabled` | `bool` | `False` | Expose `/.well-known/jwks.json` and rotate keys. |

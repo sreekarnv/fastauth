@@ -108,7 +108,7 @@ from fastauth import FastAuth, FastAuthConfig
 from fastauth.providers.credentials import CredentialsProvider
 from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
 
-SECRET = "change-me-in-production"
+SECRET = "REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret"
 
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
@@ -122,6 +122,11 @@ config = FastAuthConfig(
 
 auth = FastAuth(config)
 ```
+
+!!! warning "Use the CLI to generate your secret"
+    The placeholder above is intentionally short and **will fail** the
+    32-byte minimum required for HS-family algorithms. Replace it with the
+    output of `fastauth generate-secret` before running the app.
 
 **`main.py`** — a minimal FastAPI app that mounts FastAuth:
 

@@ -19,7 +19,8 @@ from fastauth.session_backends.memory import MemorySessionBackend
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 
 auth = FastAuth(FastAuthConfig(
-    secret="change-me-in-production",
+    # Run `fastauth generate-secret` and paste the output here.
+    secret="REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret",
     providers=[
         PasskeyProvider(
             rp_id="example.com",          # domain only, no scheme

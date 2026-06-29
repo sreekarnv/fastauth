@@ -121,8 +121,13 @@ class FastAuthConfig:
             lifecycle callbacks (``on_signup``, ``modify_jwt``, etc.).
         oauth_adapter: Adapter for persisting linked OAuth accounts.
         oauth_state_store: Session backend used to store OAuth CSRF state.
-        oauth_redirect_url: Full callback URL registered with OAuth providers
-            (e.g. ``"https://example.com/auth/oauth/callback"``).
+        oauth_redirect_url: Frontend URL FastAuth 302s to after a successful
+            OAuth callback (e.g. ``"https://app.example.com/auth/callback"``).
+            Tokens are set as ``HttpOnly`` cookies on the response — never
+            appended to the URL. This is **not** the OAuth provider callback URL;
+            the provider callback is the ``/auth/oauth/{provider}/callback``
+            route and is identified by the ``redirect_uri`` query parameter on
+            the authorize endpoint.
         token_adapter: Adapter for persisting one-time verification/reset tokens.
         base_url: Public base URL of your application; used when building
             email verification / password-reset links.

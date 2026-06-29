@@ -65,7 +65,7 @@ pip install "sreekarnv-fastauth[standard,email]"
 
 | Variable | Example | Description |
 |----------|---------|-------------|
-| `SECRET` | `change-me` | JWT signing secret |
+| `SECRET` | _(run `fastauth generate-secret`)_ | JWT signing secret (≥ 32 bytes for HS algorithms) |
 | `SMTP_HOST` | `localhost` | SMTP server host |
 | `SMTP_PORT` | `1025` | SMTP server port |
 | `SMTP_USER` | _(empty)_ | SMTP username |
@@ -93,7 +93,7 @@ pip install "sreekarnv-fastauth[standard,email]"
 Then set:
 
 ```bash
-export SECRET=dev-secret
+export SECRET=$(fastauth generate-secret)
 export SMTP_HOST=localhost
 export SMTP_PORT=1025
 export SMTP_USER=

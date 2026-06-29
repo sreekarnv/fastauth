@@ -11,8 +11,26 @@ pip install "sreekarnv-fastauth[standard,email]"
 ## Run
 
 ```bash
+export SECRET=$(fastauth generate-secret)
+export SMTP_HOST=localhost
+export SMTP_PORT=1025
+export SMTP_USER=
+export SMTP_PASS=
+export SMTP_FROM=no-reply@example.com
 uvicorn main:app --reload
 ```
+
+The example wires `SMTPTransport(...)` directly in `main.py` using the `host`/`from_email` constructor fields, so you need a local SMTP catcher to actually receive the rendered emails. The easiest way is [Mailpit](https://mailpit.axllent.org/):
+
+```bash
+# macOS
+brew install mailpit && mailpit
+
+# Docker
+docker run -d -p 1025:1025 -p 8025:8025 axllent/mailpit
+```
+
+The web UI is then at <http://localhost:8025>. If you would rather avoid running SMTP, swap the `SMTPTransport(...)` call in `main.py` for `ConsoleTransport()` — the templates will then be printed to stdout.
 
 ## What this example shows
 
@@ -44,9 +62,7 @@ Any template file placed in that directory overrides the corresponding built-in.
 
 ## Try it
 
-Because this example uses `ConsoleTransport`, rendered emails are printed to stdout — no SMTP server needed.
-
-Register a user to see the welcome email:
+With SMTP running and the environment variables above set, register a user to see the welcome email:
 
 ```bash
 curl -X POST http://localhost:8000/auth/register \

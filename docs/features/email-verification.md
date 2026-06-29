@@ -1,6 +1,23 @@
 # Email Verification
 
-FastAuth can require users to verify their email address before they can sign in. The flow uses a one-time token stored via `token_adapter` and delivered by `email_transport`.
+FastAuth can mark user records as `email_verified` after the user proves they own the address. The flow uses a one-time token stored via `token_adapter` and delivered by `email_transport`.
+
+!!! warning "Registration does **not** send a verification email"
+    `POST /auth/register` creates the user with `email_verified=False` and immediately returns a token pair — it does **not** enqueue or send a verification email. To send one, the (now-authenticated) user must explicitly call `POST /auth/request-verify-email`. If you need automatic verification on registration, call `/auth/request-verify-email` from your own code right after `/auth/register` returns, or use the `on_signup` event hook to trigger a verification flow.
+
+!!! note "Credentials login checks `is_active`, not `email_verified`"
+    `CredentialsProvider` signs a user in as long as their account is `is_active=True`. It does **not** check `email_verified` — unverified users can still obtain a token pair via `/auth/login`. If your app needs to gate sign-in on verified email, enforce that yourself with the `allow_signin` hook:
+
+    ```python
+    from fastauth.core.protocols import EventHooks
+    from fastauth.types import UserData
+
+    class RequireVerifiedEmail(EventHooks):
+        async def allow_signin(self, user: UserData, provider: str) -> bool:
+            return user.get("email_verified", False)
+    ```
+
+    The `MagicLinksProvider` similarly checks only `is_active` on the callback. The same `allow_signin` hook above will apply to magic-link sign-ins as well.
 
 ## Prerequisites
 
@@ -29,9 +46,12 @@ sequenceDiagram
     U->>C: POST /auth/register {email, password}
     C->>FA: POST /auth/register
     FA->>DB: create user (email_verified=False)
+    FA-->>C: 201 Created with token pair (no email sent)
+
+    U->>C: POST /auth/request-verify-email
+    C->>FA: POST /auth/request-verify-email (Bearer token)
     FA->>DB: create_token(type="verification", token=<cuid>)
     FA->>E: send verification email with link
-    FA-->>C: 201 Created (user created, not yet verified)
 
     U->>U: Opens email, clicks verification link
     U->>C: GET /auth/verify-email?token=<cuid>
@@ -51,18 +71,20 @@ sequenceDiagram
 
 | Method | Path | Auth required | Description |
 |--------|------|:---:|-------------|
-| `POST` | `/auth/request-verify-email` | Yes | Re-send the verification email |
+| `POST` | `/auth/request-verify-email` | Yes | Generate a verification token and email it to the **authenticated** user |
 | `GET`  | `/auth/verify-email?token=<token>` | No | Verify the email and activate the account |
 | `POST` | `/auth/verify-email` | No | Verify via body: `{"token": "..."}` |
 
-### Resend verification email
+### Request a verification email
 
-The resend endpoint requires a valid access token (the user must be logged in):
+`/auth/request-verify-email` is **explicit and authenticated** — the caller must already hold a valid access token for the user being verified. The endpoint ignores the request body and always sends the email to the address on the authenticated user's record (you cannot ask it to verify a different address).
 
 ```bash
 curl -X POST http://localhost:8000/auth/request-verify-email \
   -H "Authorization: Bearer <access_token>"
 ```
+
+If `token_adapter` is not configured, the endpoint returns `400`. If `email_transport` is not configured, the endpoint still creates the verification token in storage (it does not raise), but the email cannot be delivered — configure at least `ConsoleTransport` during development to see the link.
 
 ### Verify email
 
@@ -78,6 +100,8 @@ curl -X POST http://localhost:8000/auth/verify-email \
   -d '{"token": "<token-from-email>"}'
 ```
 
+Both forms require a valid `token_adapter`; the endpoint returns `400` if it is not configured.
+
 ## Email transports
 
 | Transport | Install | Use case |
@@ -89,15 +113,16 @@ curl -X POST http://localhost:8000/auth/verify-email \
 ### SMTP
 
 ```python
+import os
 from fastauth.email_transports.smtp import SMTPTransport
 
 transport = SMTPTransport(
-    hostname="smtp.sendgrid.net",
+    host="smtp.sendgrid.net",
     port=587,
     username="apikey",
     password=os.environ["SENDGRID_API_KEY"],
+    from_email="noreply@example.com",
     use_tls=True,
-    sender="noreply@example.com",
 )
 ```
 
