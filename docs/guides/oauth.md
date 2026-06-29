@@ -105,10 +105,12 @@ Response:
 
 Redirect the user's browser to that URL. FastAuth handles the rest — CSRF state, code exchange, user creation/linking, and token issuance.
 
-After the OAuth flow completes, if `oauth_redirect_url` is set, FastAuth redirects to it with tokens as query parameters:
+After the OAuth flow completes, if `oauth_redirect_url` is set, FastAuth redirects to it and sets the access and refresh tokens as `HttpOnly` cookies on the response. Tokens are **not** placed in the redirect URL.
 
 ```
-http://localhost:3000/auth/callback?access_token=eyJ...&refresh_token=eyJ...&token_type=bearer&expires_in=900
+GET http://localhost:3000/auth/callback
+Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 ```
 
 ## Environment variables

@@ -40,7 +40,7 @@ sequenceDiagram
     FA->>FA: issue access + refresh tokens
 
     alt oauth_redirect_url configured
-        FA-->>C: 302 → oauth_redirect_url?access_token=...&refresh_token=...
+        FA-->>C: 302 → oauth_redirect_url (tokens set as HttpOnly cookies)
     else
         FA-->>C: {"access_token": "...", "refresh_token": "..."}
     end
@@ -131,13 +131,18 @@ config = FastAuthConfig(
 
 ## Handling the callback response
 
-If `oauth_redirect_url` is set in your config, FastAuth redirects to it after a successful OAuth callback, appending tokens as query parameters:
+If `oauth_redirect_url` is set in your config, FastAuth redirects to it after a successful OAuth callback. Tokens are set as `HttpOnly` cookies on the redirect response instead of being appended to the URL:
 
 ```
-GET https://your-app.com/auth/callback?access_token=eyJ...&refresh_token=eyJ...&token_type=bearer&expires_in=900
+GET https://your-app.com/auth/callback
+Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
+Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Lax
 ```
 
-Your frontend can extract these tokens and store them. If `oauth_redirect_url` is not set, the tokens are returned as a JSON body instead.
+If `oauth_redirect_url` is not set, the tokens are returned as a JSON body instead.
+
+!!! warning "Avoid reading tokens from the URL"
+    Tokens must not be placed in redirect query parameters because they can be exposed through browser history, logs, screenshots, and `Referer` headers. Always rely on `HttpOnly` cookies (or a server-side exchange) when using `oauth_redirect_url`.
 
 ## Account linking
 

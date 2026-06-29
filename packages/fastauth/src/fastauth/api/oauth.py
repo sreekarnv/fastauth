@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from urllib.parse import urlencode
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-from fastauth.api.auth import _issue_tracked_tokens
+from fastauth.api.auth import _issue_tracked_tokens, _set_auth_cookies
 from fastauth.api.deps import require_auth
 from fastauth.api.schemas import ErrorDetail
 from fastauth.core.oauth import (
@@ -104,6 +103,7 @@ def create_oauth_router(auth: object) -> APIRouter:
     @router.get("/{provider}/callback")
     async def callback(
         request: Request,
+        response: Response,
         provider: str,
         code: str,
         state: str,
@@ -170,18 +170,15 @@ def create_oauth_router(auth: object) -> APIRouter:
         tokens = await _issue_tracked_tokens(fa, user)
 
         if fa.config.oauth_redirect_url:
-            params = urlencode(
-                {
-                    "access_token": tokens["access_token"],
-                    "refresh_token": tokens["refresh_token"],
-                    "token_type": tokens["token_type"],
-                    "expires_in": tokens["expires_in"],
-                }
-            )
-            return RedirectResponse(
-                url=f"{fa.config.oauth_redirect_url}?{params}",
+            redirect = RedirectResponse(
+                url=fa.config.oauth_redirect_url,
                 status_code=status.HTTP_302_FOUND,
             )
+            _set_auth_cookies(redirect, tokens, fa)
+            return redirect
+
+        if fa.config.token_delivery == "cookie":
+            _set_auth_cookies(response, tokens, fa)
 
         return TokenResponse(**tokens)
 

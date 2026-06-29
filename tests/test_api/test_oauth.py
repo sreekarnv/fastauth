@@ -169,8 +169,11 @@ async def test_callback_redirect_mode(redirect_client, oauth_redirect_app):
     )
     assert resp.status_code == 302
     location = resp.headers["location"]
-    assert location.startswith("http://frontend.com/callback?")
-    assert "access_token=" in location
+    assert location == "http://frontend.com/callback"
+    assert "access_token=" not in location
+    assert "refresh_token=" not in location
+    assert "access_token" in resp.cookies
+    assert "refresh_token" in resp.cookies
 
 
 async def test_callback_invalid_state(client):
