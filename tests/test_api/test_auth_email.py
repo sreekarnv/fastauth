@@ -64,6 +64,22 @@ async def _register(client):
     return resp.json()
 
 
+def _extract_token_from_capsys(capsys) -> str:
+    out = capsys.readouterr().out
+    for line in out.splitlines():
+        if "token=" in line:
+            for part in line.split("token=")[1:]:
+                candidate = ""
+                for ch in part:
+                    if ch.isalnum() or ch in "-_.":
+                        candidate += ch
+                    else:
+                        break
+                if candidate:
+                    return candidate
+    raise AssertionError(f"Could not find token= in console output:\n{out}")
+
+
 async def test_request_verify_email(client):
     tokens = await _register(client)
     resp = await client.post(
@@ -79,35 +95,32 @@ async def test_request_verify_email_unauthenticated(client):
     assert resp.status_code == 401
 
 
-async def test_verify_email_post(client, memory_token_adapter):
+async def test_verify_email_post(client, capsys):
     tokens = await _register(client)
     await client.post(
         "/auth/request-verify-email",
         headers={"Authorization": f"Bearer {tokens['access_token']}"},
     )
 
-    # Get the token from the adapter
-    stored_tokens = list(memory_token_adapter._tokens.values())
-    verify_token = [t for t in stored_tokens if t["token_type"] == "verification"][0]
+    verify_token = _extract_token_from_capsys(capsys)
 
     resp = await client.post(
-        "/auth/verify-email", json={"token": verify_token["token"]}
+        "/auth/verify-email", json={"token": verify_token}
     )
     assert resp.status_code == 200
     assert resp.json()["message"] == "Email verified successfully"
 
 
-async def test_verify_email_get(client, memory_token_adapter):
+async def test_verify_email_get(client, capsys):
     tokens = await _register(client)
     await client.post(
         "/auth/request-verify-email",
         headers={"Authorization": f"Bearer {tokens['access_token']}"},
     )
 
-    stored_tokens = list(memory_token_adapter._tokens.values())
-    verify_token = [t for t in stored_tokens if t["token_type"] == "verification"][0]
+    verify_token = _extract_token_from_capsys(capsys)
 
-    resp = await client.get(f"/auth/verify-email?token={verify_token['token']}")
+    resp = await client.get(f"/auth/verify-email?token={verify_token}")
     assert resp.status_code == 200
 
 
@@ -136,16 +149,15 @@ async def test_forgot_password_nonexistent_email(client):
     assert resp.status_code == 200
 
 
-async def test_reset_password(client, memory_token_adapter):
+async def test_reset_password(client, capsys):
     await _register(client)
     await client.post("/auth/forgot-password", json={"email": "test@example.com"})
 
-    stored_tokens = list(memory_token_adapter._tokens.values())
-    reset_token = [t for t in stored_tokens if t["token_type"] == "password_reset"][0]
+    reset_token = _extract_token_from_capsys(capsys)
 
     resp = await client.post(
         "/auth/reset-password",
-        json={"token": reset_token["token"], "new_password": "NewPass456#"},
+        json={"token": reset_token, "new_password": "NewPass456#"},
     )
     assert resp.status_code == 200
 

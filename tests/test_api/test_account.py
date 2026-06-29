@@ -141,7 +141,7 @@ async def test_change_email_already_taken(client):
     assert resp.status_code == 409
 
 
-async def test_confirm_email_change(client, memory_token_adapter):
+async def test_confirm_email_change(client, capsys):
     token = await _register_and_get_token(client)
     await client.post(
         "/auth/account/change-email",
@@ -149,11 +149,22 @@ async def test_confirm_email_change(client, memory_token_adapter):
         headers=_auth_header(token),
     )
 
-    stored_tokens = list(memory_token_adapter._tokens.values())
-    change_token = [t for t in stored_tokens if t["token_type"] == "email_change"][0]
+    out = capsys.readouterr().out
+    raw_token = ""
+    for line in out.splitlines():
+        if "token=" in line:
+            tail = line.split("token=", 1)[1]
+            for ch in tail:
+                if ch.isalnum() or ch in "-_.":
+                    raw_token += ch
+                else:
+                    break
+            if raw_token:
+                break
+    assert raw_token, f"Could not find token= in console output:\n{out}"
 
     resp = await client.get(
-        f"/auth/account/confirm-email-change?token={change_token['token']}",
+        f"/auth/account/confirm-email-change?token={raw_token}",
     )
     assert resp.status_code == 200
 

@@ -4,6 +4,7 @@ from fastauth import FastAuth
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
 from fastauth.config import FastAuthConfig, JWTConfig
 from fastauth.core.protocols import EventHooks
+from fastauth.email_transports.console import ConsoleTransport
 from fastauth.providers.credentials import CredentialsProvider
 from fastauth.providers.magic_links import MagicLinksProvider
 from fastauth.types import UserData
@@ -29,6 +30,8 @@ def _build_app(
         jwt=JWTConfig(algorithm="HS256"),
         hooks=hooks,
         token_delivery=token_delivery,
+        email_transport=ConsoleTransport(),
+        base_url="http://localhost:8000",
     )
     auth = FastAuth(config)
     app = FastAPI()
@@ -49,6 +52,22 @@ def _get_magic_token(token_adapter) -> str | None:
         if tok["token_type"] == "magic_link_login_request":
             return tok["token"]
     return None
+
+
+def _extract_magic_token(capsys) -> str:
+    out = capsys.readouterr().out
+    for line in out.splitlines():
+        if "token=" in line:
+            tail = line.split("token=", 1)[1]
+            raw = ""
+            for ch in tail:
+                if ch.isalnum() or ch in "-_.":
+                    raw += ch
+                else:
+                    break
+            if raw:
+                return raw
+    raise AssertionError(f"Could not find token= in console output:\n{out}")
 
 
 async def test_login_returns_message(magic_client):
@@ -82,9 +101,10 @@ async def test_login_existing_user_not_duplicated(magic_client):
     assert user is not None
 
 
-async def test_login_stores_token(magic_client):
+async def test_login_stores_token(magic_client, capsys):
     client, _, token_adapter = magic_client
     await client.post("/auth/magic-links/login", json={"email": "tok@example.com"})
+    capsys.readouterr()  # consume
 
     assert _get_magic_token(token_adapter) is not None
 
@@ -95,11 +115,10 @@ async def test_login_invalid_email_returns_422(magic_client):
     assert resp.status_code == 422
 
 
-async def test_callback_valid_token_returns_token_pair(magic_client):
-    client, _, token_adapter = magic_client
+async def test_callback_valid_token_returns_token_pair(magic_client, capsys):
+    client, _, _ = magic_client
     await client.post("/auth/magic-links/login", json={"email": "cb@example.com"})
-
-    token = _get_magic_token(token_adapter)
+    token = _extract_magic_token(capsys)
     resp = await client.get(f"/auth/magic-links/callback?token={token}")
 
     assert resp.status_code == 200
@@ -115,46 +134,45 @@ async def test_callback_invalid_token_returns_401(magic_client):
     assert resp.status_code == 401
 
 
-async def test_callback_token_is_one_time_use(magic_client):
-    client, _, token_adapter = magic_client
+async def test_callback_token_is_one_time_use(magic_client, capsys):
+    client, _, _ = magic_client
     await client.post("/auth/magic-links/login", json={"email": "once@example.com"})
-
-    token = _get_magic_token(token_adapter)
+    token = _extract_magic_token(capsys)
     await client.get(f"/auth/magic-links/callback?token={token}")
 
     resp = await client.get(f"/auth/magic-links/callback?token={token}")
     assert resp.status_code == 401
 
 
-async def test_callback_inactive_user_returns_401(magic_client):
-    client, user_adapter, token_adapter = magic_client
+async def test_callback_inactive_user_returns_401(magic_client, capsys):
+    client, user_adapter, _ = magic_client
     user = await user_adapter.create_user("inactive@example.com")
     await user_adapter.update_user(user["id"], is_active=False)
 
     await client.post("/auth/magic-links/login", json={"email": "inactive@example.com"})
-    token = _get_magic_token(token_adapter)
+    token = _extract_magic_token(capsys)
 
     resp = await client.get(f"/auth/magic-links/callback?token={token}")
     assert resp.status_code == 401
     assert "inactive" in resp.json()["detail"].lower()
 
 
-async def test_callback_blocked_by_allow_signin_hook():
+async def test_callback_blocked_by_allow_signin_hook(capsys):
     class BlockingHooks(EventHooks):
         async def allow_signin(self, user: UserData, provider: str) -> bool:
             return False
 
-    app, _, token_adapter = _build_app(hooks=BlockingHooks())
+    app, _, _ = _build_app(hooks=BlockingHooks())
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         await c.post("/auth/magic-links/login", json={"email": "blocked@example.com"})
-        token = _get_magic_token(token_adapter)
+        token = _extract_magic_token(capsys)
         resp = await c.get(f"/auth/magic-links/callback?token={token}")
 
     assert resp.status_code == 403
 
 
-async def test_callback_calls_on_signin_hook():
+async def test_callback_calls_on_signin_hook(capsys):
     class RecordingHooks(EventHooks):
         def __init__(self):
             self.events: list[tuple[str, str]] = []
@@ -163,23 +181,23 @@ async def test_callback_calls_on_signin_hook():
             self.events.append((user["email"], provider))
 
     hooks = RecordingHooks()
-    app, _, token_adapter = _build_app(hooks=hooks)
+    app, _, _ = _build_app(hooks=hooks)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         await c.post("/auth/magic-links/login", json={"email": "hook@example.com"})
-        token = _get_magic_token(token_adapter)
+        token = _extract_magic_token(capsys)
         await c.get(f"/auth/magic-links/callback?token={token}")
 
     assert len(hooks.events) == 1
     assert hooks.events[0] == ("hook@example.com", "magic_link")
 
 
-async def test_callback_cookie_delivery_sets_cookie():
-    app, _, token_adapter = _build_app(token_delivery="cookie")
+async def test_callback_cookie_delivery_sets_cookie(capsys):
+    app, _, _ = _build_app(token_delivery="cookie")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         await c.post("/auth/magic-links/login", json={"email": "cookie@example.com"})
-        token = _get_magic_token(token_adapter)
+        token = _extract_magic_token(capsys)
         resp = await c.get(f"/auth/magic-links/callback?token={token}")
 
     assert resp.status_code == 200

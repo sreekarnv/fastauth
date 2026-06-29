@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastauth import FastAuth, FastAuthConfig
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
 from fastauth.core.protocols import EventHooks
+from fastauth.email_transports.console import ConsoleTransport
 from fastauth.providers.credentials import CredentialsProvider
 from httpx import ASGITransport, AsyncClient
 
@@ -174,6 +175,8 @@ def hooks_with_email_app(hooks):
         adapter=adapter,
         token_adapter=token_adapter,
         hooks=hooks,
+        email_transport=ConsoleTransport(),
+        base_url="http://localhost:8000",
     )
     auth = FastAuth(config)
     _app = FastAPI()
@@ -189,7 +192,23 @@ async def hooks_email_client(hooks_with_email_app):
         yield c
 
 
-async def test_verify_email_calls_hook(hooks_email_client, hooks_with_email_app, hooks):
+def _extract_token(capsys) -> str:
+    out = capsys.readouterr().out
+    for line in out.splitlines():
+        if "token=" in line:
+            tail = line.split("token=", 1)[1]
+            raw = ""
+            for ch in tail:
+                if ch.isalnum() or ch in "-_.":
+                    raw += ch
+                else:
+                    break
+            if raw:
+                return raw
+    raise AssertionError(f"Could not find token= in console output:\n{out}")
+
+
+async def test_verify_email_calls_hook(hooks_email_client, hooks_with_email_app, hooks, capsys):
     _, token_adapter = hooks_with_email_app
     resp = await hooks_email_client.post("/auth/register", json=_REGISTER)
     token = resp.json()["access_token"]
@@ -198,27 +217,25 @@ async def test_verify_email_calls_hook(hooks_email_client, hooks_with_email_app,
         headers={"Authorization": f"Bearer {token}"},
     )
     hooks.calls.clear()
-    stored = list(token_adapter._tokens.values())
-    verify_token = next(t for t in stored if t["token_type"] == "verification")
+    verify_token = _extract_token(capsys)
     resp = await hooks_email_client.post(
-        "/auth/verify-email", json={"token": verify_token["token"]}
+        "/auth/verify-email", json={"token": verify_token}
     )
     assert resp.status_code == 200
     assert "on_email_verify" in hooks.calls
 
 
 async def test_reset_password_calls_hook(
-    hooks_email_client, hooks_with_email_app, hooks
+    hooks_email_client, hooks_with_email_app, hooks, capsys
 ):
     _, token_adapter = hooks_with_email_app
     await hooks_email_client.post("/auth/register", json=_REGISTER)
     await hooks_email_client.post("/auth/forgot-password", json={"email": _EMAIL})
     hooks.calls.clear()
-    stored = list(token_adapter._tokens.values())
-    reset_token = next(t for t in stored if t["token_type"] == "password_reset")
+    reset_token = _extract_token(capsys)
     resp = await hooks_email_client.post(
         "/auth/reset-password",
-        json={"token": reset_token["token"], "new_password": "NewPass456#"},
+        json={"token": reset_token, "new_password": "NewPass456#"},
     )
     assert resp.status_code == 200
     assert "on_password_reset" in hooks.calls

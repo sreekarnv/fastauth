@@ -10,6 +10,10 @@ from pydantic import BaseModel, EmailStr
 from fastauth.api.deps import require_auth
 from fastauth.api.schemas import ErrorDetail
 from fastauth.core.credentials import hash_password
+from fastauth.core.one_time_tokens import (
+    generate_one_time_token,
+    hash_one_time_token,
+)
 from fastauth.core.tokens import create_token_pair, decode_token
 from fastauth.exceptions import (
     AuthenticationError,
@@ -339,10 +343,10 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        token = generate_token()
+        token = generate_one_time_token()
         await fa.config.token_adapter.create_token(
             {
-                "token": token,
+                "token": hash_one_time_token(token),
                 "user_id": user["id"],
                 "token_type": "verification",
                 "expires_at": datetime.now(timezone.utc) + timedelta(hours=24),
@@ -376,7 +380,9 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(token, "verification")
+        stored = await fa.config.token_adapter.get_token(
+            hash_one_time_token(token), "verification"
+        )
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -384,7 +390,7 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         await fa.config.adapter.update_user(stored["user_id"], email_verified=True)
-        await fa.config.token_adapter.delete_token(token)
+        await fa.config.token_adapter.delete_token(hash_one_time_token(token))
 
         user = await fa.config.adapter.get_user_by_id(stored["user_id"])
         if user and fa.config.hooks:
@@ -406,10 +412,10 @@ def create_auth_router(auth: object) -> APIRouter:
 
         user = await fa.config.adapter.get_user_by_email(body.email)
         if user:
-            token = generate_token()
+            token = generate_one_time_token()
             await fa.config.token_adapter.create_token(
                 {
-                    "token": token,
+                    "token": hash_one_time_token(token),
                     "user_id": user["id"],
                     "token_type": "password_reset",
                     "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
@@ -437,16 +443,29 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(body.token, "password_reset")
+        token_hash = hash_one_time_token(body.token)
+        stored = await fa.config.token_adapter.get_token(
+            token_hash, "password_reset"
+        )
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired reset token",
             )
 
+        from fastauth.core.credentials import validate_password
+
+        try:
+            validate_password(body.new_password, fa.config.password)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e),
+            ) from e
+
         hashed = hash_password(body.new_password)
         await fa.config.adapter.set_hashed_password(stored["user_id"], hashed)
-        await fa.config.token_adapter.delete_token(body.token)
+        await fa.config.token_adapter.delete_token(token_hash)
         await fa.config.token_adapter.delete_user_tokens(
             stored["user_id"], "password_reset"
         )
