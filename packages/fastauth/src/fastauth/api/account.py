@@ -108,7 +108,9 @@ def create_account_router(auth: object) -> APIRouter:
         await fa.config.adapter.set_hashed_password(user["id"], hashed)
 
         if fa.config.token_adapter:
-            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh")
+            await fa.config.token_adapter.delete_user_tokens(
+                user["id"], "refresh_jti"
+            )
 
         return MessageResponse(message="Password changed successfully")
 
