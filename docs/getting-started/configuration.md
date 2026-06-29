@@ -39,8 +39,10 @@ config = FastAuthConfig(
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `session_strategy` | `"jwt"` \| `"database"` | `"jwt"` | Stateless JWTs or server-side sessions. |
-| `session_backend` | `SessionBackend \| None` | `None` | Required when `session_strategy="database"`. |
+| `session_strategy` | `"jwt"` \| `"database"` | `"jwt"` | Currently informational only. Auth routes always issue JWT token pairs. `"database"` is reserved for a future server-side session model and is not yet wired through. |
+| `session_backend` | `SessionBackend \| None` | `None` | Reserved for the future `"database"` session strategy. Not used by auth routes today. |
+
+User session management for the `/auth/sessions` endpoints is provided by a `SessionAdapter` assigned to the `FastAuth` instance (`auth.session_adapter = ...`), independent of `session_strategy`.
 
 ### OAuth
 
