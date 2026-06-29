@@ -3,7 +3,11 @@ from fastauth.adapters.memory import (
     MemoryOAuthAccountAdapter,
     MemoryUserAdapter,
 )
-from fastauth.core.oauth import complete_oauth_flow, initiate_oauth_flow
+from fastauth.core.oauth import (
+    complete_oauth_flow,
+    initiate_oauth_flow,
+    link_oauth_account,
+)
 from fastauth.exceptions import ProviderError
 from fastauth.session_backends.memory import MemorySessionBackend
 from fastauth.types import UserData
@@ -311,3 +315,85 @@ async def test_complete_invalid_state(
             user_adapter=user_adapter,
             oauth_adapter=oauth_adapter,
         )
+
+
+async def test_complete_new_user_does_not_store_provider_tokens_by_default(
+    provider, state_store, user_adapter, oauth_adapter
+):
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    user, _, _ = await complete_oauth_flow(
+        provider=provider,
+        code="auth-code",
+        state=state,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])
+    assert len(accounts) == 1
+    assert accounts[0]["access_token"] is None
+    assert accounts[0]["refresh_token"] is None
+
+
+async def test_complete_new_user_stores_provider_tokens_when_enabled(
+    provider, state_store, user_adapter, oauth_adapter
+):
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    user, _, _ = await complete_oauth_flow(
+        provider=provider,
+        code="auth-code",
+        state=state,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+        store_provider_tokens=True,
+    )
+
+    accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])
+    assert len(accounts) == 1
+    assert accounts[0]["access_token"] == "fake-access-token"
+    assert accounts[0]["refresh_token"] == "fake-refresh"
+
+
+async def test_link_oauth_account_does_not_store_provider_tokens_by_default(
+    provider, state_store, user_adapter, oauth_adapter
+):
+    user = await user_adapter.create_user(email="linker@example.com")
+    await state_store.write(
+        "oauth_state:link-state",
+        {
+            "code_verifier": "verifier",
+            "provider": "fake",
+            "flow": "link",
+            "user_id": user["id"],
+        },
+        ttl=600,
+    )
+
+    _, linked_user = await link_oauth_account(
+        provider=provider,
+        code="auth-code",
+        state="link-state",
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+        user_adapter=user_adapter,
+        oauth_adapter=oauth_adapter,
+    )
+
+    accounts = await oauth_adapter.get_user_oauth_accounts(linked_user["id"])
+    assert len(accounts) == 1
+    assert accounts[0]["access_token"] is None
+    assert accounts[0]["refresh_token"] is None

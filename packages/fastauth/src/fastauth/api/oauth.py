@@ -139,6 +139,7 @@ def create_oauth_router(auth: object) -> APIRouter:
                 state_store=fa.config.oauth_state_store,
                 user_adapter=fa.config.adapter,
                 oauth_adapter=fa.config.oauth_adapter,
+                store_provider_tokens=fa.config.store_oauth_provider_tokens,
             )
         except ProviderError as e:
             raise HTTPException(
@@ -310,6 +311,7 @@ def create_oauth_router(auth: object) -> APIRouter:
                 state_store=fa.config.oauth_state_store,
                 user_adapter=fa.config.adapter,
                 oauth_adapter=fa.config.oauth_adapter,
+                store_provider_tokens=fa.config.store_oauth_provider_tokens,
             )
         except ProviderError as e:
             raise HTTPException(

@@ -159,6 +159,7 @@ class FastAuthConfig:
     oauth_adapter: OAuthAccountAdapter | None = None
     oauth_state_store: SessionBackend | None = None
     oauth_redirect_url: str | None = None
+    store_oauth_provider_tokens: bool = False
     token_adapter: TokenAdapter | None = None
     passkey_adapter: PasskeyAdapter | None = None
     passkey_state_store: SessionBackend | None = None
