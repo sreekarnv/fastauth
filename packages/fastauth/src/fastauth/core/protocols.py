@@ -143,7 +143,7 @@ class PasskeyAdapter(Protocol):
 class AuthProvider(Protocol):
     id: str
     name: str
-    auth_type: Literal["oauth", "credentials", "email", "magic_links", "passkey"]
+    auth_type: Literal["oauth", "credentials", "magic_links", "passkey"]
 
 
 class OAuthProvider(AuthProvider, Protocol):

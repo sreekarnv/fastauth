@@ -14,7 +14,6 @@ class CredentialsProvider:
     id = "credentials"
     name = "Credentials"
     auth_type = "credentials"
-    type = "credentials"
 
     def __init__(
         self,
