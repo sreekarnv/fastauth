@@ -34,7 +34,7 @@ class WebhookTransport:
         if body_text:
             payload["body_text"] = body_text
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.post(
                 self.url,
                 json=payload,

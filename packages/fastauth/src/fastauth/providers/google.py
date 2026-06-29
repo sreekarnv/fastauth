@@ -64,7 +64,7 @@ class GoogleProvider:
         if kwargs.get("code_verifier"):
             data["code_verifier"] = kwargs["code_verifier"]
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.post(self.TOKEN_URL, data=data)
             if resp.status_code != 200:
                 raise ProviderError(f"Google token exchange failed: {resp.text}")
@@ -73,7 +73,7 @@ class GoogleProvider:
     async def get_user_info(self, access_token: str) -> UserData:
         import httpx
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.get(
                 self.USERINFO_URL,
                 headers={"Authorization": f"Bearer {access_token}"},
@@ -93,7 +93,7 @@ class GoogleProvider:
     async def refresh_access_token(self, refresh_token: str) -> dict[str, Any] | None:
         import httpx
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             resp = await client.post(
                 self.TOKEN_URL,
                 data={
