@@ -2361,11 +2361,8 @@
 <a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="email-policy">Email policy<a class="headerlink" href="#email-policy" title="Permanent link">&para;</a></h2>
-<p>GitHub accounts may have a private email address. FastAuth fetches the user's primary, verified email from the GitHub API. If no public email is available it falls back to the verified primary email from the <code>/user/emails</code> endpoint.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Users without a verified email on GitHub cannot sign in until they add and verify one.</p>
-</div>
+<p>GitHub accounts may have a private email address. FastAuth fetches the user's profile email when it is public, or falls back to the <code>/user/emails</code> endpoint when no public email is available.</p>
+<p>FastAuth records GitHub email verification status separately. An unverified GitHub email can create a new unverified FastAuth user, but it will not be used to link to an existing local account or mark a local email as verified.</p>
 <h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">&para;</a></h2>
 <p>The flow is the same as <a href="../google/">Google OAuth</a> — call <code>/authorize</code>, redirect the user, handle the callback. The provider ID is <code>github</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /auth/oauth/github/authorize?redirect_uri=&lt;callback_url&gt;

@@ -2583,7 +2583,8 @@
 </code></pre></div>
 <p>Your frontend can extract these tokens and store them. If <code>oauth_redirect_url</code> is not set, the tokens are returned as a JSON body instead.</p>
 <h2 id="account-linking">Account linking<a class="headerlink" href="#account-linking" title="Permanent link">&para;</a></h2>
-<p>When a user logs in via OAuth and a local user with the same email already exists, FastAuth links the OAuth account to the existing user and calls <code>hooks.on_oauth_link</code>. No duplicate user is created.</p>
+<p>When a user logs in via OAuth and a local user with the same email already exists, FastAuth only links the OAuth account to that existing user if the provider reports the email as verified. This prevents an unverified provider email from taking over a local account that uses the same address.</p>
+<p>If the provider email is not verified and no local user exists yet, FastAuth can create a new user, but the user's <code>email_verified</code> field remains <code>False</code>. Already-linked OAuth accounts can continue to sign in by provider account ID; an unverified provider email will not upgrade the local <code>email_verified</code> flag.</p>
 
 
 
