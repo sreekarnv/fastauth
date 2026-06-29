@@ -79,6 +79,8 @@ REFERENCE_PAGES = [
             "fastauth.providers.credentials.CredentialsProvider",
             "fastauth.providers.google.GoogleProvider",
             "fastauth.providers.github.GitHubProvider",
+            "fastauth.providers.magic_links.MagicLinksProvider",
+            "fastauth.providers.passkey.PasskeyProvider",
         ],
     ),
     (

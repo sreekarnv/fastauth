@@ -68,7 +68,7 @@ body:
     attributes:
       label: FastAuth Version
       description: What version of FastAuth are you using?
-      placeholder: "0.3.0"
+      placeholder: "0.5.5"
     validations:
       required: true
 
