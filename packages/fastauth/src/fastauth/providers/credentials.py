@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 
 from fastauth.core.credentials import verify_password
 from fastauth.core.protocols import TokenAdapter, UserAdapter
 from fastauth.exceptions import AccountLockedError, AuthenticationError
 from fastauth.types import UserData
+
+if TYPE_CHECKING:
+    from fastauth.config import SecurityConfig
 
 
 class CredentialsProvider:
@@ -29,18 +33,28 @@ class CredentialsProvider:
         email: str,
         password: str,
         token_adapter: TokenAdapter | None = None,
+        security: "SecurityConfig | None" = None,
     ) -> UserData:
+        max_attempts = (
+            security.max_login_attempts if security else self.max_login_attempts
+        )
+        lockout_seconds = (
+            security.lockout_duration if security else self.lockout_duration
+        )
+
         user = await adapter.get_user_by_email(email)
         if not user:
             raise AuthenticationError("Invalid email or password")
 
         if token_adapter:
-            await self._check_lockout(token_adapter, user["id"])
+            await self._check_lockout(token_adapter, user["id"], lockout_seconds)
 
         hashed = await adapter.get_hashed_password(user["id"])
         if not hashed or not verify_password(password, hashed):
             if token_adapter:
-                await self._record_failed_attempt(token_adapter, user["id"])
+                await self._record_failed_attempt(
+                    token_adapter, user["id"], max_attempts, lockout_seconds
+                )
             raise AuthenticationError("Invalid email or password")
 
         if not user["is_active"]:
@@ -51,7 +65,9 @@ class CredentialsProvider:
 
         return user
 
-    async def _check_lockout(self, token_adapter: TokenAdapter, user_id: str) -> None:
+    async def _check_lockout(
+        self, token_adapter: TokenAdapter, user_id: str, lockout_seconds: int
+    ) -> None:
         attempt = await token_adapter.get_token(
             f"login_attempt:{user_id}", "login_attempt"
         )
@@ -64,7 +80,11 @@ class CredentialsProvider:
                 )
 
     async def _record_failed_attempt(
-        self, token_adapter: TokenAdapter, user_id: str
+        self,
+        token_adapter: TokenAdapter,
+        user_id: str,
+        max_attempts: int,
+        lockout_seconds: int,
     ) -> None:
         attempt = await token_adapter.get_token(
             f"login_attempt:{user_id}", "login_attempt"
@@ -77,8 +97,8 @@ class CredentialsProvider:
         else:
             attempts = 1
 
-        if attempts >= self.max_login_attempts:
-            locked_until = now + timedelta(seconds=self.lockout_duration)
+        if attempts >= max_attempts:
+            locked_until = now + timedelta(seconds=lockout_seconds)
             await token_adapter.create_token(
                 {
                     "token": f"login_attempt:{user_id}",

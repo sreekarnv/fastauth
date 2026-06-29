@@ -200,6 +200,11 @@ def create_auth_router(auth: object) -> APIRouter:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="A user with this email already exists",
             ) from e
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e),
+            ) from e
 
         if fa.role_adapter and fa.config.default_role:
             from fastauth.core.rbac import assign_default_role
@@ -237,6 +242,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 email=body.email,
                 password=body.password,
                 token_adapter=fa.config.token_adapter,
+                security=fa.config.security,
             )
         except AuthenticationError as e:
             raise HTTPException(
