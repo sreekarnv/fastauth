@@ -34,7 +34,7 @@ from fastauth.types import (
     UserData,
 )
 
-__version__ = "0.5.5"
+__version__ = "0.5.6"
 __all__ = [
     "AccountLockedError",
     "AuthProvider",

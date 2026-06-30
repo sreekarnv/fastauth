@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.5.6] - 2026-06-30
+
+### Fixed
+
+- `MissingDependencyError` install hint now points at the correct distribution: `pip install sreekarnv-fastauth[<extra>]` (previously printed `fastauth[<extra>]` which only resolves when the legacy package name is installed). The exact install command is now covered by `tests/test_compat.py::test_missing_dependency_error_message`.
+- **Token delivery hardening.** Cookie token delivery no longer exposes access and refresh token bodies in JSON responses when tokens are configured to be delivered as `HttpOnly` cookies.
+- **Refresh-token revocation and rotation.** Password reset now revokes existing refresh tokens when a token adapter is configured, and refresh-token rotation is atomic so a new refresh token is only issued after the old token has been validated and revoked.
+- **OAuth validation and account uniqueness.** OAuth flows now validate provider-scoped state and redirect URIs more strictly, and OAuth account linking/enrollment enforces provider account uniqueness across users.
+- **Docs / examples — HS secret placeholders.** Replaced short and made-up `secret=...` strings in the CLI `init` scaffold, docs, guides, and examples with a `REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret` placeholder. The previous placeholders were either below the 32-byte minimum required for HS-family algorithms or no longer matched what the CLI scaffold emits.
+- **OAuth example.** `examples/oauth/main.py` now uses cookie delivery (`token_delivery="cookie"`, `debug=True`) and points `oauth_redirect_url` at a frontend URL (`http://localhost:3000/auth/callback`) instead of the FastAPI route, matching the documented distinction between the provider callback URL and the post-login frontend redirect.
+- **Custom templates example.** `examples/custom_templates/README.md` no longer claims the example uses `ConsoleTransport`; `main.py` wires `SMTPTransport(...)` and the README now shows the matching `SMTP_HOST` / `SMTP_PORT` / `SMTP_FROM` environment variables and points at Mailpit for local delivery.
+- **Docs — email verification.** `docs/features/email-verification.md` no longer claims that `POST /auth/register` sends a verification email. The page now states that users must explicitly call `POST /auth/request-verify-email` afterwards, clarifies that `CredentialsProvider` only checks `is_active`, and shows the `allow_signin` hook pattern for gating sign-in on verified email.
+- **Docs — `oauth_redirect_url`.** `docs/getting-started/configuration.md` and the `FastAuthConfig.oauth_redirect_url` docstring now describe it as the frontend URL FastAuth redirects to after a successful OAuth callback, with tokens as `HttpOnly` cookies.
+- **Docs — SMTP constructor.** `docs/features/email-verification.md` SMTP example now uses `host=...` and `from_email=...`, matching the `SMTPTransport.__init__` signature.
+- **Docs — session strategy.** `docs/concepts/tokens.md` now states explicitly that auth routes always issue JWT token pairs, that `session_strategy="database"` is reserved / informational and is not wired through to auth routes, and that user-session tracking via `/auth/sessions` is provided by a `SessionAdapter` assigned to the `FastAuth` instance.
+- **Behavior alignment from #98.** Remember-me cookie TTL now matches remember-me refresh-token TTL, GitHub OAuth only treats explicitly verified primary emails as verified, RS/JWKS behavior is documented and enforced, and authorization token precedence is consistent.
+
+### Added
+
+- `docs/features/tokens.md` — new page documenting `/auth/token/introspect` and `/auth/token/revoke`, including the refresh JTI allowlist behavior when `token_adapter` is configured.
+
+### Breaking Changes
+
+- **RS256/RS512 initialization.** RS256 and RS512 signing now require `jwks_enabled=True` and `auth.initialize_jwks()` before token signing. Static RSA key pairs without JWKS were previously accepted by config but were not correctly supported.
+
+### Migration Notes
+
+- Users upgrading from 0.5.5 should review cookie token delivery behavior, refresh-token revocation/rotation, OAuth state validation, OAuth account uniqueness, remember-me cookie TTL, GitHub email verification, bearer/cookie token precedence, and RS256/RS512 initialization requirements.
+
 ## [0.5.5] - 2026-05-08
 
 ### Added
@@ -43,23 +74,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JWKS route (`/.well-known/jwks.json`) was never registered when `initialize_jwks()` is called inside the FastAPI lifespan handler — `FastAuth.mount()` now checks `config.jwt.jwks_enabled` (static config) instead of `self.jwks_manager` (runtime state), which was always `None` at mount time
 - Pre-commit hooks were not installed (`pre-commit install` had never been run); running it now creates `.git/hooks/pre-commit`
 - `.pre-commit-config.yaml` referenced non-existent ruff version `v0.14.10`; corrected to `v0.15.1`
-
-## [Unreleased]
-
-### Fixed
-
-- `MissingDependencyError` install hint now points at the correct distribution: `pip install sreekarnv-fastauth[<extra>]` (previously printed `fastauth[<extra>]` which only resolves when the legacy package name is installed). The exact install command is now covered by `tests/test_compat.py::test_missing_dependency_error_message`.
-- **Docs / examples — HS secret placeholders.** Replaced short and made-up `secret=...` strings in the CLI `init` scaffold, `docs/cli.md`, `docs/features/passkeys.md`, `docs/features/magic-links.md`, `docs/features/jwt.md`, `docs/guides/magic-links.md`, `docs/guides/passkeys.md`, `docs/guides/basic.md`, `examples/passkeys/main.py`, `examples/basic/main.py`, and `examples/custom_templates/main.py` with a `REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret` placeholder. The previous placeholders were either below the 32-byte minimum required for HS-family algorithms or no longer matched what the CLI scaffold emits, and would have raised `ConfigError` at startup.
-- **OAuth example.** `examples/oauth/main.py` now uses cookie delivery (`token_delivery="cookie"`, `debug=True`) and points `oauth_redirect_url` at a frontend URL (`http://localhost:3000/auth/callback`) instead of the FastAPI route, matching the documented distinction between the provider callback URL and the post-login frontend redirect. `examples/oauth/.env.example` now exports `OAUTH_REDIRECT_URL`, and `main.py` calls `load_dotenv()` so the `.env` file is actually consulted (matching the README's setup steps).
-- **Custom templates example.** `examples/custom_templates/README.md` no longer claims the example uses `ConsoleTransport`; `main.py` wires `SMTPTransport(...)` and the README now shows the matching `SMTP_HOST` / `SMTP_PORT` / `SMTP_FROM` environment variables and points at Mailpit for local delivery. The example `secret` was also replaced with the `fastauth generate-secret` placeholder.
-- **Docs — email verification.** `docs/features/email-verification.md` no longer claims that `POST /auth/register` sends a verification email. The new wording states that registration does **not** send a verification email and that the user must explicitly call `POST /auth/request-verify-email` (an authenticated endpoint) afterwards. The sequence diagram and endpoint table were updated to match. The same page now clarifies that `CredentialsProvider` only checks `is_active` (not `email_verified`) and shows the `allow_signin` hook pattern for gating sign-in on a verified email.
-- **Docs — `oauth_redirect_url`.** `docs/getting-started/configuration.md` and the `FastAuthConfig.oauth_redirect_url` docstring now describe it as the **frontend** URL FastAuth 302s to after a successful OAuth callback, with tokens as `HttpOnly` cookies, and link to the [OAuth → redirect_uri vs oauth_redirect_url](../docs/features/oauth.md#redirect_uri-vs-oauth_redirect_url) section. The previous wording called it the provider callback URL.
-- **Docs — SMTP constructor.** `docs/features/email-verification.md` SMTP example now uses `host=...` and `from_email=...`, matching the `SMTPTransport.__init__` signature (the previous example used the wrong `hostname` and `sender` argument names).
-- **Docs — session strategy.** `docs/concepts/tokens.md` now states explicitly that auth routes always issue JWT token pairs, that `session_strategy="database"` is reserved / informational and is not wired through to auth routes, and that user-session tracking via `/auth/sessions` is provided by a `SessionAdapter` assigned to the `FastAuth` instance — independent of `session_strategy`.
-
-### Added
-
-- `docs/features/tokens.md` — new page documenting `/auth/token/introspect` and `/auth/token/revoke`, including the refresh JTI allowlist behavior when `token_adapter` is configured.
 
 ## [0.5.3] - 2026-03-21
 
