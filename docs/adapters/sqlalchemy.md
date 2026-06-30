@@ -89,7 +89,7 @@ auth.role_adapter = adapter.role
 |----------|----------|-----------------|
 | `adapter.user` | `UserAdapter` | Always |
 | `adapter.token` | `TokenAdapter` | Email verification, password reset |
-| `adapter.session` | `SessionAdapter` | `session_strategy="database"` |
+| `adapter.session` | `SessionAdapter` | `/auth/sessions` user-session listing and revocation |
 | `adapter.role` | `RoleAdapter` | RBAC |
 | `adapter.oauth` | `OAuthAccountAdapter` | OAuth providers |
 

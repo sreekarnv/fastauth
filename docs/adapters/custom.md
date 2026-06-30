@@ -70,13 +70,13 @@ class UserAdapter(Protocol):
 
 ## Other protocols
 
-If you need token storage, OAuth account linking, or RBAC, implement the corresponding protocols:
+If you need token storage, OAuth account linking, user-session management, or RBAC, implement the corresponding protocols:
 
 | Protocol | Required for |
 |----------|-------------|
 | `TokenAdapter` | Email verification, password reset |
 | `OAuthAccountAdapter` | OAuth providers |
-| `SessionAdapter` | `session_strategy="database"` |
+| `SessionAdapter` | `/auth/sessions` user-session listing and revocation |
 | `RoleAdapter` | RBAC |
 
 All protocols are defined in `fastauth.core.protocols`. See the [Protocols Reference](../reference/protocols.md) for the full signatures.
