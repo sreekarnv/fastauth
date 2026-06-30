@@ -3,9 +3,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
 
+from fastauth.api.auth import _clear_auth_cookies
 from fastauth.api.deps import require_auth
 from fastauth.app import FastAuth
 from fastauth.core.credentials import hash_password, verify_password
@@ -175,7 +176,7 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(
+        stored = await fa.config.token_adapter.consume_token(
             hash_one_time_token(token), "email_change"
         )
         if (
@@ -190,16 +191,21 @@ def create_account_router(auth: object) -> APIRouter:
             )
 
         await fa.config.adapter.update_user(
-            stored["user_id"], email=stored["raw_data"]["email"]
+            stored["user_id"], email=stored["raw_data"]["email"], email_verified=True
         )
-
-        await fa.config.token_adapter.delete_token(hash_one_time_token(token))
+        await fa.config.token_adapter.delete_user_tokens(
+            stored["user_id"], "email_change"
+        )
+        await fa.config.token_adapter.delete_user_tokens(
+            stored["user_id"], "refresh_jti"
+        )
 
         return MessageResponse(message="Email changed successfully")
 
     @router.delete("", response_model=MessageResponse)
     async def delete_account(
         request: Request,
+        response: Response,
         body: DeleteAccountRequest,
         user: UserData = Depends(require_auth),
     ) -> MessageResponse:
@@ -212,7 +218,14 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Password is incorrect",
             )
 
+        if fa.config.token_adapter:
+            await fa.config.token_adapter.delete_user_tokens(user["id"], "refresh_jti")
+        if fa.session_adapter:
+            await fa.session_adapter.delete_user_sessions(user["id"])
+
         await fa.config.adapter.delete_user(user["id"], soft=True)
+        if fa.config.token_delivery == "cookie":
+            _clear_auth_cookies(response, fa)
 
         return MessageResponse(message="Account deleted successfully")
 

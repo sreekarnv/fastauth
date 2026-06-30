@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import secrets
+from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from fastauth.exceptions import ProviderError
@@ -154,6 +155,8 @@ async def link_oauth_account(
             "expires_at": None,
         }
     )
+    if account["user_id"] != user_id:
+        raise ProviderError("This provider account is already linked to a user")
 
     user = await user_adapter.get_user_by_id(user_id)
     if not user:
@@ -171,6 +174,7 @@ async def complete_oauth_flow(
     user_adapter: UserAdapter,
     oauth_adapter: OAuthAccountAdapter,
     store_provider_tokens: bool = False,
+    allow_signin: Callable[[UserData, str], Awaitable[bool]] | None = None,
 ) -> tuple[UserData, bool, bool]:
     """Complete an OAuth sign-in flow.
 
@@ -206,8 +210,12 @@ async def complete_oauth_flow(
             raise ProviderError("Linked user account not found")
         email_verified_now = False
         if provider_user.get("email_verified") and not user.get("email_verified"):
+            if allow_signin is not None and not await allow_signin(user, provider.id):
+                raise ProviderError("Sign-in not allowed")
             user = await user_adapter.update_user(user["id"], email_verified=True)
             email_verified_now = True
+        elif allow_signin is not None and not await allow_signin(user, provider.id):
+            raise ProviderError("Sign-in not allowed")
         return user, False, email_verified_now
 
     user = await user_adapter.get_user_by_email(provider_user["email"])
@@ -227,11 +235,15 @@ async def complete_oauth_flow(
         if not provider_email_verified:
             raise ProviderError("OAuth provider email is not verified")
         email_verified_now = False
-        if not user.get("email_verified"):
-            user = await user_adapter.update_user(user["id"], email_verified=True)
-            email_verified_now = True
 
-    _ = await oauth_adapter.create_oauth_account(
+    if allow_signin is not None and not await allow_signin(user, provider.id):
+        raise ProviderError("Sign-in not allowed")
+
+    if not is_new and not user.get("email_verified"):
+        user = await user_adapter.update_user(user["id"], email_verified=True)
+        email_verified_now = True
+
+    account = await oauth_adapter.create_oauth_account(
         {
             "provider": provider.id,
             "provider_account_id": provider_user["id"],
@@ -245,5 +257,7 @@ async def complete_oauth_flow(
             "expires_at": None,
         }
     )
+    if account["user_id"] != user["id"]:
+        raise ProviderError("This provider account is already linked to a user")
 
     return user, is_new, email_verified_now

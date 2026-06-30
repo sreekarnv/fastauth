@@ -116,7 +116,7 @@ async def test_authorize_unknown_provider(client):
 
 
 async def test_callback_json_mode(client, oauth_app):
-    _, _, _, state_store = oauth_app
+    _, oauth_adapter, user_adapter, state_store = oauth_app
 
     # Manually store state (simulating initiate flow)
     await state_store.write(
@@ -360,7 +360,7 @@ async def test_oauth_callback_assigns_default_role_to_new_user():
 async def test_oauth_callback_state_provider_mismatch(client, oauth_app):
     """State written for one provider must not be redeemable for a
     different provider's callback."""
-    _, _, _, state_store = oauth_app
+    _, oauth_adapter, user_adapter, state_store = oauth_app
 
     await state_store.write(
         "oauth_state:test-state",
@@ -478,7 +478,7 @@ async def test_oauth_signin_does_not_fire_on_oauth_link(client, oauth_app):
         async def on_signin(self, user, provider):
             events.append(("on_signin", provider))
 
-    _, _, _, state_store = oauth_app
+    _, oauth_adapter, user_adapter, state_store = oauth_app
     app = client._transport.app
     fa = app.state.fastauth
     fa.config.hooks = Hooks()
@@ -571,7 +571,7 @@ async def test_oauth_signin_denied_by_allow_signin_no_tokens(client, oauth_app):
         async def on_oauth_link(self, user, provider):
             events.append("on_oauth_link")
 
-    _, _, _, state_store = oauth_app
+    _, oauth_adapter, user_adapter, state_store = oauth_app
     app = client._transport.app
     fa = app.state.fastauth
     fa.config.hooks = Hooks()
@@ -596,6 +596,9 @@ async def test_oauth_signin_denied_by_allow_signin_no_tokens(client, oauth_app):
     assert "refresh_token" not in body
     assert "on_signin" not in events
     assert "on_oauth_link" not in events
+    user = await user_adapter.get_user_by_email("oauth@example.com")
+    if user is not None:
+        assert await oauth_adapter.get_user_oauth_accounts(user["id"]) == []
 
     # No refresh_jti should be recorded for the user.
     if fa.config.token_adapter is not None:

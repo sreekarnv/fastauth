@@ -108,6 +108,9 @@ async def test_verify_email_post(client, capsys):
     assert resp.status_code == 200
     assert resp.json()["message"] == "Email verified successfully"
 
+    replay = await client.post("/auth/verify-email", json={"token": verify_token})
+    assert replay.status_code == 400
+
 
 async def test_verify_email_get(client, capsys):
     tokens = await _register(client)
@@ -165,6 +168,12 @@ async def test_reset_password(client, capsys):
         json={"email": "test@example.com", "password": "NewPass456#"},
     )
     assert login_resp.status_code == 200
+
+    replay_resp = await client.post(
+        "/auth/reset-password",
+        json={"token": reset_token, "new_password": "NewPass789#"},
+    )
+    assert replay_resp.status_code == 400
 
 
 async def test_reset_password_invalid_token(client):

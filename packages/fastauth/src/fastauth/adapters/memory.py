@@ -61,6 +61,15 @@ class MemoryUserAdapter(UserAdapter):
             raise UserNotFoundError(f"User '{user_id}' not found")
 
         old_email = user["email"]
+        new_email = kwargs.get("email")
+        if (
+            isinstance(new_email, str)
+            and new_email != old_email
+            and new_email in self._email_index
+        ):
+            raise UserAlreadyExistsError(
+                f"User with email '{new_email}' already exists"
+            )
 
         for key, value in kwargs.items():
             if key in user:

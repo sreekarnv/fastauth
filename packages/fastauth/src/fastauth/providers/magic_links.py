@@ -47,7 +47,7 @@ class MagicLinksProvider:
             raise ConfigError("token_adapter is required for magic links")
 
         token_hash = hash_one_time_token(token)
-        _token = await fa.config.token_adapter.get_token(
+        _token = await fa.config.token_adapter.consume_token(
             token_hash, token_type="magic_link_login_request"
         )
 
@@ -58,7 +58,5 @@ class MagicLinksProvider:
 
         if not user:
             raise AuthenticationError("Invalid or expired magic link")
-
-        await fa.config.token_adapter.delete_token(token_hash)
 
         return user

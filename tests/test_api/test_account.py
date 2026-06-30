@@ -1,7 +1,13 @@
+from datetime import datetime, timedelta, timezone
+
 import pytest
 from fastapi import Depends, FastAPI
 from fastauth import FastAuth
-from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
+from fastauth.adapters.memory import (
+    MemorySessionAdapter,
+    MemoryTokenAdapter,
+    MemoryUserAdapter,
+)
 from fastauth.api.deps import require_auth
 from fastauth.config import FastAuthConfig, JWTConfig
 from fastauth.email_transports.console import ConsoleTransport
@@ -67,6 +73,22 @@ async def _register_and_get_token(client):
 
 def _auth_header(token):
     return {"Authorization": f"Bearer {token}"}
+
+
+def _extract_token_from_output(out: str) -> str:
+    raw_token = ""
+    for line in out.splitlines():
+        if "token=" in line:
+            tail = line.split("token=", 1)[1]
+            for ch in tail:
+                if ch.isalnum() or ch in "-_.":
+                    raw_token += ch
+                else:
+                    break
+            if raw_token:
+                break
+    assert raw_token, f"Could not find token= in console output:\n{out}"
+    return raw_token
 
 
 async def test_change_password_success(client):
@@ -149,24 +171,62 @@ async def test_confirm_email_change(client, capsys):
         headers=_auth_header(token),
     )
 
-    out = capsys.readouterr().out
-    raw_token = ""
-    for line in out.splitlines():
-        if "token=" in line:
-            tail = line.split("token=", 1)[1]
-            for ch in tail:
-                if ch.isalnum() or ch in "-_.":
-                    raw_token += ch
-                else:
-                    break
-            if raw_token:
-                break
-    assert raw_token, f"Could not find token= in console output:\n{out}"
+    raw_token = _extract_token_from_output(capsys.readouterr().out)
 
     resp = await client.get(
         f"/auth/account/confirm-email-change?token={raw_token}",
     )
     assert resp.status_code == 200
+
+    replay = await client.get(
+        f"/auth/account/confirm-email-change?token={raw_token}",
+    )
+    assert replay.status_code == 400
+
+
+async def test_confirm_email_change_verifies_revokes_and_clears_pending(
+    client, memory_user_adapter, memory_token_adapter, capsys
+):
+    token = await _register_and_get_token(client)
+    user = await memory_user_adapter.get_user_by_email("test@example.com")
+    assert user is not None
+
+    await memory_token_adapter.create_token(
+        {
+            "token": "refresh-jti",
+            "user_id": user["id"],
+            "token_type": "refresh_jti",
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+            "raw_data": None,
+        }
+    )
+    await client.post(
+        "/auth/account/change-email",
+        json={"new_email": "new@example.com", "password": "Pass123#"},
+        headers=_auth_header(token),
+    )
+    first_token = _extract_token_from_output(capsys.readouterr().out)
+    await client.post(
+        "/auth/account/change-email",
+        json={"new_email": "newer@example.com", "password": "Pass123#"},
+        headers=_auth_header(token),
+    )
+    _ = _extract_token_from_output(capsys.readouterr().out)
+
+    resp = await client.get(f"/auth/account/confirm-email-change?token={first_token}")
+    assert resp.status_code == 200
+
+    updated = await memory_user_adapter.get_user_by_email("new@example.com")
+    assert updated is not None
+    assert updated["email_verified"] is True
+    assert await memory_token_adapter.get_token("refresh-jti", "refresh_jti") is None
+    assert await memory_token_adapter.get_token("refresh-jti", "email_change") is None
+    pending = [
+        token
+        for token in memory_token_adapter._tokens.values()
+        if token["user_id"] == user["id"] and token["token_type"] == "email_change"
+    ]
+    assert pending == []
 
 
 async def test_confirm_email_change_invalid_token(client):
@@ -221,6 +281,80 @@ async def test_delete_account_and_fetch_user(client):
     # Get User should fail
     get_user = await client.get("/auth/me", headers=_auth_header(token))
     assert get_user.status_code == 401
+
+
+async def test_delete_account_revokes_tokens_and_sessions(
+    client, app, memory_user_adapter, memory_token_adapter
+):
+    session_adapter = MemorySessionAdapter()
+    app.state.fastauth.session_adapter = session_adapter
+    access_token = await _register_and_get_token(client)
+    user = await memory_user_adapter.get_user_by_email("test@example.com")
+    assert user is not None
+    await memory_token_adapter.create_token(
+        {
+            "token": "delete-refresh-jti",
+            "user_id": user["id"],
+            "token_type": "refresh_jti",
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+            "raw_data": None,
+        }
+    )
+    await session_adapter.create_session(
+        {
+            "id": "delete-session",
+            "user_id": user["id"],
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+            "ip_address": None,
+            "user_agent": None,
+        }
+    )
+
+    resp = await client.request(
+        "DELETE",
+        "/auth/account",
+        json={"password": "Pass123#"},
+        headers=_auth_header(access_token),
+    )
+    assert resp.status_code == 200
+    assert (
+        await memory_token_adapter.get_token("delete-refresh-jti", "refresh_jti")
+        is None
+    )
+    assert await session_adapter.get_session("delete-session") is None
+
+
+async def test_delete_account_cookie_mode_clears_auth_cookies(memory_user_adapter):
+    token_adapter = MemoryTokenAdapter()
+    config = FastAuthConfig(
+        secret="super-secret-key-only-for-testing",
+        providers=[CredentialsProvider()],
+        adapter=memory_user_adapter,
+        jwt=JWTConfig(algorithm="HS256"),
+        token_adapter=token_adapter,
+        token_delivery="cookie",
+        cookie_secure=False,
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        register = await c.post(
+            "/auth/register",
+            json={"email": "cookie@example.com", "password": "Pass123#"},
+        )
+        assert register.status_code == 201
+        resp = await c.request("DELETE", "/auth/account", json={"password": "Pass123#"})
+
+    assert resp.status_code == 200
+    set_cookie = resp.headers.get_list("set-cookie")
+    assert any(
+        "access_token=" in header and "Max-Age=0" in header for header in set_cookie
+    )
+    assert any(
+        "refresh_token=" in header and "Max-Age=0" in header for header in set_cookie
+    )
 
 
 async def test_delete_account_wrong_password(client):
