@@ -2046,10 +2046,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#rs256-private_key-is-required" class="md-nav__link">
+  <a href="#rs256-jwks_enabledtrue-is-required" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RS256 — "private_key is required"
+        RS256 — "jwks_enabled=True" is required
       
     </span>
   </a>
@@ -2732,10 +2732,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#rs256-private_key-is-required" class="md-nav__link">
+  <a href="#rs256-jwks_enabledtrue-is-required" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RS256 — "private_key is required"
+        RS256 — "jwks_enabled=True" is required
       
     </span>
   </a>
@@ -2960,15 +2960,16 @@
 </code></pre></div>
 <hr />
 <h2 id="jwt-keys">JWT / Keys<a class="headerlink" href="#jwt-keys" title="Permanent link">&para;</a></h2>
-<h3 id="rs256-private_key-is-required"><code>RS256</code> — "private_key is required"<a class="headerlink" href="#rs256-private_key-is-required" title="Permanent link">&para;</a></h3>
-<p>When using <code>RS256</code> or <code>RS512</code>, you must provide both keys:</p>
+<h3 id="rs256-jwks_enabledtrue-is-required"><code>RS256</code> — "jwks_enabled=True" is required<a class="headerlink" href="#rs256-jwks_enabledtrue-is-required" title="Permanent link">&para;</a></h3>
+<p>When using <code>RS256</code> or <code>RS512</code>, enable JWKS mode. You may provide both keys or let FastAuth generate them during JWKS initialization:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
 <a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">JWTConfig</span><span class="p">(</span>
 <a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
 <a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="n">private_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;private.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
 <a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="n">public_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;public.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="p">)</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">jwks_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="p">)</span>
 </code></pre></div>
 <p>Generate a key pair:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>private.pem<span class="w"> </span><span class="m">2048</span>

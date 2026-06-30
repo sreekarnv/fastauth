@@ -2555,7 +2555,7 @@
 <p>The <code>secret</code> must be at least 32 bytes for HS256/HS384/HS512. Never hard-code it — use environment variables, and replace the placeholder above with the output of <code>fastauth generate-secret</code> before starting the app.</p>
 </div>
 <h2 id="rs256-rs512">RS256 / RS512<a class="headerlink" href="#rs256-rs512" title="Permanent link">&para;</a></h2>
-<p>Uses an RSA key pair. The private key signs tokens; the public key verifies them. This lets other services (microservices, CDNs) verify tokens without the private key.</p>
+<p>Uses a JWKS-backed RSA key pair. The private key signs tokens; the public key verifies them. This lets other services (microservices, CDNs) verify tokens without the private key.</p>
 <h3 id="generate-keys">Generate keys<a class="headerlink" href="#generate-keys" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>private.pem<span class="w"> </span><span class="m">2048</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>private.pem<span class="w"> </span>-pubout<span class="w"> </span>-out<span class="w"> </span>public.pem
@@ -2572,10 +2572,12 @@
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="n">private_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;private.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="n">public_key</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;public.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="p">),</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="o">...</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="p">)</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        <span class="n">jwks_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="p">),</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="o">...</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">)</span>
 </code></pre></div>
+<p>FastAuth only supports RSA signing through JWKS mode. Call <code>initialize_jwks()</code> before issuing tokens.</p>
 <h2 id="jwks-json-web-key-sets">JWKS (JSON Web Key Sets)<a class="headerlink" href="#jwks-json-web-key-sets" title="Permanent link">&para;</a></h2>
 <p>When <code>jwks_enabled=True</code>, FastAuth exposes a <code>/.well-known/jwks.json</code> endpoint that publishes the current public key(s). Other services can fetch this endpoint to verify tokens without you distributing the public key file.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
