@@ -1877,6 +1877,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#release-checklist-for-maintainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (for maintainers)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2424,6 +2435,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#release-checklist-for-maintainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release checklist (for maintainers)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2619,6 +2641,23 @@
 <li>[ ] Hook into <code>on_signin</code>, <code>on_signup</code> to emit metrics or audit logs</li>
 <li>[ ] Monitor failed sign-in rates for anomaly detection</li>
 <li>[ ] Set up alerts for database connection pool exhaustion</li>
+</ul>
+<h2 id="release-checklist-for-maintainers">Release checklist (for maintainers)<a class="headerlink" href="#release-checklist-for-maintainers" title="Permanent link">&para;</a></h2>
+<p>When cutting a new release of FastAuth itself:</p>
+<ul>
+<li>[ ] <strong>Update <code>CHANGELOG.md</code></strong> — move the <code>[Unreleased]</code> section into a dated <code>[X.Y.Z]</code> block and start a fresh <code>[Unreleased]</code>.</li>
+<li>[ ] <strong>Bump the version</strong> in <code>packages/fastauth/pyproject.toml</code> and <code>packages/fastauth/src/fastauth/__init__.py</code> (<code>__version__</code>).</li>
+<li>[ ] <strong>Refresh stale docs and examples</strong> — <code>README.md</code>, <code>packages/fastauth/README.md</code>, <code>docs/index.md</code>, the bug-report placeholder, and the <code>docs/getting-started/installation.md</code> example output. See <a href="#release-checklist-for-maintainers"><code>docs/guides/production.md</code> → Release checklist</a>.</li>
+<li>[ ] <strong>Run the full CI gate locally</strong>:<ul>
+<li><code>uv run pytest tests/ -q</code></li>
+<li><code>uv run ruff check .</code></li>
+<li><code>uv run ruff format --check .</code></li>
+<li><code>uv run mkdocs build</code></li>
+<li><code>uv build --package sreekarnv-fastauth --out-dir dist</code> and confirm both <code>sdist</code> and <code>wheel</code> include <code>LICENSE</code>.</li>
+</ul>
+</li>
+<li>[ ] <strong>Smoke-install the wheel</strong> in a clean venv and import <code>fastauth</code> to confirm <code>__version__</code> matches the new release (the CI <code>package-smoke</code> job does this on every PR that touches packaging files).</li>
+<li>[ ] <strong>Tag the release</strong> on the default branch and let the publish workflow upload to PyPI.</li>
 </ul>
 
 

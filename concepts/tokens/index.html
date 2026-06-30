@@ -2586,7 +2586,7 @@
 </tr>
 </tbody>
 </table>
-<p>These endpoints are only mounted when a <code>session_adapter</code> is set; if it is <code>None</code> they return <code>400</code> with <code>detail: "Session management is not configured"</code>. This is <strong>not</strong> related to <code>session_strategy</code> — <code>session_strategy="database"</code> is not required to use <code>session_adapter</code>.</p>
+<p>These endpoints are always mounted, but return <code>400</code> with <code>detail: "Session management is not configured"</code> when no <code>session_adapter</code> is set on the <code>FastAuth</code> instance. This is <strong>not</strong> related to <code>session_strategy</code> — <code>session_strategy="database"</code> is not required to use <code>session_adapter</code>.</p>
 <h2 id="signing-algorithms">Signing algorithms<a class="headerlink" href="#signing-algorithms" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

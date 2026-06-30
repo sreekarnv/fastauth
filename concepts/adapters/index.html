@@ -857,6 +857,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#email-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#custom-adapters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2338,6 +2349,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#email-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#custom-adapters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2475,7 +2497,7 @@
 </tr>
 <tr>
 <td><code>SessionAdapter</code></td>
-<td>Store server-side sessions</td>
+<td><code>/auth/sessions</code> user-session tracking</td>
 <td>used internally</td>
 </tr>
 <tr>
@@ -2491,6 +2513,8 @@
 </tbody>
 </table>
 <p>You only need to configure the protocols relevant to your feature set. Email verification requires a <code>TokenAdapter</code>; OAuth requires an <code>OAuthAccountAdapter</code>; RBAC requires a <code>RoleAdapter</code>.</p>
+<h2 id="email-identity">Email identity<a class="headerlink" href="#email-identity" title="Permanent link">&para;</a></h2>
+<p>FastAuth treats email addresses as case-insensitive and trims surrounding whitespace. The canonical form is <code>email.strip().casefold()</code>, so <code>Alice@Example.COM</code> and <code>alice@example.com</code> always refer to the same user. Built-in adapters normalize every email on create / lookup / update, so credentials login, OAuth email linking, magic-link auto-registration, and account lockout tracking all see the same identity. Custom adapters must do the same — see <a href="../../adapters/custom/#email-identity-and-normalization">Custom Adapter → Email identity and normalization</a> for the requirement and the <code>fastauth.core.identity.normalize_email</code> helper.</p>
 <h2 id="custom-adapters">Custom adapters<a class="headerlink" href="#custom-adapters" title="Permanent link">&para;</a></h2>
 <p>If you use a database not supported by SQLAlchemy, or you have existing models, you can implement the protocol directly. See <a href="../../adapters/custom/">Custom Adapter</a>.</p>
 

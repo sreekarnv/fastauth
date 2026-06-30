@@ -2688,12 +2688,16 @@
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">],</span>
 </code></pre></div>
 <h2 id="cookie-delivery">Cookie delivery<a class="headerlink" href="#cookie-delivery" title="Permanent link">&para;</a></h2>
-<p>When <code>token_delivery="cookie"</code> is set, the callback endpoint sets <code>access_token</code> and <code>refresh_token</code> as HTTP-only cookies instead of returning them in the JSON body. This is useful for browser-based apps where the callback URL is opened directly in a tab.</p>
+<p>When <code>token_delivery="cookie"</code> is set, the callback endpoint sets <code>access_token</code> and <code>refresh_token</code> as <code>HttpOnly</code> cookies on the response instead of returning them in the JSON body. The response body is a tokenless <code>{"message": "Authentication successful"}</code> payload, the same shape used by <code>/auth/login</code> and <code>/auth/refresh</code> in cookie mode. This is useful for browser-based apps where the callback URL is opened directly in a tab.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">FastAuthConfig</span><span class="p">(</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="o">...</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">token_delivery</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">)</span>
 </code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">No tokens in the response body</p>
+<p>Cookie-mode callbacks never return access or refresh tokens in the JSON body. The body is always the same small confirmation payload, and the tokens live only in the <code>HttpOnly</code> cookies. See <a href="../cookies/">Cookie Delivery</a> for the full reference.</p>
+</div>
 <h2 id="event-hooks">Event hooks<a class="headerlink" href="#event-hooks" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.core.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventHooks</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserData</span>

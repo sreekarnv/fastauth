@@ -1933,6 +1933,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fastauth.config.PasswordConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;PasswordConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fastauth.config.SecurityConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SecurityConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2242,6 +2264,28 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;JWTConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fastauth.config.PasswordConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;PasswordConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fastauth.config.SecurityConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SecurityConfig
       
     </span>
   </a>
@@ -2709,7 +2753,12 @@ matching CSRF cookie/header token (default: <code>True</code>).</p>
           <tr class="doc-section-item">
             <td><code><span title="fastauth.config.FastAuthConfig.password">password</span></code></td>
             <td>
-                  <code><span title="fastauth.config.PasswordConfig">PasswordConfig</span></code>
+                  <code><a class="autorefs autorefs-internal" title="            fastauth.config.PasswordConfig
+
+
+  
+      dataclass
+  " href="#fastauth.config.PasswordConfig">PasswordConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2720,7 +2769,12 @@ matching CSRF cookie/header token (default: <code>True</code>).</p>
           <tr class="doc-section-item">
             <td><code><span title="fastauth.config.FastAuthConfig.security">security</span></code></td>
             <td>
-                  <code><span title="fastauth.config.SecurityConfig">SecurityConfig</span></code>
+                  <code><a class="autorefs autorefs-internal" title="            fastauth.config.SecurityConfig
+
+
+  
+      dataclass
+  " href="#fastauth.config.SecurityConfig">SecurityConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2893,6 +2947,224 @@ and rotate RSA keys automatically.</p>
             <td>
               <div class="doc-md-description">
                 <p>PEM-encoded RSA public key (required for RS256/RS512).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="fastauth.config.PasswordConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">fastauth.config.PasswordConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#fastauth.config.PasswordConfig" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Password strength and security settings.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.min_length">min_length</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum password length (default: 8).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.require_uppercase">require_uppercase</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Require at least one uppercase letter.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.require_lowercase">require_lowercase</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Require at least one lowercase letter.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.require_digit">require_digit</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Require at least one digit.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.require_special">require_special</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Require at least one special character.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.PasswordConfig.max_length">max_length</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum password length (default: 128).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="fastauth.config.SecurityConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">fastauth.config.SecurityConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#fastauth.config.SecurityConfig" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Security settings including account lockout.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.SecurityConfig.max_login_attempts">max_login_attempts</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum failed login attempts before lockout (default: 5).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.SecurityConfig.lockout_duration">lockout_duration</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Duration of lockout in seconds (default: 300 = 5 minutes).</p>
               </div>
             </td>
           </tr>
