@@ -50,9 +50,10 @@ engine = create_async_engine(
 adapter = SQLAlchemyAdapter(engine=engine)
 ```
 
-## Session storage
+## Ephemeral storage
 
-- [ ] **Use Redis** for `oauth_state_store` and `session_backend` — memory backends don't survive restarts or scale across instances
+- [ ] **Use Redis** for `oauth_state_store` — memory backends don't survive restarts or scale across instances
+- [ ] **Treat `session_backend` as reserved** — `session_strategy="database"` is not wired into auth routes today, which always issue JWT token pairs
 
 ```python
 from fastauth.session_backends.redis import RedisSessionBackend
@@ -61,9 +62,11 @@ backend = RedisSessionBackend(url=os.environ["REDIS_URL"])
 config = FastAuthConfig(
     ...,
     oauth_state_store=backend,
-    session_backend=backend,  # if using database sessions
+    # session_backend=backend,  # reserved for future database-session auth
 )
 ```
+
+For user-visible session listing and revocation, configure `auth.session_adapter` instead; this powers `/auth/sessions` and is independent of `session_strategy`.
 
 ## Cookies
 

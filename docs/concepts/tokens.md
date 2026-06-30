@@ -79,12 +79,10 @@ User-session tracking (the kind that lets a user list and revoke their active se
 
 ```python
 from fastauth.adapters.sqlalchemy import SQLAlchemyAdapter
-from fastauth.session_backends.memory import MemorySessionBackend
 
 adapter = SQLAlchemyAdapter(engine_url="sqlite+aiosqlite:///./auth.db")
 auth = FastAuth(config)
 auth.session_adapter = adapter.session     # ← this powers /auth/sessions
-auth.session_backend = MemorySessionBackend()  # optional
 ```
 
 `/auth/sessions` then exposes:

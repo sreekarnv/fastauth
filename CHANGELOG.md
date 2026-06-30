@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed unused session strategy internals (`JWTSessionStrategy` and `DatabaseSessionStrategy`).
+
+### Fixed
+
+- Clarified that `/auth/sessions` remains independent of `session_strategy` and is powered by `FastAuth.session_adapter`.
+
 ## [0.5.6] - 2026-06-30
 
 ### Fixed
