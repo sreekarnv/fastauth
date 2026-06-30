@@ -2550,12 +2550,10 @@
 <h2 id="user-sessions">User sessions<a class="headerlink" href="#user-sessions" title="Permanent link">&para;</a></h2>
 <p>User-session tracking (the kind that lets a user list and revoke their active sessions) is provided by a <code>SessionAdapter</code> assigned to the <code>FastAuth</code> instance, independent of <code>session_strategy</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.adapters.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAdapter</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.session_backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemorySessionBackend</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">auth</span><span class="o">.</span><span class="n">session_adapter</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">session</span>     <span class="c1"># ← this powers /auth/sessions</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">auth</span><span class="o">.</span><span class="n">session_backend</span> <span class="o">=</span> <span class="n">MemorySessionBackend</span><span class="p">()</span>  <span class="c1"># optional</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine_url</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///./auth.db&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">auth</span> <span class="o">=</span> <span class="n">FastAuth</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">auth</span><span class="o">.</span><span class="n">session_adapter</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">session</span>     <span class="c1"># ← this powers /auth/sessions</span>
 </code></pre></div>
 <p><code>/auth/sessions</code> then exposes:</p>
 <table>

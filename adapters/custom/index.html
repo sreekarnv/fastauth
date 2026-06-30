@@ -2419,7 +2419,7 @@
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_hashed_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </code></pre></div>
 <h2 id="other-protocols">Other protocols<a class="headerlink" href="#other-protocols" title="Permanent link">&para;</a></h2>
-<p>If you need token storage, OAuth account linking, or RBAC, implement the corresponding protocols:</p>
+<p>If you need token storage, OAuth account linking, user-session management, or RBAC, implement the corresponding protocols:</p>
 <table>
 <thead>
 <tr>
@@ -2438,7 +2438,7 @@
 </tr>
 <tr>
 <td><code>SessionAdapter</code></td>
-<td><code>session_strategy="database"</code></td>
+<td><code>/auth/sessions</code> user-session listing and revocation</td>
 </tr>
 <tr>
 <td><code>RoleAdapter</code></td>

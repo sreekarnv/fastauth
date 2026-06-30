@@ -1801,10 +1801,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#session-storage" class="md-nav__link">
+  <a href="#ephemeral-storage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Session storage
+        Ephemeral storage
       
     </span>
   </a>
@@ -2348,10 +2348,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#session-storage" class="md-nav__link">
+  <a href="#ephemeral-storage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Session storage
+        Ephemeral storage
       
     </span>
   </a>
@@ -2536,9 +2536,10 @@
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">)</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">adapter</span> <span class="o">=</span> <span class="n">SQLAlchemyAdapter</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="session-storage">Session storage<a class="headerlink" href="#session-storage" title="Permanent link">&para;</a></h2>
+<h2 id="ephemeral-storage">Ephemeral storage<a class="headerlink" href="#ephemeral-storage" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <strong>Use Redis</strong> for <code>oauth_state_store</code> and <code>session_backend</code> — memory backends don't survive restarts or scale across instances</li>
+<li>[ ] <strong>Use Redis</strong> for <code>oauth_state_store</code> — memory backends don't survive restarts or scale across instances</li>
+<li>[ ] <strong>Treat <code>session_backend</code> as reserved</strong> — <code>session_strategy="database"</code> is not wired into auth routes today, which always issue JWT token pairs</li>
 </ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastauth.session_backends.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisSessionBackend</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
@@ -2546,9 +2547,10 @@
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="o">...</span><span class="p">,</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">oauth_state_store</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">session_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>  <span class="c1"># if using database sessions</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="c1"># session_backend=backend,  # reserved for future database-session auth</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">)</span>
 </code></pre></div>
+<p>For user-visible session listing and revocation, configure <code>auth.session_adapter</code> instead; this powers <code>/auth/sessions</code> and is independent of <code>session_strategy</code>.</p>
 <h2 id="cookies">Cookies<a class="headerlink" href="#cookies" title="Permanent link">&para;</a></h2>
 <ul>
 <li>[ ] <strong>Set <code>cookie_secure=True</code></strong> (default when not in debug mode)</li>
