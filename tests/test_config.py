@@ -113,6 +113,13 @@ def test_cookie_defaults():
     assert config.cookie_secure is None
 
 
+def test_csrf_defaults():
+    config = _make()
+    assert config.csrf_enabled is True
+    assert config.csrf_cookie_name == "csrf_token"
+    assert config.csrf_header_name == "X-CSRF-Token"
+
+
 def test_valid_config_ok():
     config = _make()
     assert config.secret == "this-is-a-test-secret-32-bytes!!"

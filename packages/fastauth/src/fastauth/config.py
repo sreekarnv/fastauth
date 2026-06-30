@@ -148,6 +148,12 @@ class FastAuthConfig:
         cookie_samesite: ``SameSite`` policy — ``"lax"``, ``"strict"``, or
             ``"none"`` (default: ``"lax"``).
         cookie_domain: Optional domain scope for cookies.
+        csrf_enabled: Whether cookie-authenticated unsafe requests require a
+            matching CSRF cookie/header token (default: ``True``).
+        csrf_cookie_name: Name of the readable CSRF cookie (default:
+            ``"csrf_token"``).
+        csrf_header_name: Name of the request header containing the CSRF token
+            (default: ``"X-CSRF-Token"``).
         password: Password strength and validation settings.
         security: Security settings including account lockout.
     """
@@ -183,6 +189,9 @@ class FastAuthConfig:
     cookie_httponly: bool = True
     cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     cookie_domain: str | None = None
+    csrf_enabled: bool = True
+    csrf_cookie_name: str = "csrf_token"
+    csrf_header_name: str = "X-CSRF-Token"
 
     @property
     def effective_cookie_secure(self) -> bool:

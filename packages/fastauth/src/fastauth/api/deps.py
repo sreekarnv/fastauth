@@ -1,3 +1,4 @@
+from secrets import compare_digest
 from typing import Any
 
 from fastapi import Depends, HTTPException, Request, status
@@ -9,6 +10,26 @@ from fastauth.exceptions import InvalidTokenError
 from fastauth.types import UserData
 
 security = HTTPBearer(auto_error=False)
+UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+
+def enforce_cookie_csrf(request: Request) -> None:
+    auth = request.app.state.fastauth
+    cfg = auth.config
+    if not cfg.csrf_enabled or request.method not in UNSAFE_METHODS:
+        return
+
+    cookie_token = request.cookies.get(cfg.csrf_cookie_name)
+    header_token = request.headers.get(cfg.csrf_header_name)
+    if (
+        not cookie_token
+        or not header_token
+        or not compare_digest(cookie_token, header_token)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="CSRF token missing or invalid",
+        )
 
 
 async def get_fastauth(request: Request):
@@ -22,8 +43,10 @@ async def get_current_user(
     auth = request.app.state.fastauth
 
     token_str = credentials.credentials if credentials else None
+    auth_from_cookie = False
     if not token_str:
         token_str = request.cookies.get(auth.config.cookie_name_access)
+        auth_from_cookie = bool(token_str)
     if not token_str:
         return None
 
@@ -32,6 +55,8 @@ async def get_current_user(
         if claims.get("type") != "access":
             return None
         user = await auth.config.adapter.get_user_by_id(claims["sub"])
+        if user and auth_from_cookie:
+            enforce_cookie_csrf(request)
         return user
     except InvalidTokenError:
         return None
