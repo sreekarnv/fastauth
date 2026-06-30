@@ -2574,6 +2574,24 @@
 <td><code>None</code></td>
 <td>Optional domain scope.</td>
 </tr>
+<tr>
+<td><code>csrf_enabled</code></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>Require a matching CSRF cookie/header for cookie-authenticated unsafe requests.</td>
+</tr>
+<tr>
+<td><code>csrf_cookie_name</code></td>
+<td><code>str</code></td>
+<td><code>"csrf_token"</code></td>
+<td>Readable CSRF cookie name.</td>
+</tr>
+<tr>
+<td><code>csrf_header_name</code></td>
+<td><code>str</code></td>
+<td><code>"X-CSRF-Token"</code></td>
+<td>Header that must match the CSRF cookie.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="session-strategy">Session strategy<a class="headerlink" href="#session-strategy" title="Permanent link">&para;</a></h3>

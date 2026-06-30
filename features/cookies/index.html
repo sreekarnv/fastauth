@@ -1253,6 +1253,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF protection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cookie-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2282,6 +2293,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF protection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cookie-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2383,7 +2405,7 @@
 
 
 <h1 id="cookie-delivery">Cookie Delivery<a class="headerlink" href="#cookie-delivery" title="Permanent link">&para;</a></h1>
-<p>By default FastAuth returns tokens in the JSON response body. Switching to <code>"cookie"</code> delivery sets them as HttpOnly cookies instead — the browser sends them automatically on every request.</p>
+<p>By default FastAuth returns tokens in the JSON response body. Switching to <code>"cookie"</code> delivery sets access and refresh tokens as HttpOnly cookies instead — the browser sends them automatically on every request. FastAuth also sets a readable CSRF cookie so browser clients can protect state-changing requests.</p>
 <div class="admonition danger">
 <p class="admonition-title">Tokenless response bodies in cookie mode</p>
 <p>When <code>token_delivery="cookie"</code>, FastAuth <strong>never returns tokens in the JSON body</strong>. Every sign-in / refresh / OAuth-callback / magic-link-callback / passkey-authenticate response is a small <code>{"message": "Authentication successful"}</code> payload — the tokens are attached only as <code>HttpOnly</code> cookies. This prevents accidental leaks through logs, browser dev tools, or JavaScript that happens to read the response.</p>
@@ -2403,13 +2425,35 @@
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>When <code>token_delivery="cookie"</code>:</p>
 <ol>
-<li><strong>Sign-in / sign-up / refresh / OAuth callback / magic-link callback / passkey auth completion</strong> — FastAuth sets two cookies on the response:</li>
+<li><strong>Sign-in / sign-up / refresh / OAuth callback / magic-link callback / passkey auth completion</strong> — FastAuth sets three cookies on the response:</li>
 <li><code>access_token</code> (15 min, <code>HttpOnly</code>)</li>
-<li><code>refresh_token</code> (30 days, <code>HttpOnly</code>)
+<li><code>refresh_token</code> (30 days, <code>HttpOnly</code>)</li>
+<li><code>csrf_token</code> (readable by JavaScript, used only for CSRF protection)
    The response body is <code>{"message": "Authentication successful"}</code> and intentionally contains no token material.</li>
-<li><strong>Protected routes</strong> — <code>require_auth</code> reads the access token from the cookie first, then falls back to the <code>Authorization: Bearer</code> header.</li>
-<li><strong>Sign-out</strong> — FastAuth clears both cookies.</li>
+<li><strong>Protected routes</strong> — <code>require_auth</code> reads the access token from <code>Authorization: Bearer</code> first, then falls back to the access-token cookie.</li>
+<li><strong>Unsafe cookie-authenticated requests</strong> — <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code> requests authenticated by cookies must send the CSRF token in the configured header. <code>GET</code>, <code>HEAD</code>, and <code>OPTIONS</code> do not require the header. Bearer-token requests do not require CSRF.</li>
+<li><strong>Sign-out</strong> — FastAuth clears the auth cookies and the CSRF cookie.</li>
 </ol>
+<h2 id="csrf-protection">CSRF protection<a class="headerlink" href="#csrf-protection" title="Permanent link">&para;</a></h2>
+<p>CSRF protection is enabled by default for cookie-authenticated unsafe requests. After login/register/refresh, read the <code>csrf_token</code> cookie and send it as <code>X-CSRF-Token</code> on every <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code> request that relies on cookies.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">readCookie</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">.</span><span class="nx">find</span><span class="p">((</span><span class="nx">row</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">row</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">name</span><span class="si">}</span><span class="sb">=`</span><span class="p">))</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="o">?</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mf">1</span><span class="p">]</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;/auth/account/profile&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nx">credentials</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;include&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="s2">&quot;Content-Type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="s2">&quot;X-CSRF-Token&quot;</span><span class="o">:</span><span class="w"> </span><span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">readCookie</span><span class="p">(</span><span class="s2">&quot;csrf_token&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Ada&quot;</span><span class="p">}),</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">})</span>
+</code></pre></div>
+<p>This also applies to cookie-based <code>POST /auth/refresh</code> and <code>POST /auth/logout</code>. Missing or mismatched CSRF tokens return <code>403 Forbidden</code>.</p>
 <h2 id="cookie-options">Cookie options<a class="headerlink" href="#cookie-options" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2450,6 +2494,21 @@
 <td><code>None</code></td>
 <td>Domain scope</td>
 </tr>
+<tr>
+<td><code>csrf_enabled</code></td>
+<td><code>True</code></td>
+<td>Require CSRF header for cookie-authenticated unsafe requests</td>
+</tr>
+<tr>
+<td><code>csrf_cookie_name</code></td>
+<td><code>"csrf_token"</code></td>
+<td>Readable CSRF cookie name</td>
+</tr>
+<tr>
+<td><code>csrf_header_name</code></td>
+<td><code>"X-CSRF-Token"</code></td>
+<td>Request header that must match the CSRF cookie</td>
+</tr>
 </tbody>
 </table>
 <h2 id="samesite-policy">SameSite policy<a class="headerlink" href="#samesite-policy" title="Permanent link">&para;</a></h2>
@@ -2465,7 +2524,7 @@
 <tr>
 <td><code>"lax"</code></td>
 <td>Sent on same-site requests and top-level cross-site navigations</td>
-<td>Default — protects against CSRF for most apps</td>
+<td>Default for most apps</td>
 </tr>
 <tr>
 <td><code>"strict"</code></td>
@@ -2484,11 +2543,11 @@
 <p>If your frontend is on a different domain (e.g. <code>app.example.com</code> → <code>api.example.com</code>), set <code>cookie_samesite="none"</code> and <code>cookie_secure=True</code>. You'll also need to configure <code>cors_origins</code> and ensure your frontend sends credentials (<code>credentials: "include"</code> in fetch).</p>
 </div>
 <h2 id="development-mode">Development mode<a class="headerlink" href="#development-mode" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="o">...</span><span class="p">,</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">token_delivery</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># sets cookie_secure=False so cookies work on http://localhost</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">FastAuthConfig</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="o">...</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">token_delivery</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># sets cookie_secure=False so cookies work on http://localhost</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
 </code></pre></div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>

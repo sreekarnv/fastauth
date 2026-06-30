@@ -2671,6 +2671,42 @@ error output. <strong>Never enable in production.</strong></p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.FastAuthConfig.csrf_enabled">csrf_enabled</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether cookie-authenticated unsafe requests require a
+matching CSRF cookie/header token (default: <code>True</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.FastAuthConfig.csrf_cookie_name">csrf_cookie_name</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the readable CSRF cookie (default:
+<code>"csrf_token"</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="fastauth.config.FastAuthConfig.csrf_header_name">csrf_header_name</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the request header containing the CSRF token
+(default: <code>"X-CSRF-Token"</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="fastauth.config.FastAuthConfig.password">password</span></code></td>
             <td>
                   <code><span title="fastauth.config.PasswordConfig">PasswordConfig</span></code>
