@@ -54,7 +54,7 @@ fastauth generate-secret
 
 ## RS256 / RS512
 
-Uses an RSA key pair. The private key signs tokens; the public key verifies them. This lets other services (microservices, CDNs) verify tokens without the private key.
+Uses a JWKS-backed RSA key pair. The private key signs tokens; the public key verifies them. This lets other services (microservices, CDNs) verify tokens without the private key.
 
 ### Generate keys
 
@@ -80,10 +80,13 @@ config = FastAuthConfig(
         algorithm="RS256",
         private_key=Path("private.pem").read_text(),
         public_key=Path("public.pem").read_text(),
+        jwks_enabled=True,
     ),
     ...
 )
 ```
+
+FastAuth only supports RSA signing through JWKS mode. Call `initialize_jwks()` before issuing tokens.
 
 ## JWKS (JSON Web Key Sets)
 

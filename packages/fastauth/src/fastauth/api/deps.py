@@ -21,9 +21,9 @@ async def get_current_user(
 ):
     auth = request.app.state.fastauth
 
-    token_str = request.cookies.get(auth.config.cookie_name_access)
-    if not token_str and credentials:
-        token_str = credentials.credentials
+    token_str = credentials.credentials if credentials else None
+    if not token_str:
+        token_str = request.cookies.get(auth.config.cookie_name_access)
     if not token_str:
         return None
 

@@ -25,6 +25,7 @@ from fastauth._compat import require
 from fastauth.api.auth import MessageResponse, _issue_tracked_tokens
 from fastauth.api.deps import require_auth
 from fastauth.api.schemas import ErrorDetail
+from fastauth.exceptions import ConfigError
 
 if TYPE_CHECKING:
     from fastauth.app import FastAuth
@@ -50,9 +51,12 @@ def create_passkeys_router(auth: object) -> APIRouter:
     from fastauth.app import FastAuth
     from fastauth.providers.passkey import PasskeyProvider
 
-    assert isinstance(auth, FastAuth)
-    assert auth.config.passkey_adapter is not None
-    assert auth.config.passkey_state_store is not None
+    if not isinstance(auth, FastAuth):
+        raise ConfigError("auth must be a FastAuth instance")
+    if auth.config.passkey_adapter is None:
+        raise ConfigError("passkey_adapter is not configured")
+    if auth.config.passkey_state_store is None:
+        raise ConfigError("passkey_state_store is not configured")
 
     passkey_adapter: PasskeyAdapter = auth.config.passkey_adapter
     state_store: SessionBackend = auth.config.passkey_state_store

@@ -64,9 +64,9 @@ def test_rs256_without_keys_and_jwks_raises():
         _make(jwt=JWTConfig(algorithm="RS256"))
 
 
-def test_rs256_with_keys_ok():
-    config = _make(jwt=JWTConfig(algorithm="RS256", private_key="pk", public_key="pub"))
-    assert config.jwt.algorithm == "RS256"
+def test_rs256_with_keys_without_jwks_raises():
+    with pytest.raises(ConfigError, match="jwks_enabled=True"):
+        _make(jwt=JWTConfig(algorithm="RS256", private_key="pk", public_key="pub"))
 
 
 def test_rs256_with_jwks_enabled_ok():

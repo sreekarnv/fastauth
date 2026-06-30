@@ -69,7 +69,7 @@ class FastAuth:
             app: A :class:`fastapi.FastAPI` instance.
 
         Raises:
-            AssertionError: If *app* is not a :class:`fastapi.FastAPI` instance.
+            TypeError: If *app* is not a :class:`fastapi.FastAPI` instance.
             MissingDependencyError: If the ``fastapi`` extra is not installed.
         """
         require("fastapi", "fastapi")
@@ -78,7 +78,8 @@ class FastAuth:
 
         from fastauth.api.router import create_router
 
-        assert isinstance(app, FastAPI)
+        if not isinstance(app, FastAPI):
+            raise TypeError("app must be a fastapi.FastAPI instance")
         app.state.fastauth = self
         router = create_router(self)
         app.include_router(router, prefix=self.config.route_prefix)

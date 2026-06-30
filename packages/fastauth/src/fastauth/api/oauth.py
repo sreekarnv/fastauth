@@ -19,7 +19,7 @@ from fastauth.core.oauth import (
     initiate_oauth_flow,
     link_oauth_account,
 )
-from fastauth.exceptions import ProviderError
+from fastauth.exceptions import ConfigError, ProviderError
 
 if TYPE_CHECKING:
     from fastauth.types import TokenPair, UserData
@@ -44,7 +44,8 @@ class OAuthAccountResponse(BaseModel):
 def _get_oauth_provider(fa: object, provider_id: str):
     from fastauth.app import FastAuth
 
-    assert isinstance(fa, FastAuth)
+    if not isinstance(fa, FastAuth):
+        raise ConfigError("auth must be a FastAuth instance")
     for p in fa.config.providers:
         if (
             getattr(p, "id", None) == provider_id
@@ -69,7 +70,8 @@ def _oauth_signin_response(
     """
     from fastauth.app import FastAuth
 
-    assert isinstance(fa, FastAuth)
+    if not isinstance(fa, FastAuth):
+        raise ConfigError("auth must be a FastAuth instance")
     if fa.config.oauth_redirect_url:
         redirect = RedirectResponse(
             url=fa.config.oauth_redirect_url,

@@ -24,7 +24,8 @@ class JWKSManager:
 
     def _load_pem_keys(self) -> None:
         kid = generate_kid()
-        assert self._config.private_key is not None
+        if self._config.private_key is None:
+            raise RuntimeError("private_key is required to load PEM keys")
         key = RSAKey.import_key(self._config.private_key)
 
         key_dict = key.as_dict(private=True)

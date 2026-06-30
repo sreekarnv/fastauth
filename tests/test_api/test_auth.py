@@ -140,6 +140,28 @@ async def test_protected_route_with_invalid_token_returns_401(client):
     assert resp.status_code == 401
 
 
+async def test_authorization_header_preferred_over_stale_cookie(client):
+    r = await __register_user(client)
+    access_token = r.json()["access_token"]
+    client.cookies.set("access_token", "stale-token")
+
+    resp = await __protected(
+        client, headers={"Authorization": f"Bearer {access_token}"}
+    )
+
+    assert resp.status_code == 200
+
+
+async def test_refresh_body_preferred_over_stale_cookie(client):
+    r = await __register_user(client)
+    refresh_token = r.json()["refresh_token"]
+    client.cookies.set("refresh_token", "stale-token")
+
+    resp = await __refresh(client, refresh_token=refresh_token)
+
+    assert resp.status_code == 200
+
+
 async def test_login_remember_me_extends_refresh_ttl(client):
 
     await __register_user(client)

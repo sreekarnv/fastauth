@@ -111,8 +111,14 @@ async def test_github_get_user_info_uses_timeout():
         "avatar_url": "http://img",
     }
 
+    emails_response = MagicMock()
+    emails_response.status_code = 200
+    emails_response.json.return_value = [
+        {"email": "x@x.com", "primary": True, "verified": True}
+    ]
+
     mock_client = AsyncMock()
-    mock_client.get.return_value = mock_response
+    mock_client.get.side_effect = [mock_response, emails_response]
 
     with patch("httpx.AsyncClient") as mock_cls:
         mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)

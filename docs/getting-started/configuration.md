@@ -103,7 +103,7 @@ config = FastAuthConfig(
 | `remember_me_ttl` | `int` | `7_776_000` | Refresh token lifetime in seconds (90 days) when `POST /auth/login` is called with `remember: true`. |
 | `issuer` | `str \| None` | `None` | `iss` claim added to every token. |
 | `audience` | `list[str] \| None` | `None` | `aud` claim; validated on decode. |
-| `jwks_enabled` | `bool` | `False` | Expose `/.well-known/jwks.json` and rotate keys. |
+| `jwks_enabled` | `bool` | `False` | Required for RS256/RS512. Exposes `/.well-known/jwks.json` and rotates keys. |
 | `key_rotation_interval` | `int \| None` | `None` | Seconds between RSA key rotations. |
 | `private_key` | `str \| None` | `None` | PEM RSA private key (RS256/RS512). |
 | `public_key` | `str \| None` | `None` | PEM RSA public key (RS256/RS512). |
@@ -120,5 +120,7 @@ config = FastAuthConfig(
         algorithm="RS256",
         private_key=Path("private.pem").read_text(),
         public_key=Path("public.pem").read_text(),
+        jwks_enabled=True,
     )
     ```
+    Call `auth.initialize_jwks()` before issuing tokens.

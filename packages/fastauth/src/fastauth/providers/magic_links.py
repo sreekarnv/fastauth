@@ -5,7 +5,7 @@ from fastauth.core.one_time_tokens import (
     generate_one_time_token,
     hash_one_time_token,
 )
-from fastauth.exceptions import AuthenticationError
+from fastauth.exceptions import AuthenticationError, ConfigError
 from fastauth.types import UserData
 
 if TYPE_CHECKING:
@@ -21,7 +21,8 @@ class MagicLinksProvider:
         self.max_age = max_age
 
     async def send_login_request(self, fa: "FastAuth", user: UserData) -> None:
-        assert fa.config.token_adapter is not None
+        if fa.config.token_adapter is None:
+            raise ConfigError("token_adapter is required for magic links")
 
         raw_token = generate_one_time_token()
         expires_at = datetime.now(timezone.utc) + timedelta(seconds=self.max_age)
@@ -42,7 +43,8 @@ class MagicLinksProvider:
             )
 
     async def authenticate(self, fa: "FastAuth", token: str) -> UserData:
-        assert fa.config.token_adapter is not None
+        if fa.config.token_adapter is None:
+            raise ConfigError("token_adapter is required for magic links")
 
         token_hash = hash_one_time_token(token)
         _token = await fa.config.token_adapter.get_token(
