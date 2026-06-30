@@ -146,3 +146,19 @@ Consider rate limiting these endpoints in particular:
 - [ ] Hook into `on_signin`, `on_signup` to emit metrics or audit logs
 - [ ] Monitor failed sign-in rates for anomaly detection
 - [ ] Set up alerts for database connection pool exhaustion
+
+## Release checklist (for maintainers)
+
+When cutting a new release of FastAuth itself:
+
+- [ ] **Update `CHANGELOG.md`** — move the `[Unreleased]` section into a dated `[X.Y.Z]` block and start a fresh `[Unreleased]`.
+- [ ] **Bump the version** in `packages/fastauth/pyproject.toml` and `packages/fastauth/src/fastauth/__init__.py` (`__version__`).
+- [ ] **Refresh stale docs and examples** — `README.md`, `packages/fastauth/README.md`, `docs/index.md`, the bug-report placeholder, and the `docs/getting-started/installation.md` example output. See [`docs/guides/production.md` → Release checklist](#release-checklist-for-maintainers).
+- [ ] **Run the full CI gate locally**:
+    - `uv run pytest tests/ -q`
+    - `uv run ruff check .`
+    - `uv run ruff format --check .`
+    - `uv run mkdocs build`
+    - `uv build --package sreekarnv-fastauth --out-dir dist` and confirm both `sdist` and `wheel` include `LICENSE`.
+- [ ] **Smoke-install the wheel** in a clean venv and import `fastauth` to confirm `__version__` matches the new release (the CI `package-smoke` job does this on every PR that touches packaging files).
+- [ ] **Tag the release** on the default branch and let the publish workflow upload to PyPI.

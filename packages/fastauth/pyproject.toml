@@ -74,6 +74,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fastauth"]
+include = ["src/fastauth", "README.md", "LICENSE"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/fastauth", "README.md", "LICENSE", "pyproject.toml"]
 
 [project.urls]
 Homepage = "https://github.com/sreekarnv/fastauth"

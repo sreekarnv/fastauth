@@ -7,13 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **One-time token / OAuth consistency.** Magic-link callbacks and OAuth callbacks now atomically consume their one-time tokens through the same `consume_token` path as password-reset and email-verification, so a single use cannot be replayed and the issuing token is removed from the adapter in a single round-trip.
+- **CSRF protection for cookie token delivery.** `token_delivery="cookie"` now requires a matching `csrf_token` cookie and `X-CSRF-Token` header for cookie-authenticated `POST`, `PUT`, `PATCH`, and `DELETE` requests. Bearer-token requests are exempt, and `GET` / `HEAD` / `OPTIONS` do not require the header. Missing or mismatched CSRF tokens return `403 Forbidden`. See [`docs/features/cookies.md`](docs/features/cookies.md).
+- **Email normalization and lockout hardening.** The shared `normalize_email` helper now strips and casefolds every email address before it is stored or looked up, and custom adapters are documented to enforce uniqueness by the normalized form. Account-lockout tracking was tightened in the credentials provider and SQLAlchemy adapter to handle concurrent failed attempts correctly.
+
 ### Removed
 
-- Removed unused session strategy internals (`JWTSessionStrategy` and `DatabaseSessionStrategy`).
+- Removed unused session strategy internals (`JWTSessionStrategy` and `DatabaseSessionStrategy`). The `session_strategy` and `session_backend` fields on `FastAuthConfig` remain for compatibility but are no longer wired through to auth routes; treat `session_strategy="database"` as reserved. User-session tracking via `/auth/sessions` continues to be powered by `FastAuth.session_adapter`, independent of `session_strategy`.
 
 ### Fixed
 
-- Clarified that `/auth/sessions` remains independent of `session_strategy` and is powered by `FastAuth.session_adapter`.
+- Clarified that `/auth/sessions` endpoints are always mounted but return `400` with `detail: "Session management is not configured"` when no `session_adapter` is configured, and that this is independent of `session_strategy`.
+- `README.md`, `packages/fastauth/README.md`, and `docs/index.md` now describe auth behaviour as "JWT token pairs (access + refresh) with optional `/auth/sessions` user-session tracking via `session_adapter`", replacing the previous "JWT & database sessions" wording.
+- `docs/concepts/tokens.md` and `docs/concepts/adapters.md` updated to match the same wording.
+- `examples/full/main.py` no longer sets `session_strategy="database"` or `session_backend`; it wires `auth.session_adapter = adapter.session` and defaults `OAUTH_REDIRECT_URL` to a frontend URL (`http://localhost:3000/auth/callback`).
+- `examples/oauth/README.md` now correctly states that `main.py` calls `load_dotenv()`.
+- `examples/basic`, `examples/oauth`, `examples/magic_link`, `examples/custom_templates`, and `examples/passkeys` READMEs now mention the CSRF header requirement for cookie-based unsafe requests, and the `passkeys` example adds `jinja2` to its requirements.
+- `examples/magic_link/README.md` now uses `export SECRET=$(fastauth generate-secret)` instead of a placeholder secret.
+- `examples/custom_templates/main.py` now reads `SECRET` from the environment and raises a clear error if it is missing, matching the README.
+- `docs/features/magic-links.md` no longer claims tokens are returned in the JSON body when `token_delivery="cookie"`; cookie mode now sets `HttpOnly` cookies and returns a tokenless success body, consistent with `docs/features/cookies.md`.
+- `docs/adapters/custom.md` documents the normalized-email identity model and recommends that custom adapters enforce uniqueness by the normalized form.
+- `.github/ISSUE_TEMPLATE/bug_report.yml` now asks reporters to run `fastauth version` instead of typing a hardcoded version string.
+- `scripts/gen_api_docs.py` now exposes `fastauth.types.PasskeyData`, `fastauth.core.protocols.PasskeyAdapter`, `fastauth.adapters.memory.MemoryPasskeyAdapter`, `fastauth.adapters.sqlalchemy.passkey.SQLAlchemyPasskeyAdapter`, `fastauth.config.PasswordConfig`, `fastauth.config.SecurityConfig`, and `fastauth.types.LoginAttemptData` in the generated API reference.
 
 ## [0.5.6] - 2026-06-30
 

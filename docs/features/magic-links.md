@@ -158,7 +158,7 @@ providers=[
 
 ## Cookie delivery
 
-When `token_delivery="cookie"` is set, the callback endpoint sets `access_token` and `refresh_token` as HTTP-only cookies instead of returning them in the JSON body. This is useful for browser-based apps where the callback URL is opened directly in a tab.
+When `token_delivery="cookie"` is set, the callback endpoint sets `access_token` and `refresh_token` as `HttpOnly` cookies on the response instead of returning them in the JSON body. The response body is a tokenless `{"message": "Authentication successful"}` payload, the same shape used by `/auth/login` and `/auth/refresh` in cookie mode. This is useful for browser-based apps where the callback URL is opened directly in a tab.
 
 ```python
 FastAuthConfig(
@@ -166,6 +166,9 @@ FastAuthConfig(
     token_delivery="cookie",
 )
 ```
+
+!!! danger "No tokens in the response body"
+    Cookie-mode callbacks never return access or refresh tokens in the JSON body. The body is always the same small confirmation payload, and the tokens live only in the `HttpOnly` cookies. See [Cookie Delivery](cookies.md) for the full reference.
 
 ## Event hooks
 

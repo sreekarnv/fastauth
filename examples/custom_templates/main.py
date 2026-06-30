@@ -23,9 +23,15 @@ email_transport = SMTPTransport(
     use_tls=False,
 )
 
+secret = os.environ.get("SECRET")
+if not secret:
+    raise RuntimeError(
+        "SECRET environment variable is required. "
+        "Generate one with `fastauth generate-secret` and export it before running."
+    )
+
 config = FastAuthConfig(
-    # Run `fastauth generate-secret` and paste the output here.
-    secret="REPLACE_WITH_OUTPUT_OF_fastauth_generate_secret",
+    secret=secret,
     providers=[
         CredentialsProvider(),
         MagicLinksProvider(),

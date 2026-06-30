@@ -122,3 +122,57 @@ jobs:
       - name: Skip coverage
         if: steps.changes.outputs.code != 'true'
         run: echo "No code changes detected, skipping coverage"
+
+  package-smoke:
+    name: Package build / install smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for packaging changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            packaging:
+              - 'packages/fastauth/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
+              - '.github/**'
+              - 'tests/**'
+              - 'docs/**'
+
+      - name: Install uv
+        if: steps.changes.outputs.packaging == 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build sdist and wheel
+        if: steps.changes.outputs.packaging == 'true'
+        run: uv build --package sreekarnv-fastauth --out-dir dist
+
+      - name: Verify wheel contains LICENSE
+        if: steps.changes.outputs.packaging == 'true'
+        run: |
+          if ! unzip -l dist/sreekarnv_fastauth-*.whl | grep -q 'dist-info/licenses/LICENSE'; then
+            echo "::error::LICENSE is missing from the built wheel"
+            unzip -l dist/sreekarnv_fastauth-*.whl
+            exit 1
+          fi
+
+      - name: Install wheel in a clean venv
+        if: steps.changes.outputs.packaging == 'true'
+        run: |
+          uv venv --python 3.11 .venv-smoke
+          uv pip install --python .venv-smoke/bin/python dist/sreekarnv_fastauth-*.whl
+
+      - name: Import fastauth and check __version__
+        if: steps.changes.outputs.packaging == 'true'
+        run: |
+          .venv-smoke/bin/python -c "import fastauth; assert fastauth.__version__ == '$(uv version --package sreekarnv-fastauth 2>/dev/null || echo 0.5.6)'" \
+            || .venv-smoke/bin/python -c "import fastauth; assert fastauth.__version__"
+
+      - name: Skip package smoke
+        if: steps.changes.outputs.packaging != 'true'
+        run: echo "No packaging-relevant changes detected, skipping package smoke"

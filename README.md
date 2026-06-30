@@ -17,7 +17,7 @@ FastAuth gives you a complete auth system — credentials, OAuth, passkeys (WebA
 - **Multiple providers** — email/password, magic links, Google OAuth, GitHub OAuth, passkeys (WebAuthn)
 - **OAuth account linking** — connect additional providers to an existing account while authenticated
 - **Pluggable adapters** — SQLAlchemy (SQLite, PostgreSQL, MySQL) or bring your own
-- **JWT & database sessions** — stateless tokens or server-side sessions
+- **JWT token pairs** — stateless access + refresh tokens, with optional `/auth/sessions` user-session tracking via `session_adapter`
 - **Cookie delivery** — HttpOnly, Secure, SameSite out of the box
 - **Email flows** — verification, password reset, and magic links with customizable transports
 - **Custom email templates** — drop Jinja2 templates into any directory; unoverridden templates fall back to built-ins

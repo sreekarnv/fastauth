@@ -9,7 +9,12 @@ REFERENCE_PAGES = [
     (
         "reference/config.md",
         "Configuration",
-        ["fastauth.config.FastAuthConfig", "fastauth.config.JWTConfig"],
+        [
+            "fastauth.config.FastAuthConfig",
+            "fastauth.config.JWTConfig",
+            "fastauth.config.PasswordConfig",
+            "fastauth.config.SecurityConfig",
+        ],
     ),
     (
         "reference/exceptions.md",
@@ -34,6 +39,8 @@ REFERENCE_PAGES = [
             "fastauth.types.TokenData",
             "fastauth.types.OAuthAccountData",
             "fastauth.types.RoleData",
+            "fastauth.types.PasskeyData",
+            "fastauth.types.LoginAttemptData",
             "fastauth.types.TokenPair",
         ],
     ),
@@ -46,6 +53,7 @@ REFERENCE_PAGES = [
             "fastauth.core.protocols.TokenAdapter",
             "fastauth.core.protocols.OAuthAccountAdapter",
             "fastauth.core.protocols.RoleAdapter",
+            "fastauth.core.protocols.PasskeyAdapter",
             "fastauth.core.protocols.SessionBackend",
             "fastauth.core.protocols.EmailTransport",
             "fastauth.core.protocols.EventHooks",
@@ -70,6 +78,8 @@ REFERENCE_PAGES = [
             "fastauth.adapters.memory.MemorySessionAdapter",
             "fastauth.adapters.memory.MemoryRoleAdapter",
             "fastauth.adapters.memory.MemoryOAuthAccountAdapter",
+            "fastauth.adapters.memory.MemoryPasskeyAdapter",
+            "fastauth.adapters.sqlalchemy.passkey.SQLAlchemyPasskeyAdapter",
         ],
     ),
     (

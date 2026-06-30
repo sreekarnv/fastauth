@@ -21,11 +21,32 @@ pip install sreekarnv-fastauth[standard,oauth,email]
 uvicorn main:app --reload
 ```
 
-The app reads `SECRET`, the OAuth client IDs/secrets, and the optional `OAUTH_REDIRECT_URL` from the environment. The example does **not** call `load_dotenv()` for you — either `export` the variables in your shell or wrap `main.py` with `python-dotenv` yourself. `SECRET` must be at least 32 bytes; generate it with `fastauth generate-secret`.
+The app reads `SECRET`, the OAuth client IDs/secrets, and the optional `OAUTH_REDIRECT_URL` from the environment. `main.py` calls `load_dotenv()` for you, so copying `.env.example` to `.env` and filling in the values is enough. `SECRET` must be at least 32 bytes; generate it with `fastauth generate-secret`.
 
 ## Cookie behavior on `http://localhost`
 
 The example sets `token_delivery="cookie"` and `debug=True` so the `HttpOnly` cookies are issued without the `Secure` flag, which lets the browser keep them over `http://localhost`. For production remove `debug=True` (or set it to `False`) so the cookies are flagged `Secure` and only sent over HTTPS.
+
+## CSRF for unsafe requests
+
+With `token_delivery="cookie"` enabled, FastAuth sets a readable `csrf_token` cookie alongside the auth cookies. Browser clients must echo that token in the `X-CSRF-Token` header on every cookie-authenticated `POST`, `PUT`, `PATCH`, and `DELETE` request — including `POST /auth/logout` and `POST /auth/refresh`. Missing or mismatched CSRF tokens return `403 Forbidden`. `GET`, `HEAD`, and `OPTIONS` are exempt, and `Authorization: Bearer …` requests do not need the header.
+
+```javascript
+function readCookie(name) {
+  return document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split("=")[1];
+}
+
+await fetch("/auth/logout", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "X-CSRF-Token": decodeURIComponent(readCookie("csrf_token") ?? ""),
+  },
+});
+```
 
 ## Getting OAuth credentials
 
