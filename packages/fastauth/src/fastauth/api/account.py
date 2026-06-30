@@ -10,6 +10,7 @@ from fastauth.api.auth import _clear_auth_cookies
 from fastauth.api.deps import require_auth
 from fastauth.app import FastAuth
 from fastauth.core.credentials import hash_password, verify_password
+from fastauth.core.identity import normalize_email
 from fastauth.core.one_time_tokens import (
     generate_one_time_token,
     hash_one_time_token,
@@ -135,8 +136,9 @@ def create_account_router(auth: object) -> APIRouter:
                 detail="Password is incorrect",
             )
 
-        existing = await fa.config.adapter.get_user_by_email(body.new_email)
-        if existing:
+        new_email = normalize_email(str(body.new_email))
+        existing = await fa.config.adapter.get_user_by_email(new_email)
+        if existing and existing["id"] != user["id"]:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Email is already in use",
@@ -155,13 +157,13 @@ def create_account_router(auth: object) -> APIRouter:
                 "user_id": user["id"],
                 "token_type": "email_change",
                 "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
-                "raw_data": {"email": body.new_email},
+                "raw_data": {"email": new_email},
             }
         )
 
         if fa.email_dispatcher:
             await fa.email_dispatcher.send_email_change_email(
-                user, body.new_email, token, expires_in_minutes=30
+                user, new_email, token, expires_in_minutes=30
             )
 
         return MessageResponse(message="Confirmation email sent to new address")

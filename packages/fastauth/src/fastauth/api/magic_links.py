@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 from fastauth.api.auth import MessageResponse, _issue_tracked_tokens, _set_auth_cookies
 from fastauth.api.schemas import ErrorDetail
 from fastauth.app import FastAuth
+from fastauth.core.identity import normalize_email
 from fastauth.exceptions import AuthenticationError, ConfigError
 from fastauth.providers.magic_links import MagicLinksProvider
 
@@ -45,11 +46,12 @@ def create_magic_links_router(auth: object) -> APIRouter:
     async def magic_link_login(input: MagicLinkRequest) -> MessageResponse:
         provider = _get_provider()
 
-        user = await fa.config.adapter.get_user_by_email(input.email)
+        email = normalize_email(str(input.email))
+        user = await fa.config.adapter.get_user_by_email(email)
 
         if not user:
             user = await fa.config.adapter.create_user(
-                email=input.email, hashed_password=None
+                email=email, hashed_password=None
             )
             if fa.role_adapter and fa.config.default_role:
                 from fastauth.core.rbac import assign_default_role

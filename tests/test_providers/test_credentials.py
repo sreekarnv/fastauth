@@ -33,10 +33,10 @@ def provider():
 @pytest.mark.asyncio
 async def test_successful_login(user_adapter, token_adapter, provider):
     hashed = hash_password("password123")
-    _ = await user_adapter.create_user("test@example.com", hashed)
+    _ = await user_adapter.create_user("Test@Example.COM", hashed)
 
     result = await provider.authenticate(
-        user_adapter, "test@example.com", "password123", token_adapter
+        user_adapter, " test@example.com ", "password123", token_adapter
     )
     assert result["email"] == "test@example.com"
 
@@ -76,13 +76,21 @@ async def test_account_lockout_after_max_attempts(
     user_adapter, token_adapter, provider
 ):
     hashed = hash_password("password123")
-    _ = await user_adapter.create_user("test@example.com", hashed)
+    user = await user_adapter.create_user("test@example.com", hashed)
 
     for _ in range(3):
         with pytest.raises(AuthenticationError):
             await provider.authenticate(
                 user_adapter, "test@example.com", "wrong", token_adapter
             )
+
+    attempt = await token_adapter.get_token(
+        f"login_attempt:{user['id']}", "login_attempt"
+    )
+    assert attempt is not None
+    assert attempt["raw_data"] is not None
+    assert attempt["raw_data"]["attempts"] == 3
+    assert attempt["raw_data"].get("locked_until") is not None
 
     with pytest.raises(AccountLockedError):
         await provider.authenticate(
@@ -99,6 +107,17 @@ async def test_successful_login_clears_attempts(user_adapter, token_adapter, pro
         await provider.authenticate(
             user_adapter, "test@example.com", "wrong", token_adapter
         )
+    with pytest.raises(AuthenticationError):
+        await provider.authenticate(
+            user_adapter, "test@example.com", "wrong", token_adapter
+        )
+
+    attempt = await token_adapter.get_token(
+        f"login_attempt:{user['id']}", "login_attempt"
+    )
+    assert attempt is not None
+    assert attempt["raw_data"] is not None
+    assert attempt["raw_data"]["attempts"] == 2
 
     result = await provider.authenticate(
         user_adapter, "test@example.com", "password123", token_adapter

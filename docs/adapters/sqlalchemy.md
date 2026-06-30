@@ -108,3 +108,7 @@ Import `Base` from FastAuth in your Alembic `env.py`:
 from fastauth.adapters.sqlalchemy.models import Base
 target_metadata = Base.metadata
 ```
+
+### Email identity upgrade note
+
+FastAuth normalizes email identity by trimming and lowercasing/casefolding email addresses before storage and lookup. Existing databases that contain users whose emails differ only by case should be cleaned before upgrading. Merge or rename those duplicates before applying any unique normalized-email policy.

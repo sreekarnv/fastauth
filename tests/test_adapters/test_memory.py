@@ -26,6 +26,13 @@ async def test_create_user_duplicate_email(memory_user_adapter):
         )
 
 
+async def test_create_user_duplicate_email_case_variant(memory_user_adapter):
+    await memory_user_adapter.create_user(email="User@Example.COM")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await memory_user_adapter.create_user(email=" user@example.com ")
+
+
 async def test_get_user_by_id(memory_user_adapter):
     user = await memory_user_adapter.create_user(
         email="a@b.com", name="ABC", hashed_password="hash123#"
@@ -47,6 +54,15 @@ async def test_get_user_by_email(memory_user_adapter):
     )
     _user = await memory_user_adapter.get_user_by_email(email)
     assert _user == user
+
+
+async def test_get_user_by_email_case_insensitive(memory_user_adapter):
+    user = await memory_user_adapter.create_user(email="User@Example.COM")
+
+    found = await memory_user_adapter.get_user_by_email(" user@example.com ")
+
+    assert found == user
+    assert found["email"] == "user@example.com"
 
 
 async def test_get_user_by_email_not_found(memory_user_adapter):
@@ -87,6 +103,18 @@ async def test_update_user_duplicate_email_raises(memory_user_adapter):
 
     with pytest.raises(UserAlreadyExistsError):
         await memory_user_adapter.update_user(user["id"], email="taken@b.com")
+
+    unchanged = await memory_user_adapter.get_user_by_id(user["id"])
+    assert unchanged is not None
+    assert unchanged["email"] == "old@b.com"
+
+
+async def test_update_user_duplicate_email_case_variant_raises(memory_user_adapter):
+    user = await memory_user_adapter.create_user(email="old@b.com")
+    await memory_user_adapter.create_user(email="Taken@B.COM")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await memory_user_adapter.update_user(user["id"], email=" taken@b.com ")
 
     unchanged = await memory_user_adapter.get_user_by_id(user["id"])
     assert unchanged is not None

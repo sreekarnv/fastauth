@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from secrets import token_urlsafe
 from typing import TYPE_CHECKING
 
 from fastauth.core.credentials import verify_password
+from fastauth.core.identity import normalize_email
 from fastauth.core.protocols import TokenAdapter, UserAdapter
 from fastauth.exceptions import AccountLockedError, AuthenticationError
 from fastauth.types import UserData
@@ -42,7 +44,7 @@ class CredentialsProvider:
             security.lockout_duration if security else self.lockout_duration
         )
 
-        user = await adapter.get_user_by_email(email)
+        user = await adapter.get_user_by_email(normalize_email(email))
         if not user:
             raise AuthenticationError("Invalid email or password")
 
@@ -92,38 +94,71 @@ class CredentialsProvider:
 
         now = datetime.now(timezone.utc)
         raw_data = attempt.get("raw_data") if attempt else None
-        if raw_data and raw_data.get("attempts"):
-            attempts = raw_data["attempts"] + 1
-        else:
-            attempts = 1
+        attempt_ids = list(raw_data.get("attempt_ids", [])) if raw_data else []
+        if raw_data and raw_data.get("attempts") and not attempt_ids:
+            attempt_ids = [""] * int(raw_data["attempts"])
 
+        attempt_id = token_urlsafe(16)
+        if attempt_id not in attempt_ids:
+            attempt_ids.append(attempt_id)
+
+        await self._write_failed_attempt(
+            token_adapter,
+            user_id,
+            attempt_ids,
+            max_attempts,
+            lockout_seconds,
+            now,
+        )
+
+        stored = await token_adapter.get_token(
+            f"login_attempt:{user_id}", "login_attempt"
+        )
+        stored_raw_data = stored.get("raw_data") if stored else None
+        stored_attempt_ids = (
+            list(stored_raw_data.get("attempt_ids", [])) if stored_raw_data else []
+        )
+        if attempt_id not in stored_attempt_ids:
+            merged_ids = [*stored_attempt_ids, attempt_id]
+            await self._write_failed_attempt(
+                token_adapter,
+                user_id,
+                merged_ids,
+                max_attempts,
+                lockout_seconds,
+                now,
+            )
+
+    async def _write_failed_attempt(
+        self,
+        token_adapter: TokenAdapter,
+        user_id: str,
+        attempt_ids: list[str],
+        max_attempts: int,
+        lockout_seconds: int,
+        now: datetime,
+    ) -> None:
+        attempts = len(attempt_ids)
+        raw_data: dict[str, object] = {
+            "attempts": attempts,
+            "attempt_ids": attempt_ids,
+        }
         if attempts >= max_attempts:
-            locked_until = now + timedelta(seconds=lockout_seconds)
-            await token_adapter.create_token(
-                {
-                    "token": f"login_attempt:{user_id}",
-                    "user_id": user_id,
-                    "token_type": "login_attempt",
-                    "expires_at": locked_until,
-                    "raw_data": {
-                        "attempts": attempts,
-                        "locked_until": locked_until,
-                    },
-                }
-            )
+            expires_at = now + timedelta(seconds=lockout_seconds)
+            raw_data["locked_until"] = expires_at
         else:
-            await token_adapter.create_token(
-                {
-                    "token": f"login_attempt:{user_id}",
-                    "user_id": user_id,
-                    "token_type": "login_attempt",
-                    "expires_at": now + timedelta(minutes=15),
-                    "raw_data": {
-                        "attempts": attempts,
-                        "last_attempt_at": now,
-                    },
-                }
-            )
+            expires_at = now + timedelta(minutes=15)
+            raw_data["last_attempt_at"] = now
+
+        await token_adapter.create_token(
+            {
+                "token": f"login_attempt:{user_id}",
+                "user_id": user_id,
+                "token_type": "login_attempt",
+                "expires_at": expires_at,
+                "raw_data": raw_data,
+            }
+        )
 
     async def _clear_failed_attempts(
         self, token_adapter: TokenAdapter, user_id: str
