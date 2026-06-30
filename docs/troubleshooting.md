@@ -251,9 +251,9 @@ target_metadata = Base.metadata
 
 ## JWT / Keys
 
-### `RS256` — "private_key is required"
+### `RS256` — "jwks_enabled=True" is required
 
-When using `RS256` or `RS512`, you must provide both keys:
+When using `RS256` or `RS512`, enable JWKS mode. You may provide both keys or let FastAuth generate them during JWKS initialization:
 
 ```python
 from pathlib import Path
@@ -262,6 +262,7 @@ JWTConfig(
     algorithm="RS256",
     private_key=Path("private.pem").read_text(),
     public_key=Path("public.pem").read_text(),
+    jwks_enabled=True,
 )
 ```
 

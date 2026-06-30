@@ -16,6 +16,7 @@ from fastauth.core.one_time_tokens import (
 from fastauth.core.tokens import async_create_token_pair, decode_token
 from fastauth.exceptions import (
     AuthenticationError,
+    ConfigError,
     InvalidTokenError,
     UserAlreadyExistsError,
 )
@@ -123,8 +124,15 @@ class MessageResponse(BaseModel):
     message: str
 
 
-def _set_auth_cookies(response: Response, tokens: TokenPair, fa: FastAuth) -> None:
+def _set_auth_cookies(
+    response: Response,
+    tokens: TokenPair,
+    fa: FastAuth,
+    refresh_max_age: int | None = None,
+) -> None:
     cfg = fa.config
+    if refresh_max_age is None:
+        refresh_max_age = cfg.jwt.refresh_token_ttl
     response.set_cookie(
         key=cfg.cookie_name_access,
         value=tokens["access_token"],
@@ -140,7 +148,7 @@ def _set_auth_cookies(response: Response, tokens: TokenPair, fa: FastAuth) -> No
         httponly=cfg.cookie_httponly,
         secure=cfg.effective_cookie_secure,
         samesite=cfg.cookie_samesite,
-        max_age=cfg.jwt.refresh_token_ttl,
+        max_age=refresh_max_age,
         domain=cfg.cookie_domain,
     )
 
@@ -168,7 +176,8 @@ def create_auth_router(auth: object) -> APIRouter:
     def _get_credentials_provider() -> CredentialsProvider | None:
         from fastauth.app import FastAuth
 
-        assert isinstance(auth, FastAuth)
+        if not isinstance(auth, FastAuth):
+            raise ConfigError("auth must be a FastAuth instance")
         for provider in auth.config.providers:
             if isinstance(provider, CredentialsProvider):
                 return provider
@@ -293,7 +302,12 @@ def create_auth_router(auth: object) -> APIRouter:
         tokens = await _issue_tracked_tokens(fa, user, remember=body.remember)
 
         if fa.config.token_delivery == "cookie":
-            _set_auth_cookies(response, tokens, fa)
+            refresh_max_age = (
+                fa.config.jwt.remember_me_ttl
+                if body.remember
+                else fa.config.jwt.refresh_token_ttl
+            )
+            _set_auth_cookies(response, tokens, fa, refresh_max_age=refresh_max_age)
 
         return _token_response_payload(fa, tokens)
 
@@ -335,9 +349,9 @@ def create_auth_router(auth: object) -> APIRouter:
 
         fa: FastAuth = request.app.state.fastauth
 
-        token_str = request.cookies.get(fa.config.cookie_name_refresh)
-        if not token_str and body:
-            token_str = body.refresh_token
+        token_str = body.refresh_token if body else None
+        if not token_str:
+            token_str = request.cookies.get(fa.config.cookie_name_refresh)
         if not token_str:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

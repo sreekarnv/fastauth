@@ -6,13 +6,15 @@ from fastauth.api.oauth import create_oauth_router
 from fastauth.api.rbac import create_rbac_router
 from fastauth.api.session import create_session_router
 from fastauth.api.token import create_token_router
+from fastauth.exceptions import ConfigError
 
 
 def create_router(auth: object) -> APIRouter:
     from fastauth.app import FastAuth
     from fastauth.providers.magic_links import MagicLinksProvider
 
-    assert isinstance(auth, FastAuth)
+    if not isinstance(auth, FastAuth):
+        raise ConfigError("auth must be a FastAuth instance")
 
     router = APIRouter()
     router.include_router(create_auth_router(auth), tags=["auth"])

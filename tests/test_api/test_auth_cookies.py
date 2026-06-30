@@ -10,6 +10,16 @@ _PASSWORD = "Pass123#"
 _REGISTER = {"email": _EMAIL, "password": _PASSWORD, "name": "Test"}
 
 
+def _cookie_max_age(resp, cookie_name: str) -> int:
+    for header in resp.headers.get_list("set-cookie"):
+        if header.startswith(f"{cookie_name}="):
+            for part in header.split(";"):
+                part = part.strip()
+                if part.lower().startswith("max-age="):
+                    return int(part.split("=", 1)[1])
+    raise AssertionError(f"{cookie_name} max-age not found")
+
+
 @pytest.fixture
 def user_adapter():
     return MemoryUserAdapter()
@@ -86,6 +96,35 @@ async def test_login_sets_cookies(cookie_client):
     assert resp.status_code == 200
     assert "access_token" in resp.cookies
     assert "refresh_token" in resp.cookies
+
+
+async def test_login_refresh_cookie_uses_default_ttl(cookie_client, cookie_app):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post(
+        "/auth/login", json={"email": _EMAIL, "password": _PASSWORD}
+    )
+
+    assert resp.status_code == 200
+    assert (
+        _cookie_max_age(resp, "refresh_token")
+        == cookie_app.state.fastauth.config.jwt.refresh_token_ttl
+    )
+
+
+async def test_login_remember_refresh_cookie_uses_remember_ttl(
+    cookie_client, cookie_app
+):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post(
+        "/auth/login",
+        json={"email": _EMAIL, "password": _PASSWORD, "remember": True},
+    )
+
+    assert resp.status_code == 200
+    assert (
+        _cookie_max_age(resp, "refresh_token")
+        == cookie_app.state.fastauth.config.jwt.remember_me_ttl
+    )
 
 
 async def test_login_cookie_mode_does_not_expose_tokens_in_body(cookie_client):

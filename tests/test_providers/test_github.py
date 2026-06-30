@@ -69,8 +69,14 @@ async def test_get_user_info_with_email(provider):
         "avatar_url": "https://avatars.githubusercontent.com/u/12345",
     }
 
+    emails_response = MagicMock()
+    emails_response.status_code = 200
+    emails_response.json.return_value = [
+        {"email": "user@github.com", "primary": True, "verified": True}
+    ]
+
     mock_client = AsyncMock()
-    mock_client.get.return_value = user_response
+    mock_client.get.side_effect = [user_response, emails_response]
 
     with patch("httpx.AsyncClient") as mock_cls:
         mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
@@ -80,6 +86,35 @@ async def test_get_user_info_with_email(provider):
         assert user["id"] == "12345"
         assert user["email"] == "user@github.com"
         assert user["name"] == "Test User"
+        assert user["email_verified"] is True
+
+
+async def test_get_user_info_with_public_unverified_email(provider):
+    user_response = MagicMock()
+    user_response.status_code = 200
+    user_response.json.return_value = {
+        "id": 12345,
+        "login": "testuser",
+        "name": "Test User",
+        "email": "user@github.com",
+        "avatar_url": "https://avatars.githubusercontent.com/u/12345",
+    }
+
+    emails_response = MagicMock()
+    emails_response.status_code = 200
+    emails_response.json.return_value = [
+        {"email": "user@github.com", "primary": True, "verified": False}
+    ]
+
+    mock_client = AsyncMock()
+    mock_client.get.side_effect = [user_response, emails_response]
+
+    with patch("httpx.AsyncClient") as mock_cls:
+        mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+
+        user = await provider.get_user_info("gh-token")
+        assert user["email"] == "user@github.com"
         assert user["email_verified"] is False
 
 

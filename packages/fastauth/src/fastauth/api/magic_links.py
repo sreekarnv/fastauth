@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr
 from fastauth.api.auth import MessageResponse, _issue_tracked_tokens, _set_auth_cookies
 from fastauth.api.schemas import ErrorDetail
 from fastauth.app import FastAuth
-from fastauth.exceptions import AuthenticationError
+from fastauth.exceptions import AuthenticationError, ConfigError
 from fastauth.providers.magic_links import MagicLinksProvider
 
 
@@ -13,7 +13,8 @@ class MagicLinkRequest(BaseModel):
 
 
 def create_magic_links_router(auth: object) -> APIRouter:
-    assert isinstance(auth, FastAuth)
+    if not isinstance(auth, FastAuth):
+        raise ConfigError("auth must be a FastAuth instance")
 
     fa: FastAuth = auth
     router = APIRouter(

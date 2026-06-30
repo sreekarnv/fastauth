@@ -215,9 +215,8 @@ class FastAuthConfig:
             )
 
         if self.jwt.algorithm.startswith("RS"):
-            has_keys = self.jwt.private_key and self.jwt.public_key
-            if not has_keys and not self.jwt.jwks_enabled:
+            if not self.jwt.jwks_enabled:
                 raise ConfigError(
-                    f"For {self.jwt.algorithm}, provide private_key/public_key "
-                    "or enable jwks_enabled"
+                    f"{self.jwt.algorithm} requires jwks_enabled=True and "
+                    "auth.initialize_jwks() before signing tokens"
                 )

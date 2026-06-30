@@ -80,7 +80,11 @@ class GitHubProvider:
 
             email = data.get("email")
             email_verified = False
-            if not email:
+            if email:
+                email_verified = await self._fetch_email_verification(
+                    client, access_token, email
+                )
+            else:
                 email, email_verified = await self._fetch_primary_email(
                     client, access_token
                 )
@@ -116,6 +120,23 @@ class GitHubProvider:
         if emails:
             return emails[0]["email"], bool(emails[0].get("verified", False))
         raise ProviderError("No email found on GitHub account")
+
+    async def _fetch_email_verification(
+        self, client: Any, access_token: str, email: str
+    ) -> bool:
+        resp = await client.get(
+            self.EMAILS_URL,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json",
+            },
+        )
+        if resp.status_code != 200:
+            raise ProviderError("Failed to fetch GitHub emails")
+        for entry in resp.json():
+            if entry.get("email") == email:
+                return bool(entry.get("verified", False))
+        return False
 
     async def refresh_access_token(self, refresh_token: str) -> dict[str, Any] | None:
         return None
