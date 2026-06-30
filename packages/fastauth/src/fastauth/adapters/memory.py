@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from cuid2 import cuid_wrapper
 
+from fastauth.core.identity import normalize_email
 from fastauth.core.protocols import UserAdapter
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
 from fastauth.types import (
@@ -29,13 +30,16 @@ class MemoryUserAdapter(UserAdapter):
     async def create_user(
         self, email: str, hashed_password: str | None = None, **kwargs: object
     ) -> UserData:
-        if email in self._email_index:
-            raise UserAlreadyExistsError(f"User with email '{email}' already exists")
+        normalized_email = normalize_email(email)
+        if normalized_email in self._email_index:
+            raise UserAlreadyExistsError(
+                f"User with email '{normalized_email}' already exists"
+            )
 
         user_id = generate_id()
         user: UserData = {
             "id": user_id,
-            "email": email,
+            "email": normalized_email,
             "name": kwargs.get("name"),  # type: ignore[typeddict-item]
             "image": kwargs.get("image"),  # type: ignore[typeddict-item]
             "email_verified": bool(kwargs.get("email_verified", False)),
@@ -43,14 +47,14 @@ class MemoryUserAdapter(UserAdapter):
         }
         self._users[user_id] = user
         self._passwords[user_id] = hashed_password
-        self._email_index[email] = user_id
+        self._email_index[normalized_email] = user_id
         return user
 
     async def get_user_by_id(self, user_id: str) -> UserData | None:
         return self._users.get(user_id)
 
     async def get_user_by_email(self, email: str) -> UserData | None:
-        user_id = self._email_index.get(email)
+        user_id = self._email_index.get(normalize_email(email))
         if user_id is None:
             return None
         return self._users.get(user_id)
@@ -62,14 +66,20 @@ class MemoryUserAdapter(UserAdapter):
 
         old_email = user["email"]
         new_email = kwargs.get("email")
+        normalized_new_email = (
+            normalize_email(new_email) if isinstance(new_email, str) else None
+        )
         if (
-            isinstance(new_email, str)
-            and new_email != old_email
-            and new_email in self._email_index
+            normalized_new_email is not None
+            and normalized_new_email != old_email
+            and normalized_new_email in self._email_index
         ):
             raise UserAlreadyExistsError(
-                f"User with email '{new_email}' already exists"
+                f"User with email '{normalized_new_email}' already exists"
             )
+
+        if normalized_new_email is not None:
+            kwargs["email"] = normalized_new_email
 
         for key, value in kwargs.items():
             if key in user:
@@ -91,7 +101,7 @@ class MemoryUserAdapter(UserAdapter):
             user["is_active"] = False
             self._users[user_id] = user
         else:
-            del self._email_index[user["email"]]
+            del self._email_index[normalize_email(user["email"])]
             del self._users[user_id]
             self._passwords.pop(user_id, None)
 

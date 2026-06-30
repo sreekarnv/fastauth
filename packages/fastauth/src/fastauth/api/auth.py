@@ -10,6 +10,7 @@ from pydantic import BaseModel, EmailStr
 from fastauth.api.deps import enforce_cookie_csrf, require_auth
 from fastauth.api.schemas import ErrorDetail
 from fastauth.core.credentials import hash_password
+from fastauth.core.identity import normalize_email
 from fastauth.core.one_time_tokens import (
     generate_one_time_token,
     hash_one_time_token,
@@ -230,8 +231,9 @@ def create_auth_router(auth: object) -> APIRouter:
 
             validate_password(body.password, fa.config.password)
             hashed = hash_password(body.password)
+            email = normalize_email(str(body.email))
             user = await fa.config.adapter.create_user(
-                email=body.email,
+                email=email,
                 hashed_password=hashed,
                 name=body.name,
             )
@@ -290,7 +292,7 @@ def create_auth_router(auth: object) -> APIRouter:
         try:
             user = await provider.authenticate(
                 adapter=fa.config.adapter,
-                email=body.email,
+                email=normalize_email(str(body.email)),
                 password=body.password,
                 token_adapter=fa.config.token_adapter,
                 security=fa.config.security,
@@ -497,7 +499,9 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        user = await fa.config.adapter.get_user_by_email(body.email)
+        user = await fa.config.adapter.get_user_by_email(
+            normalize_email(str(body.email))
+        )
         if user:
             token = generate_one_time_token()
             await fa.config.token_adapter.create_token(

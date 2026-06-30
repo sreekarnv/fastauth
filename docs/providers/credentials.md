@@ -58,6 +58,12 @@ curl -X POST http://localhost:8000/auth/login \
   -d '{"email": "alice@example.com", "password": "s3cur3P@ss!"}'
 ```
 
+## Email identity
+
+FastAuth treats email identity case-insensitively. Email addresses are trimmed and lowercased/casefolded before storage and lookup, so `Alice@Example.com` and `alice@example.com` refer to the same user.
+
+FastAuth does not apply provider-specific normalization such as Gmail dot or plus-address handling.
+
 ## Email verification
 
 When an `email_transport` and `token_adapter` are configured, FastAuth automatically sends a verification email on registration.

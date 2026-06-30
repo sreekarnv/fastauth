@@ -4,10 +4,11 @@ from datetime import datetime, timezone
 from typing import Any
 
 from cuid2 import cuid_wrapper
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 
 from fastauth.adapters.sqlalchemy.models import UserModel
+from fastauth.core.identity import normalize_email
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
 from fastauth.types import UserData
 
@@ -32,19 +33,20 @@ class SQLAlchemyUserAdapter:
     async def create_user(
         self, email: str, hashed_password: str | None = None, **kwargs: Any
     ) -> UserData:
+        normalized_email = normalize_email(email)
         async with self._session_factory() as session:
             existing = await session.execute(
-                select(UserModel).where(UserModel.email == email)
+                select(UserModel).where(func.lower(UserModel.email) == normalized_email)
             )
-            if existing.scalar_one_or_none():
+            if existing.scalars().first():
                 raise UserAlreadyExistsError(
-                    f"User with email '{email}' already exists"
+                    f"User with email '{normalized_email}' already exists"
                 )
 
             now = datetime.now(timezone.utc)
             user = UserModel(
                 id=generate_id(),
-                email=email,
+                email=normalized_email,
                 hashed_password=hashed_password,
                 name=kwargs.get("name"),
                 image=kwargs.get("image"),
@@ -59,7 +61,7 @@ class SQLAlchemyUserAdapter:
             except IntegrityError as e:
                 await session.rollback()
                 raise UserAlreadyExistsError(
-                    f"User with email '{email}' already exists"
+                    f"User with email '{normalized_email}' already exists"
                 ) from e
             await session.refresh(user)
             return _to_user_data(user)
@@ -73,11 +75,12 @@ class SQLAlchemyUserAdapter:
             return _to_user_data(user) if user else None
 
     async def get_user_by_email(self, email: str) -> UserData | None:
+        normalized_email = normalize_email(email)
         async with self._session_factory() as session:
             result = await session.execute(
-                select(UserModel).where(UserModel.email == email)
+                select(UserModel).where(func.lower(UserModel.email) == normalized_email)
             )
-            user = result.scalar_one_or_none()
+            user = result.scalars().first()
             return _to_user_data(user) if user else None
 
     async def update_user(self, user_id: str, **kwargs: Any) -> UserData:
@@ -91,6 +94,18 @@ class SQLAlchemyUserAdapter:
 
             allowed_fields = {"email", "name", "image", "email_verified", "is_active"}
             update_data = {k: v for k, v in kwargs.items() if k in allowed_fields}
+            if isinstance(update_data.get("email"), str):
+                update_data["email"] = normalize_email(update_data["email"])
+                existing = await session.execute(
+                    select(UserModel).where(
+                        func.lower(UserModel.email) == update_data["email"],
+                        UserModel.id != user_id,
+                    )
+                )
+                if existing.scalars().first():
+                    raise UserAlreadyExistsError(
+                        f"User with email '{update_data['email']}' already exists"
+                    )
             update_data["updated_at"] = datetime.now(timezone.utc)
 
             if update_data:

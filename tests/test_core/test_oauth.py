@@ -237,7 +237,7 @@ async def test_complete_links_to_existing_email_user(
     provider, state_store, user_adapter, oauth_adapter
 ):
     existing = await user_adapter.create_user(
-        email="oauth@example.com", hashed_password="hashed"
+        email="OAuth@Example.COM", hashed_password="hashed"
     )
 
     _, state = await initiate_oauth_flow(
@@ -258,6 +258,7 @@ async def test_complete_links_to_existing_email_user(
     assert is_new is False
     assert email_verified_now is True
     assert user["id"] == existing["id"]
+    assert user["email"] == "oauth@example.com"
     assert user["email_verified"] is True
 
     accounts = await oauth_adapter.get_user_oauth_accounts(user["id"])

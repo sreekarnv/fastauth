@@ -6,6 +6,7 @@ import secrets
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
+from fastauth.core.identity import normalize_email
 from fastauth.exceptions import ProviderError
 
 if TYPE_CHECKING:
@@ -218,13 +219,14 @@ async def complete_oauth_flow(
             raise ProviderError("Sign-in not allowed")
         return user, False, email_verified_now
 
-    user = await user_adapter.get_user_by_email(provider_user["email"])
+    email = normalize_email(provider_user["email"])
+    user = await user_adapter.get_user_by_email(email)
     is_new = False
     provider_email_verified = bool(provider_user.get("email_verified", False))
 
     if not user:
         user = await user_adapter.create_user(
-            email=provider_user["email"],
+            email=email,
             name=provider_user.get("name"),
             image=provider_user.get("image"),
             email_verified=provider_email_verified,

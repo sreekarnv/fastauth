@@ -32,6 +32,13 @@ async def test_create_duplicate_user_raises(adapter):
         await adapter.user.create_user("alice@example.com")
 
 
+async def test_create_duplicate_user_case_variant_raises(adapter):
+    await adapter.user.create_user("Alice@Example.COM")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await adapter.user.create_user(" alice@example.com ")
+
+
 async def test_get_user_by_id(adapter):
     created = await adapter.user.create_user("alice@example.com")
     found = await adapter.user.get_user_by_id(created["id"])
@@ -47,6 +54,15 @@ async def test_get_user_by_id_not_found(adapter):
 async def test_get_user_by_email(adapter):
     await adapter.user.create_user("alice@example.com")
     found = await adapter.user.get_user_by_email("alice@example.com")
+    assert found is not None
+    assert found["email"] == "alice@example.com"
+
+
+async def test_get_user_by_email_case_insensitive(adapter):
+    await adapter.user.create_user("Alice@Example.COM")
+
+    found = await adapter.user.get_user_by_email(" alice@example.com ")
+
     assert found is not None
     assert found["email"] == "alice@example.com"
 
@@ -71,6 +87,18 @@ async def test_update_user_duplicate_email_raises(adapter):
 
     with pytest.raises(UserAlreadyExistsError):
         await adapter.user.update_user(user["id"], email="bob@example.com")
+
+    unchanged = await adapter.user.get_user_by_id(user["id"])
+    assert unchanged is not None
+    assert unchanged["email"] == "alice@example.com"
+
+
+async def test_update_user_duplicate_email_case_variant_raises(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.user.create_user("Bob@Example.COM")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await adapter.user.update_user(user["id"], email=" bob@example.com ")
 
     unchanged = await adapter.user.get_user_by_id(user["id"])
     assert unchanged is not None
