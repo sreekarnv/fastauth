@@ -65,6 +65,18 @@ async def test_update_user(adapter):
     assert updated["email_verified"] is True
 
 
+async def test_update_user_duplicate_email_raises(adapter):
+    user = await adapter.user.create_user("alice@example.com")
+    await adapter.user.create_user("bob@example.com")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await adapter.user.update_user(user["id"], email="bob@example.com")
+
+    unchanged = await adapter.user.get_user_by_id(user["id"])
+    assert unchanged is not None
+    assert unchanged["email"] == "alice@example.com"
+
+
 async def test_update_user_not_found_raises(adapter):
     with pytest.raises(UserNotFoundError):
         await adapter.user.update_user("nonexistent", name="X")

@@ -169,10 +169,13 @@ def create_oauth_router(auth: object) -> APIRouter:
                 user_adapter=fa.config.adapter,
                 oauth_adapter=fa.config.oauth_adapter,
                 store_provider_tokens=fa.config.store_oauth_provider_tokens,
+                allow_signin=fa.config.hooks.allow_signin if fa.config.hooks else None,
             )
         except ProviderError as e:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_403_FORBIDDEN
+                if str(e) == "Sign-in not allowed"
+                else status.HTTP_400_BAD_REQUEST,
                 detail=str(e),
             ) from e
 
@@ -188,17 +191,6 @@ def create_oauth_router(auth: object) -> APIRouter:
                 await fa.config.hooks.on_signup(user)
             if email_verified_now and not is_new:
                 await fa.config.hooks.on_email_verify(user)
-            # `allow_signin` is evaluated *before* tokens are issued so a
-            # denied sign-in produces no tokens and triggers no
-            # `on_token_refresh` / `on_signin` callbacks. `on_oauth_link`
-            # intentionally only fires for explicit link flows — see
-            # `/auth/oauth/{provider}/link/callback`.
-            allowed = await fa.config.hooks.allow_signin(user, provider)
-            if not allowed:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Sign-in not allowed",
-                )
             await fa.config.hooks.on_signin(user, provider)
 
         tokens = await _issue_tracked_tokens(fa, user)

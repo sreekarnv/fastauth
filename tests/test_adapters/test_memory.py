@@ -81,6 +81,18 @@ async def test_update_user_email_change(memory_user_adapter):
     assert await memory_user_adapter.get_user_by_email("old@b.com") is None
 
 
+async def test_update_user_duplicate_email_raises(memory_user_adapter):
+    user = await memory_user_adapter.create_user(email="old@b.com")
+    await memory_user_adapter.create_user(email="taken@b.com")
+
+    with pytest.raises(UserAlreadyExistsError):
+        await memory_user_adapter.update_user(user["id"], email="taken@b.com")
+
+    unchanged = await memory_user_adapter.get_user_by_id(user["id"])
+    assert unchanged is not None
+    assert unchanged["email"] == "old@b.com"
+
+
 async def test_delete_user_hard(memory_user_adapter):
     user = await memory_user_adapter.create_user(
         email="a@b.com", name="ABC", hashed_password="hash123#"

@@ -455,7 +455,7 @@ def create_auth_router(auth: object) -> APIRouter:
                 detail="Token adapter is not configured",
             )
 
-        stored = await fa.config.token_adapter.get_token(
+        stored = await fa.config.token_adapter.consume_token(
             hash_one_time_token(token), "verification"
         )
         if not stored:
@@ -465,7 +465,6 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         await fa.config.adapter.update_user(stored["user_id"], email_verified=True)
-        await fa.config.token_adapter.delete_token(hash_one_time_token(token))
 
         user = await fa.config.adapter.get_user_by_id(stored["user_id"])
         if user and fa.config.hooks:
@@ -519,7 +518,9 @@ def create_auth_router(auth: object) -> APIRouter:
             )
 
         token_hash = hash_one_time_token(body.token)
-        stored = await fa.config.token_adapter.get_token(token_hash, "password_reset")
+        stored = await fa.config.token_adapter.consume_token(
+            token_hash, "password_reset"
+        )
         if not stored:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -538,7 +539,6 @@ def create_auth_router(auth: object) -> APIRouter:
 
         hashed = hash_password(body.new_password)
         await fa.config.adapter.set_hashed_password(stored["user_id"], hashed)
-        await fa.config.token_adapter.delete_token(token_hash)
         await fa.config.token_adapter.delete_user_tokens(
             stored["user_id"], "password_reset"
         )

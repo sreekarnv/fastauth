@@ -5,6 +5,7 @@ from typing import Any
 
 from cuid2 import cuid_wrapper
 from sqlalchemy import select, update
+from sqlalchemy.exc import IntegrityError
 
 from fastauth.adapters.sqlalchemy.models import UserModel
 from fastauth.exceptions import UserAlreadyExistsError, UserNotFoundError
@@ -53,7 +54,13 @@ class SQLAlchemyUserAdapter:
                 updated_at=now,
             )
             session.add(user)
-            await session.commit()
+            try:
+                await session.commit()
+            except IntegrityError as e:
+                await session.rollback()
+                raise UserAlreadyExistsError(
+                    f"User with email '{email}' already exists"
+                ) from e
             await session.refresh(user)
             return _to_user_data(user)
 
@@ -87,12 +94,20 @@ class SQLAlchemyUserAdapter:
             update_data["updated_at"] = datetime.now(timezone.utc)
 
             if update_data:
-                await session.execute(
-                    update(UserModel)
-                    .where(UserModel.id == user_id)
-                    .values(**update_data)
-                )
-                await session.commit()
+                try:
+                    await session.execute(
+                        update(UserModel)
+                        .where(UserModel.id == user_id)
+                        .values(**update_data)
+                    )
+                    await session.commit()
+                except IntegrityError as e:
+                    await session.rollback()
+                    if "email" in update_data:
+                        raise UserAlreadyExistsError(
+                            f"User with email '{update_data['email']}' already exists"
+                        ) from e
+                    raise
                 await session.refresh(user)
 
             return _to_user_data(user)

@@ -264,6 +264,65 @@ async def test_complete_links_to_existing_email_user(
     assert len(accounts) == 1
 
 
+async def test_complete_rejects_create_collision_for_another_user(
+    provider, state_store, user_adapter
+):
+    class CollidingOAuthAdapter(MemoryOAuthAccountAdapter):
+        async def create_oauth_account(self, account):
+            return {**account, "user_id": "other-user-id"}
+
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    with pytest.raises(ProviderError, match="already linked"):
+        await complete_oauth_flow(
+            provider=provider,
+            code="auth-code",
+            state=state,
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=CollidingOAuthAdapter(),
+        )
+
+
+async def test_complete_denied_existing_email_user_has_no_link_or_verification(
+    provider, state_store, user_adapter, oauth_adapter
+):
+    existing = await user_adapter.create_user(
+        email="oauth@example.com", hashed_password="hashed", email_verified=False
+    )
+
+    _, state = await initiate_oauth_flow(
+        provider=provider,
+        redirect_uri="http://localhost/callback",
+        state_store=state_store,
+    )
+
+    async def deny(user, provider_id):
+        return False
+
+    with pytest.raises(ProviderError, match="Sign-in not allowed"):
+        await complete_oauth_flow(
+            provider=provider,
+            code="auth-code",
+            state=state,
+            redirect_uri="http://localhost/callback",
+            state_store=state_store,
+            user_adapter=user_adapter,
+            oauth_adapter=oauth_adapter,
+            allow_signin=deny,
+        )
+
+    user = await user_adapter.get_user_by_id(existing["id"])
+    assert user is not None
+    assert user["email_verified"] is False
+    assert await oauth_adapter.get_user_oauth_accounts(existing["id"]) == []
+
+
 async def test_complete_rejects_unverified_email_link_to_existing_user(
     state_store, user_adapter, oauth_adapter
 ):
