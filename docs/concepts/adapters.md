@@ -58,11 +58,15 @@ FastAuth splits storage responsibilities across several protocols:
 |----------|---------|--------------|
 | `UserAdapter` | Create, read, update, delete users | `adapter` |
 | `TokenAdapter` | Persist one-time verification/reset tokens | `token_adapter` |
-| `SessionAdapter` | Store server-side sessions | used internally |
+| `SessionAdapter` | `/auth/sessions` user-session tracking | used internally |
 | `OAuthAccountAdapter` | Link OAuth provider accounts to users | `oauth_adapter` |
 | `RoleAdapter` | Manage roles and permissions | `auth.role_adapter` |
 
 You only need to configure the protocols relevant to your feature set. Email verification requires a `TokenAdapter`; OAuth requires an `OAuthAccountAdapter`; RBAC requires a `RoleAdapter`.
+
+## Email identity
+
+FastAuth treats email addresses as case-insensitive and trims surrounding whitespace. The canonical form is `email.strip().casefold()`, so `Alice@Example.COM` and `alice@example.com` always refer to the same user. Built-in adapters normalize every email on create / lookup / update, so credentials login, OAuth email linking, magic-link auto-registration, and account lockout tracking all see the same identity. Custom adapters must do the same — see [Custom Adapter → Email identity and normalization](../adapters/custom.md#email-identity-and-normalization) for the requirement and the `fastauth.core.identity.normalize_email` helper.
 
 ## Custom adapters
 

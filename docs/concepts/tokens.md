@@ -93,7 +93,7 @@ auth.session_adapter = adapter.session     # ← this powers /auth/sessions
 | `DELETE` | `/auth/sessions/{id}` | Yes | Revoke a single session |
 | `DELETE` | `/auth/sessions/all` | Yes | Revoke all of the caller's sessions |
 
-These endpoints are only mounted when a `session_adapter` is set; if it is `None` they return `400` with `detail: "Session management is not configured"`. This is **not** related to `session_strategy` — `session_strategy="database"` is not required to use `session_adapter`.
+These endpoints are always mounted, but return `400` with `detail: "Session management is not configured"` when no `session_adapter` is set on the `FastAuth` instance. This is **not** related to `session_strategy` — `session_strategy="database"` is not required to use `session_adapter`.
 
 ## Signing algorithms
 

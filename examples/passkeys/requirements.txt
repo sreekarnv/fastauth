@@ -1,1 +1,2 @@
 sreekarnv-fastauth[standard,webauthn]
+jinja2

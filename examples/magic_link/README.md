@@ -16,7 +16,7 @@ pip install "sreekarnv-fastauth[standard,email]"
 Set the required environment variables:
 
 ```bash
-export SECRET=your-secret-key
+export SECRET=$(fastauth generate-secret)
 export SMTP_HOST=localhost
 export SMTP_PORT=1025
 export SMTP_USER=

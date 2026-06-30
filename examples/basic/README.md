@@ -88,6 +88,27 @@ With cookies enabled:
 
 `cookie_secure` defaults to `True` in production (`debug=False`) and `False` in local dev (`debug=True`), so no manual change is needed when deploying.
 
+### CSRF for unsafe requests
+
+With `token_delivery="cookie"`, FastAuth sets a readable `csrf_token` cookie alongside the auth cookies. Browser clients must echo that token in the `X-CSRF-Token` header on every cookie-authenticated `POST`, `PUT`, `PATCH`, and `DELETE` request — including `POST /auth/refresh`, `POST /auth/logout`, and any of your own protected routes that rely on cookies (the `/dashboard`, `/admin`, and `/reports` routes in this example). Missing or mismatched CSRF tokens return `403 Forbidden`. `GET`, `HEAD`, and `OPTIONS` are exempt, and `Authorization: Bearer …` requests do not need the header.
+
+```javascript
+function readCookie(name) {
+  return document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split("=")[1];
+}
+
+await fetch("/auth/logout", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "X-CSRF-Token": decodeURIComponent(readCookie("csrf_token") ?? ""),
+  },
+});
+```
+
 ## Endpoints
 
 All FastAuth routes are mounted under `/auth`:

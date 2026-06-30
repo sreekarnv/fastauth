@@ -1,6 +1,6 @@
 <div class="fa-hero" markdown>
 
-<p class="fa-hero__eyebrow">v0.5.5 &nbsp;·&nbsp; Python 3.11+ &nbsp;·&nbsp; FastAPI</p>
+<p class="fa-hero__eyebrow">v0.5.6 &nbsp;·&nbsp; Python 3.11+ &nbsp;·&nbsp; FastAPI</p>
 
 # FastAuth
 
@@ -31,8 +31,8 @@
 
 <div class="fa-feature">
 <span class="fa-feature__num">03</span>
-<p class="fa-feature__name">JWT & Sessions</p>
-<p class="fa-feature__desc">Stateless tokens or server-side sessions — your choice.</p>
+<p class="fa-feature__name">JWT Token Pairs</p>
+<p class="fa-feature__desc">Stateless access + refresh tokens, with optional `/auth/sessions` tracking via `session_adapter`.</p>
 </div>
 
 <div class="fa-feature">

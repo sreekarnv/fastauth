@@ -2,9 +2,30 @@
 
 You can use any database or ORM by implementing the `UserAdapter` protocol. FastAuth uses structural subtyping (duck typing) — your class just needs the right methods.
 
+## Email identity and normalization
+
+FastAuth treats emails as case-insensitive and trims surrounding whitespace. The canonical form is `email.strip().casefold()` — for example `"  Alice@Example.COM  "` becomes `"alice@example.com"`. Built-in adapters (`MemoryUserAdapter`, `SQLAlchemyUserAdapter`) normalize every email on create, lookup, and update, and index the underlying store by the normalized form.
+
+Custom adapters **must enforce the same contract**:
+
+1. Normalize every incoming `email` (`email.strip().casefold()`) before you write it to your store and before you look it up.
+2. Enforce uniqueness by the normalized form, not the raw input. Otherwise `Alice@example.com` and `alice@example.com` would be two separate accounts.
+3. Return the normalized form in the `email` field of the `UserData` you return, so downstream code (JWT claims, hooks, `/auth/me`) sees a consistent identity.
+
+Use the shared helper to avoid drift:
+
+```python
+from fastauth.core.identity import normalize_email
+
+normalized = normalize_email("Alice@Example.COM")  # "alice@example.com"
+```
+
+This keeps cross-feature identity consistent — credentials login, OAuth email linking, magic-link auto-registration, and lockout tracking all rely on the same normalized form.
+
 ## Implementing UserAdapter
 
 ```python
+from fastauth.core.identity import normalize_email
 from fastauth.types import UserData
 
 class MyUserAdapter:
@@ -13,18 +34,21 @@ class MyUserAdapter:
     async def create_user(
         self, email: str, hashed_password: str | None = None, **kwargs
     ) -> UserData:
-        record = await db.users.insert(email=email, hashed_password=hashed_password)
-        return {"id": str(record.id), "email": record.email, "is_active": True}
+        normalized = normalize_email(email)
+        record = await db.users.insert(email=normalized, hashed_password=hashed_password)
+        return {"id": str(record.id), "email": normalized, "is_active": True}
 
     async def get_user_by_id(self, user_id: str) -> UserData | None:
         record = await db.users.find_one(id=user_id)
         return _to_user_data(record) if record else None
 
     async def get_user_by_email(self, email: str) -> UserData | None:
-        record = await db.users.find_one(email=email)
+        record = await db.users.find_one(email=normalize_email(email))
         return _to_user_data(record) if record else None
 
     async def update_user(self, user_id: str, **kwargs) -> UserData:
+        if "email" in kwargs and isinstance(kwargs["email"], str):
+            kwargs["email"] = normalize_email(kwargs["email"])
         record = await db.users.update(id=user_id, **kwargs)
         return _to_user_data(record)
 

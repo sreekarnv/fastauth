@@ -21,10 +21,6 @@ adapter = SQLAlchemyAdapter(
     engine_url=os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///./auth.db")
 )
 
-redis_backend = RedisSessionBackend(
-    url=os.environ.get("REDIS_URL", "redis://localhost:6379")
-)
-
 email_transport = SMTPTransport(
     host=os.environ["SMTP_HOST"],
     port=int(os.environ.get("SMTP_PORT", "587")),
@@ -53,15 +49,17 @@ config = FastAuthConfig(
     adapter=adapter.user,
     token_adapter=adapter.token,
     token_delivery="cookie",
-    session_strategy="database",
-    session_backend=redis_backend,
     oauth_adapter=adapter.oauth,
     oauth_state_store=RedisSessionBackend(
         url=os.environ.get("REDIS_URL", "redis://localhost:6379"),
         prefix="fastauth:oauth-state:",
     ),
+    # OAUTH_REDIRECT_URL is the frontend URL FastAuth 302s to after a successful
+    # OAuth callback — tokens are set as HttpOnly cookies on that response. The
+    # provider callback route is the FastAPI route registered with Google/GitHub
+    # (see `redirect_uri=...` on the authorize endpoint).
     oauth_redirect_url=os.environ.get(
-        "OAUTH_REDIRECT_URL", "http://localhost:8000/auth/oauth/callback"
+        "OAUTH_REDIRECT_URL", "http://localhost:3000/auth/callback"
     ),
     email_transport=email_transport,
     jwt=JWTConfig(
@@ -84,6 +82,7 @@ config = FastAuthConfig(
 
 auth = FastAuth(config)
 auth.role_adapter = adapter.role
+auth.session_adapter = adapter.session
 
 
 @asynccontextmanager
