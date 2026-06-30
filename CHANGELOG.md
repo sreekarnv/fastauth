@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-06-30
+
 ### Security
 
 - **One-time token / OAuth consistency.** Magic-link callbacks and OAuth callbacks now atomically consume their one-time tokens through the same `consume_token` path as password-reset and email-verification, so a single use cannot be replayed and the issuing token is removed from the adapter in a single round-trip.
@@ -31,6 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docs/adapters/custom.md` documents the normalized-email identity model and recommends that custom adapters enforce uniqueness by the normalized form.
 - `.github/ISSUE_TEMPLATE/bug_report.yml` now asks reporters to run `fastauth version` instead of typing a hardcoded version string.
 - `scripts/gen_api_docs.py` now exposes `fastauth.types.PasskeyData`, `fastauth.core.protocols.PasskeyAdapter`, `fastauth.adapters.memory.MemoryPasskeyAdapter`, `fastauth.adapters.sqlalchemy.passkey.SQLAlchemyPasskeyAdapter`, `fastauth.config.PasswordConfig`, `fastauth.config.SecurityConfig`, and `fastauth.types.LoginAttemptData` in the generated API reference.
+
+### Migration Notes
+
+- **Cookie-mode CSRF header.** When `token_delivery="cookie"`, unsafe requests (`POST`, `PUT`, `PATCH`, `DELETE`) must include a matching `csrf_token` cookie and `X-CSRF-Token` header. Frontends calling FastAuth with cookie-based auth should read the `csrf_token` cookie at login and echo it back on every unsafe request.
+- **Email normalization.** Emails are now stripped and casefolded before they are stored or looked up. Pre-existing rows that differ only by case (e.g. `Alice@Example.com` and `alice@example.com`) should be deduplicated before upgrading, otherwise registration or sign-in for the affected addresses will return uniqueness errors.
+- **`/auth/sessions` is independent of `session_strategy`.** The `/auth/sessions` endpoints are always mounted; they require a `FastAuth.session_adapter` (not the legacy `session_strategy` config) to return anything other than `400 Session management is not configured`. `session_strategy="database"` remains reserved and is not wired into auth routes.
+- **RS256/RS512 still require JWKS initialization.** RS256 and RS512 signing continue to require `jwks_enabled=True` and `auth.initialize_jwks()` before any token is signed (carried over from 0.5.6).
 
 ## [0.5.6] - 2026-06-30
 

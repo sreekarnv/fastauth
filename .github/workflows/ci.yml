@@ -170,7 +170,7 @@ jobs:
       - name: Import fastauth and check __version__
         if: steps.changes.outputs.packaging == 'true'
         run: |
-          .venv-smoke/bin/python -c "import fastauth; assert fastauth.__version__ == '$(uv version --package sreekarnv-fastauth 2>/dev/null || echo 0.5.6)'" \
+          .venv-smoke/bin/python -c "import fastauth; assert fastauth.__version__ == '$(uv version --package sreekarnv-fastauth 2>/dev/null || echo 0.5.7)'" \
             || .venv-smoke/bin/python -c "import fastauth; assert fastauth.__version__"
 
       - name: Skip package smoke
