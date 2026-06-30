@@ -345,7 +345,14 @@ async def test_delete_account_cookie_mode_clears_auth_cookies(memory_user_adapte
             json={"email": "cookie@example.com", "password": "Pass123#"},
         )
         assert register.status_code == 201
-        resp = await c.request("DELETE", "/auth/account", json={"password": "Pass123#"})
+        csrf_token = c.cookies.get("csrf_token")
+        assert csrf_token is not None
+        resp = await c.request(
+            "DELETE",
+            "/auth/account",
+            json={"password": "Pass123#"},
+            headers={"X-CSRF-Token": csrf_token},
+        )
 
     assert resp.status_code == 200
     set_cookie = resp.headers.get_list("set-cookie")
@@ -354,6 +361,9 @@ async def test_delete_account_cookie_mode_clears_auth_cookies(memory_user_adapte
     )
     assert any(
         "refresh_token=" in header and "Max-Age=0" in header for header in set_cookie
+    )
+    assert any(
+        "csrf_token=" in header and "Max-Age=0" in header for header in set_cookie
     )
 
 

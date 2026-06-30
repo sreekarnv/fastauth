@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from secrets import token_urlsafe
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr
 
-from fastauth.api.deps import require_auth
+from fastauth.api.deps import enforce_cookie_csrf, require_auth
 from fastauth.api.schemas import ErrorDetail
 from fastauth.core.credentials import hash_password
 from fastauth.core.one_time_tokens import (
@@ -151,12 +152,22 @@ def _set_auth_cookies(
         max_age=refresh_max_age,
         domain=cfg.cookie_domain,
     )
+    response.set_cookie(
+        key=cfg.csrf_cookie_name,
+        value=token_urlsafe(32),
+        httponly=False,
+        secure=cfg.effective_cookie_secure,
+        samesite=cfg.cookie_samesite,
+        max_age=refresh_max_age,
+        domain=cfg.cookie_domain,
+    )
 
 
 def _clear_auth_cookies(response: Response, fa: FastAuth) -> None:
     cfg = fa.config
     response.delete_cookie(cfg.cookie_name_access, domain=cfg.cookie_domain)
     response.delete_cookie(cfg.cookie_name_refresh, domain=cfg.cookie_domain)
+    response.delete_cookie(cfg.csrf_cookie_name, domain=cfg.cookie_domain)
 
 
 def create_auth_router(auth: object) -> APIRouter:
@@ -352,6 +363,8 @@ def create_auth_router(auth: object) -> APIRouter:
         token_str = body.refresh_token if body else None
         if not token_str:
             token_str = request.cookies.get(fa.config.cookie_name_refresh)
+            if token_str:
+                enforce_cookie_csrf(request)
         if not token_str:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

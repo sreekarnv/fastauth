@@ -1,7 +1,8 @@
 import pytest
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastauth import FastAuth, FastAuthConfig
 from fastauth.adapters.memory import MemoryTokenAdapter, MemoryUserAdapter
+from fastauth.api.deps import require_auth
 from fastauth.providers.credentials import CredentialsProvider
 from httpx import ASGITransport, AsyncClient
 
@@ -18,6 +19,12 @@ def _cookie_max_age(resp, cookie_name: str) -> int:
                 if part.lower().startswith("max-age="):
                     return int(part.split("=", 1)[1])
     raise AssertionError(f"{cookie_name} max-age not found")
+
+
+def _csrf_headers(client: AsyncClient) -> dict[str, str]:
+    token = client.cookies.get("csrf_token")
+    assert token is not None
+    return {"X-CSRF-Token": token}
 
 
 @pytest.fixture
@@ -43,6 +50,11 @@ def cookie_app(user_adapter, token_adapter):
     auth = FastAuth(config)
     _app = FastAPI()
     auth.mount(_app)
+
+    @_app.post("/protected-update")
+    async def protected_update(user=Depends(require_auth)):
+        return {"email": user["email"]}
+
     return _app
 
 
@@ -63,6 +75,11 @@ def json_app(user_adapter):
     auth = FastAuth(config)
     _app = FastAPI()
     auth.mount(_app)
+
+    @_app.post("/protected-update")
+    async def protected_update(user=Depends(require_auth)):
+        return {"email": user["email"]}
+
     return _app
 
 
@@ -78,6 +95,18 @@ async def test_register_sets_cookies(cookie_client):
     assert resp.status_code == 201
     assert "access_token" in resp.cookies
     assert "refresh_token" in resp.cookies
+    assert "csrf_token" in resp.cookies
+
+
+async def test_csrf_cookie_is_readable_by_js(cookie_client):
+    resp = await cookie_client.post("/auth/register", json=_REGISTER)
+    assert resp.status_code == 201
+    csrf_cookie = next(
+        header
+        for header in resp.headers.get_list("set-cookie")
+        if header.startswith("csrf_token=")
+    )
+    assert "HttpOnly" not in csrf_cookie
 
 
 async def test_register_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
@@ -140,21 +169,28 @@ async def test_login_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
 
 async def test_logout_clears_cookies(cookie_client):
     await cookie_client.post("/auth/register", json=_REGISTER)
-    resp = await cookie_client.post("/auth/logout")
+    resp = await cookie_client.post(
+        "/auth/logout", headers=_csrf_headers(cookie_client)
+    )
     assert resp.status_code == 200
     assert resp.cookies.get("access_token", "") == ""
+    assert resp.cookies.get("csrf_token", "") == ""
 
 
 async def test_refresh_reads_from_cookie(cookie_client):
     await cookie_client.post("/auth/register", json=_REGISTER)
-    resp = await cookie_client.post("/auth/refresh")
+    resp = await cookie_client.post(
+        "/auth/refresh", headers=_csrf_headers(cookie_client)
+    )
     assert resp.status_code == 200
     assert "access_token" in resp.cookies
 
 
 async def test_refresh_cookie_mode_does_not_expose_tokens_in_body(cookie_client):
     await cookie_client.post("/auth/register", json=_REGISTER)
-    resp = await cookie_client.post("/auth/refresh")
+    resp = await cookie_client.post(
+        "/auth/refresh", headers=_csrf_headers(cookie_client)
+    )
     assert resp.status_code == 200
     body = resp.json()
     assert "access_token" not in body
@@ -192,6 +228,56 @@ async def test_me_via_cookie(cookie_client):
     me = await cookie_client.get("/auth/me")
     assert me.status_code == 200
     assert me.json()["email"] == _EMAIL
+
+
+async def test_cookie_mode_unsafe_request_without_csrf_fails(cookie_client):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post("/protected-update")
+    assert resp.status_code == 403
+
+
+async def test_cookie_mode_unsafe_request_with_csrf_succeeds(cookie_client):
+    await cookie_client.post("/auth/register", json=_REGISTER)
+    resp = await cookie_client.post(
+        "/protected-update", headers=_csrf_headers(cookie_client)
+    )
+    assert resp.status_code == 200
+    assert resp.json()["email"] == _EMAIL
+
+
+async def test_bearer_token_unsafe_request_succeeds_without_csrf(json_client):
+    register = await json_client.post("/auth/register", json=_REGISTER)
+    access_token = register.json()["access_token"]
+    resp = await json_client.post(
+        "/protected-update", headers={"Authorization": f"Bearer {access_token}"}
+    )
+    assert resp.status_code == 200
+
+
+async def test_csrf_disabled_allows_cookie_unsafe_request(user_adapter, token_adapter):
+    config = FastAuthConfig(
+        secret="super-secret-key-only-for-testing",
+        providers=[CredentialsProvider()],
+        adapter=user_adapter,
+        token_adapter=token_adapter,
+        token_delivery="cookie",
+        debug=True,
+        csrf_enabled=False,
+    )
+    auth = FastAuth(config)
+    app = FastAPI()
+    auth.mount(app)
+
+    @app.post("/protected-update")
+    async def protected_update(user=Depends(require_auth)):
+        return {"email": user["email"]}
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        await client.post("/auth/register", json=_REGISTER)
+        resp = await client.post("/protected-update")
+
+    assert resp.status_code == 200
 
 
 async def test_me_invalid_token(json_client):

@@ -34,6 +34,9 @@ config = FastAuthConfig(
 | `cookie_httponly` | `bool` | `True` | Set the `HttpOnly` flag. |
 | `cookie_samesite` | `"lax"` \| `"strict"` \| `"none"` | `"lax"` | `SameSite` policy. |
 | `cookie_domain` | `str \| None` | `None` | Optional domain scope. |
+| `csrf_enabled` | `bool` | `True` | Require a matching CSRF cookie/header for cookie-authenticated unsafe requests. |
+| `csrf_cookie_name` | `str` | `"csrf_token"` | Readable CSRF cookie name. |
+| `csrf_header_name` | `str` | `"X-CSRF-Token"` | Header that must match the CSRF cookie. |
 
 ### Session strategy
 

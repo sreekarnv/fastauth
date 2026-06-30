@@ -71,6 +71,23 @@ config = FastAuthConfig(
 - [ ] **Set `cookie_httponly=True`** (default) — prevents JS access
 - [ ] **Review `cookie_samesite`** — `"lax"` for same-origin apps, `"none"` for cross-origin SPAs
 - [ ] **Set `cookie_domain`** if you share cookies across subdomains
+- [ ] **Keep `csrf_enabled=True`** for cookie delivery — browser clients must send the readable `csrf_token` cookie value as `X-CSRF-Token` on `POST`, `PUT`, `PATCH`, and `DELETE`
+
+Cookie mode is protected by a double-submit CSRF token. FastAuth sets `access_token` and `refresh_token` as HttpOnly cookies, plus a readable `csrf_token` cookie. Your frontend should include credentials and copy that cookie into the `X-CSRF-Token` header for unsafe requests:
+
+```javascript
+await fetch("https://api.example.com/auth/account/profile", {
+  method: "PUT",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRF-Token": csrfTokenFromCookie,
+  },
+  body: JSON.stringify({name}),
+})
+```
+
+Requests authenticated with `Authorization: Bearer <token>` are checked before cookies and do not require a CSRF header.
 
 ## Token lifetimes
 

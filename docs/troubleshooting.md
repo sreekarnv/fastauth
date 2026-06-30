@@ -112,6 +112,24 @@ fetch("http://localhost:8000/auth/login", {
 })
 ```
 
+### `403 Forbidden` on POST/PUT/PATCH/DELETE in cookie mode
+
+Cookie-authenticated unsafe requests need a CSRF header. FastAuth sets a readable `csrf_token` cookie whenever it sets auth cookies. Read that cookie and send the same value as `X-CSRF-Token`:
+
+```javascript
+fetch("http://localhost:8000/auth/account/profile", {
+  method: "PUT",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRF-Token": csrfTokenFromCookie,
+  },
+  body: JSON.stringify({name}),
+})
+```
+
+`GET`, `HEAD`, and `OPTIONS` do not require the CSRF header. Requests using `Authorization: Bearer <token>` are bearer-authenticated first and do not require CSRF.
+
 ---
 
 ## Email
